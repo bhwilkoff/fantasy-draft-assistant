@@ -324,6 +324,26 @@
 
   function render(force) {
     if (!state.data) return;
+
+    /* The league is derived at boot, but the draft client renders
+     * asynchronously -- arming a few seconds early means readDraftOrder()
+     * finds nothing and numTeams silently falls back to 12. In a 14-team room
+     * that mis-prices every replacement level. So if we booted on fallbacks,
+     * re-derive as soon as the room is actually on screen. */
+    if (state.league && state.league.teamsFrom === 'fallback'
+        && document.querySelector('.ys-draftorder-current')) {
+      applyDetectedLeague(state.data);
+      state.index = buildIndex(state.data.players);
+      window.__hcIndex = state.index;
+      window.__hcLeagueSummary = {
+        scoring: state.league.scoring.name,
+        detectedFrom: state.league.detectedFrom,
+        counts: state.league.counts,
+        roster: state.league.roster
+      };
+      force = true;
+    }
+
     var st = readStatus();
     var av = readAvailable();
     var sig = [st.pick, st.upIn, av.rows.length, state.myTeam].join('|');
@@ -497,6 +517,7 @@
       roster: roster, scoring: scoring, numTeams: numTeams
     });
     state.league.detectedFrom = det.rosterText ? 'room' : 'fallback';
+    state.league.teamsFrom = det.numTeams ? 'room' : 'fallback';
     window.__hcLeague = state.league;
     state.league.isMock = isMock;
   }
