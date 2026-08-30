@@ -60,6 +60,23 @@
       && /harvey/i.test(window.__hcLeagueSummary.scoring))
       ? L.SCORING_PRESETS.harvey_cup : L.SCORING_PRESETS.yahoo_default;
 
+    /* Never mix scales. If Yahoo projections do not cover essentially every
+     * drafted player, grading some players on Yahoo's numbers and others on
+     * ours produces a ranking that means nothing -- a team with more
+     * fallbacks is measured with a different ruler. Fall back wholesale. */
+    var cov = 0, tot = 0;
+    Object.keys(harvest.teams).forEach(function (t) {
+      harvest.teams[t].forEach(function (p) {
+        tot++; if (p.yahooProj != null) cov++; });
+    });
+    var coverage = tot ? cov / tot : 0;
+    if (source === 'yahoo' && coverage < 0.95) {
+      source = 'ours';
+      var degraded = 'yahoo coverage ' + Math.round(coverage * 100)
+                   + '% (<95%) -- graded with our projections instead, '
+                   + 'consistently, rather than mixing two scales';
+    }
+
     var uid = 0, rows = [], unresolved = [];
     Object.keys(harvest.teams).forEach(function (team) {
       var roster = [];
@@ -100,6 +117,7 @@
     return {
       room: harvest.room, me: harvest.me, rules: scoring.name,
       gradedWith: source,
+      degraded: (typeof degraded !== 'undefined') ? degraded : null,
       yahooProjCoverage: total ? Math.round(100 * yahooCount / total) + '%' : '0%',
       lineup: rosterText, numTeams: rows.length,
       myRank: mine ? mine.rank : null,

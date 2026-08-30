@@ -104,20 +104,14 @@
       });
       if (!pos && /^(QB|RB|WR|TE|K|DEF)$/i.test(slot || '')) pos = slot.toUpperCase();
       if (name && pos) {
-        /* Yahoo prints its OWN projected points in this table. Capture it:
-         * grading a draft with the same projections we drafted on is
-         * circular and would make us win by construction. Yahoo's number is
-         * independent of our ESPN-derived board, so beating the room on
-         * Yahoo's own arithmetic is a result that means something. */
-        var yProj = null;
-        for (var ci = 1; ci < cells.length; ci++) {
-          var v = parseFloat(String(cells[ci]).replace(/[^0-9.\-]/g, ''));
-          // the points column is a plausible season total, unlike bye week
-          // (1-18) or pick number
-          if (!isNaN(v) && v >= 40 && v <= 600) { yProj = v; break; }
-        }
+        /* NO projected-points column exists here. The Results roster table is
+         * Slot | Player | Grade | Bye | Pick. An earlier version scanned for
+         * "the first number between 40 and 600" and happily read the PICK
+         * NUMBER as projected points -- which silently ranked teams by how
+         * late they drafted. Yahoo's projections come from the Players table
+         * instead; see harvestYahooProjections(). */
         out.push({ name: name, pos: pos, team: team, slot: slot,
-                   yahooProj: yProj, yid: pe.getAttribute('data-id') });
+                   yid: pe.getAttribute('data-id') });
       }
     });
     return out;
@@ -130,6 +124,45 @@
       .map(function (tr) { return T(tr.cells[0] || {}); })
       .filter(Boolean).join(',');
   }
+
+  /* Yahoo's own projected points, from the Players table (which HAS a
+   * "Proj Pts" column). Keyed by the room's player id so it joins to rosters
+   * exactly, with no name matching. Toggling the "Drafted" filter is what
+   * exposes already-drafted players. */
+  window.__hcYahooProj = async function () {
+    var map = {};
+    function scrape() {
+      var t = null, best = 0;
+      [].slice.call(document.querySelectorAll('table')).forEach(function (x) {
+        var n = x.querySelectorAll('.ys-player[data-id]').length;
+        if (n > best) { best = n; t = x; }
+      });
+      if (!t) return 0;
+      var head = [].slice.call((t.rows[0] || {}).cells || [])
+        .map(function (c) { return T(c); });
+      var col = head.indexOf('Proj Pts');
+      if (col < 0) return 0;
+      var added = 0;
+      [].slice.call(t.rows).slice(1).forEach(function (tr) {
+        var pe = tr.querySelector('.ys-player[data-id]');
+        if (!pe || !tr.cells[col]) return;
+        var v = parseFloat(T(tr.cells[col]).replace(/[^0-9.\-]/g, ''));
+        if (!isNaN(v)) { map[pe.getAttribute('data-id')] = v; added++; }
+      });
+      return added;
+    }
+    clickByText('Players');
+    await yieldTimes(30);
+    scrape();
+    // include already-drafted players
+    clickByText('Drafted');
+    await yieldTimes(40);
+    scrape();
+    clickByText('Drafted');   // toggle back off
+    await yieldTimes(20);
+    window.__hcYahooProjMap = map;
+    return map;
+  };
 
   window.__hcHarvest = async function () {
     clickByText('Results');
@@ -166,6 +199,14 @@
     var slot = m ? +m[2] : null;
     // Our team is the option at our draft slot; the list is in draft order.
     var me = (slot && options[slot - 1]) ? options[slot - 1].label : null;
+
+    // attach Yahoo's projections, keyed by the room's own player ids
+    var proj = window.__hcYahooProjMap || {};
+    Object.keys(teams).forEach(function (t) {
+      teams[t].forEach(function (p) {
+        if (proj[p.yid] != null) p.yahooProj = proj[p.yid];
+      });
+    });
 
     var payload = {
       room: m ? m[1] : null, slot: slot, me: me,
