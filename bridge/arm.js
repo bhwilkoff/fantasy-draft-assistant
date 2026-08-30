@@ -37,7 +37,8 @@
   if (window.__hcAuto && window.__hcAuto.stop) window.__hcAuto.stop();
   try { delete window.__hcAuto; } catch (e) { window.__hcAuto = undefined; }
 
-  var chain = ['web/league.js', 'web/advisor.js', 'bridge/yahoo-draft-bridge.user.js'];
+  var chain = ['web/league.js', 'web/advisor.js', 'bridge/yahoo-draft-bridge.user.js',
+               'bridge/harvest.js'];
   load(chain, function () {
     if (window.__hcNoAutopilot) {
       console.log('[harvey-cup] advisor armed (no autopilot)');
