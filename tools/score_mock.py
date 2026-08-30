@@ -117,7 +117,12 @@ def resolve(idx, name, pos, team):
     return max(same or bucket, key=lambda p: p.get("vor", 0))
 
 
-def grade(payload, rules_name="room"):
+def grade(payload, rules_name="room", source="yahoo"):
+    """source="yahoo" grades with Yahoo's own projected points, harvested from
+    the room. That is deliberately INDEPENDENT of the board we drafted on --
+    grading with our own projections is circular and we would win by
+    construction. source="ours" re-scores our projections for the room's rules
+    and exists only as a cross-check."""
     rules = YAHOO_DEFAULT if rules_name == "room" else HARVEY_CUP
     base, flex = parse_roster(payload.get("roster")
                               or "QB,WR,WR,RB,RB,TE,W/R/T,K,DEF")
@@ -132,8 +137,11 @@ def grade(payload, rules_name="room"):
                 unresolved.append(f"{pk['name']} ({pk['pos']})")
                 continue
             q = dict(m)
-            q["_pts"] = score_stats(q.get("stats", {}), q["pos"], rules,
-                                    q.get("espn_points", 0.0)) * q.get("injury_factor", 1)
+            if source == "yahoo" and pk.get("yahooProj") is not None:
+                q["_pts"] = float(pk["yahooProj"])
+            else:
+                q["_pts"] = score_stats(q.get("stats", {}), q["pos"], rules,
+                                        q.get("espn_points", 0.0)) * q.get("injury_factor", 1)
             roster.append(q)
         total, starters = best_lineup(roster, base, flex)
         results.append({"team": team, "starters_points": total,
@@ -146,16 +154,18 @@ def grade(payload, rules_name="room"):
     return results, unresolved
 
 
-def main(path, rules_name="room"):
+def main(path, rules_name="room", source="yahoo"):
     with open(path) as f:
         payload = json.load(f)
-    results, unresolved = grade(payload, rules_name)
+    results, unresolved = grade(payload, rules_name, source)
     me = payload.get("me")
     lineup = payload.get("roster")
     print(f"room: {payload.get('room','?')}   teams: {len(results)}   "
           f"lineup: {lineup}")
     label = "the room's" if rules_name == "room" else "Harvey Cup"
-    print(f"graded under {label} rules\n")
+    src = ("Yahoo's own projections (independent of our board)"
+           if source == "yahoo" else "our projections (circular cross-check)")
+    print(f"graded under {label} rules, using {src}\n")
     print(f"{'rank':>4}  {'team':<26} {'starting lineup pts':>20}")
     print("-" * 56)
     for r in results:
@@ -175,4 +185,5 @@ def main(path, rules_name="room"):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1],
-                  sys.argv[2] if len(sys.argv) > 2 else "room"))
+                  sys.argv[2] if len(sys.argv) > 2 else "room",
+                  sys.argv[3] if len(sys.argv) > 3 else "yahoo"))
