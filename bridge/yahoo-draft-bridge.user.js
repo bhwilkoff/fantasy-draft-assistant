@@ -28,7 +28,7 @@
   var LOCAL_KEY = 'harveyCupTeam';
 
   var state = {
-    data: null, index: null, error: null,
+    data: null, index: null, error: null, league: null,
     myTeam: localStorage.getItem(LOCAL_KEY) || null,
     lastSig: '', collapsed: false, ambiguous: []
   };
@@ -114,6 +114,34 @@
                   team: team, injury: injury, adp: adp });
     });
     return { rows: rows, table: best };
+  }
+
+  /* Read the room's OWN settings rather than assuming Harvey Cup's. A Yahoo
+   * mock room runs default settings (QB/WR/WR/RB/RB/TE/W-R-T/K/DEF, half PPR,
+   * 4pt passing TDs); optimising a mock with Harvey Cup's rules gives
+   * confidently wrong advice, and the real league could also change. */
+  function readLeagueSettings() {
+    var body = document.body.innerText || '';
+    var out = { rosterText: null, numTeams: null, ppr: null, passTd: null };
+
+    var m = body.match(/Roster Positions\s*\n\s*([^\n]+)/i);
+    if (m) out.rosterText = m[1];
+    if (!out.rosterText) {
+      // draft room: the roster rail renders one slot label per row
+      var slots = [].slice.call(document.querySelectorAll('[class*=rosterslot],[class*=roster-slot]'))
+        .map(function (e) { return textOf(e).split('\n')[0]; })
+        .filter(function (t) { return /^(QB|RB|WR|TE|K|DEF|D\/ST|BN|W\/[RT]|W\/R\/T|Q\/W\/R\/T)$/i.test(t); });
+      if (slots.length) out.rosterText = slots.join(',');
+    }
+
+    var order = readDraftOrder();
+    if (order.length) out.numTeams = order.length;
+    var pk = body.match(/Round\s+\d+,\s*Pick\s+(\d+)/i);
+
+    // Scoring: the waiting room prints the stat categories; the draft room
+    // does not, so fall back to the league default we were told to expect.
+    if (/Receptions/i.test(body)) out.ppr = null;   // value not exposed here
+    return out;
   }
 
   function readDraftOrder() {
@@ -330,17 +358,49 @@
       + (unmatched ? ' · <span class="warn">' + unmatched + ' unmatched</span>' : '')
       + (state.ambiguous.length ? ' · <span class="warn">' + state.ambiguous.length
          + ' ambiguous: ' + esc(state.ambiguous.slice(0, 2).join('; ')) + '</span>' : '')
+      + ' · ' + esc(state.league.scoring.name) + ' rules ('
+      + esc(state.league.detectedFrom) + ')'
+      + ' · WR' + state.league.counts.WR + ' RB' + state.league.counts.RB + ' start'
       + ' · data ' + esc((state.data.meta.generated_at || '').slice(0, 16)) + '</div>');
 
     el.body.innerHTML = h.join('');
   }
 
+  /* Decide which rulebook this room is playing under, then re-derive points,
+   * replacement level and VOR for it. */
+  function applyDetectedLeague(j) {
+    var L = window.HarveyLeague;
+    var det = readLeagueSettings();
+    var isMock = /\/draftclient\/f1\/\d{7,}\//.test(location.pathname)
+              || /mock/i.test(location.href);
+    var rosterText = det.rosterText
+      || (isMock ? 'QB,WR,WR,RB,RB,TE,W/R/T,K,DEF'
+                 : 'QB,WR,WR,WR,RB,RB,TE,W/T,W/R,K,DEF,BN,BN,BN,BN,BN,BN');
+    var roster = L.parseRoster(rosterText);
+    if (!roster.starters) roster = L.parseRoster('QB,WR,WR,RB,RB,TE,W/R/T,K,DEF');
+    var scoring = isMock ? L.SCORING_PRESETS.yahoo_default
+                         : L.SCORING_PRESETS.harvey_cup;
+    var numTeams = det.numTeams || (isMock ? 12 : 12);
+    state.league = L.applyLeague(j.players, {
+      roster: roster, scoring: scoring, numTeams: numTeams
+    });
+    state.league.detectedFrom = det.rosterText ? 'room' : 'fallback';
+    state.league.isMock = isMock;
+  }
+
   /* ----------------------------------------------------------------- boot */
   function boot() {
     buildPanel();
+    var base = DATA_URL.replace(/data\/players\.json$/, '');
     var s = document.createElement('script');
-    s.src = DATA_URL.replace(/data\/players\.json$/, 'web/advisor.js');
-    s.onload = loadData;
+    s.src = base + 'web/league.js';
+    s.onload = function () {
+      var s2 = document.createElement('script');
+      s2.src = base + 'web/advisor.js';
+      s2.onload = loadData;
+      s2.onerror = s.onerror;
+      document.head.appendChild(s2);
+    };
     s.onerror = function () {
       el.body.innerHTML = '<div class="err">Could not load advisor.js from '
         + esc(DATA_URL) + '</div>';
@@ -351,7 +411,9 @@
     fetch(DATA_URL, { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (j) {
-        state.data = j; state.index = buildIndex(j.players);
+        state.data = j;
+        applyDetectedLeague(j);
+        state.index = buildIndex(j.players);
         render(true);
         new MutationObserver(function () { render(false); })
           .observe(document.body, { childList: true, subtree: true, characterData: true });
