@@ -130,7 +130,30 @@
    * exactly, with no name matching. Toggling the "Drafted" filter is what
    * exposes already-drafted players. */
   window.__hcYahooProj = async function () {
+    /* Yahoo's own projected points, from the Players table's "Proj Pts"
+     * column, keyed by the room's player id so it joins to rosters with no
+     * name matching at all.
+     *
+     * The table renders only ~100 rows, which covered just 69% of drafted
+     * players -- and partial coverage is worse than none, because grading
+     * some players on Yahoo's scale and the rest on ours ranks teams with
+     * different rulers. So page through the POSITION filter (each position
+     * is well under one page) with "Drafted" enabled, which reaches
+     * everyone. */
     var map = {};
+
+    function positionSelect() {
+      return [].slice.call(document.querySelectorAll('select')).find(function (s) {
+        return [].slice.call(s.options).some(function (o) {
+          return /All Positions/i.test(T(o)); });
+      });
+    }
+    function setSel(sel, value) {
+      var d = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(sel), 'value');
+      if (d && d.set) d.set.call(sel, value); else sel.value = value;
+      sel.dispatchEvent(new Event('input', { bubbles: true }));
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     function scrape() {
       var t = null, best = 0;
       [].slice.call(document.querySelectorAll('table')).forEach(function (x) {
@@ -151,14 +174,31 @@
       });
       return added;
     }
+
     clickByText('Players');
     await yieldTimes(30);
-    scrape();
-    // include already-drafted players
-    clickByText('Drafted');
+    clickByText('Drafted');          // include already-drafted players
     await yieldTimes(40);
-    scrape();
-    clickByText('Drafted');   // toggle back off
+
+    var sel = positionSelect();
+    if (!sel) {
+      scrape();
+    } else {
+      var wanted = ['Quarterbacks', 'Wide Receivers', 'Running Backs',
+                    'Tight Ends', 'Kickers', 'Team Defenses'];
+      var opts = [].slice.call(sel.options);
+      for (var i = 0; i < wanted.length; i++) {
+        var o = opts.find(function (x) { return T(x) === wanted[i]; });
+        if (!o) continue;
+        setSel(sel, o.value);
+        await yieldTimes(60);
+        scrape();
+      }
+      var all = opts.find(function (x) { return /All Positions/i.test(T(x)); });
+      if (all) { setSel(sel, all.value); await yieldTimes(40); }
+    }
+
+    clickByText('Drafted');          // toggle back off
     await yieldTimes(20);
     window.__hcYahooProjMap = map;
     return map;
