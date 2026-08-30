@@ -107,3 +107,27 @@ players.
 
 **How to apply:** change a constant in one, change it in the other, re-run the
 sweep in `engine/sim.py`, and re-run the parity test.
+
+---
+
+## 008 — Validate every DOM-derived number against a plausible range
+
+**Rule:** any quantity read from a page (team count, roster size, pick
+number) gets a sanity range, and a read outside it falls back to a known
+default rather than propagating.
+
+**Why:** `readDraftOrder()` returned the draft-order strip, which Yahoo
+re-renders once per ROUND. A 14-team, 15-round draft therefore reported
+**210 teams**. Nothing crashed. Replacement level simply became the
+210th-best quarterback — about zero points — so every QB carried an enormous
+VOR, and the advisor spent the middle rounds recommending quarterbacks. It
+drafted two of them before the pattern was noticed in a live mock.
+
+This is the characteristic failure of scraped inputs: they do not fail, they
+produce a confident wrong answer downstream of a plausible-looking read.
+
+**How to apply:** `numTeams` is now clamped to 4..20 and the strip is deduped
+to its first cycle. When adding any new scraped input, ask "what is the
+absurd value here, and what happens if I get it?" — then encode the answer.
+The overlay also surfaces the detected league (`WR35 RB35 start`) precisely so
+a wrong read is visible on screen rather than buried in the maths.
