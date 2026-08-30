@@ -52,8 +52,15 @@
     var m = body.match(/Round\s+(\d+),\s*Pick\s+(\d+)/i);
     if (m) { out.round = +m[1]; out.pick = +m[2]; }
     var u = body.match(/You'?re up in\s+(\d+)\s+Pick/i);
-    if (u) out.upIn = +u[1];
-    if (/YOUR TURN|Your Pick/i.test(document.title + body)) out.upIn = 0;
+    if (u) {
+      out.upIn = +u[1];
+    } else if (/^YOUR TURN/i.test(document.title)) {
+      // Only the on-the-clock title starts with it ("YOUR TURN, DRAFT NOW").
+      // Matching /YOUR TURN/ anywhere is wrong: the waiting title reads
+      // "8 picks until your turn", which made the overlay announce
+      // "YOU ARE ON THE CLOCK" for the entire draft.
+      out.upIn = 0;
+    }
     var c = body.match(/\b(\d{1,2}:\d{2})\b/);
     if (c) out.clock = c[1];
     var cur = document.querySelector('.ys-draftorder-current');

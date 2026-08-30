@@ -66,6 +66,19 @@ eq('upIn', st.upIn, 5);
 eq('clock', st.clock, '00:24');
 eq('onClock', st.onClock, 'Eric Hollinger');
 
+console.log('--- on-the-clock detection (title is a trap)');
+// "8 picks until your turn" contains the words "your turn"; a loose regex
+// made the overlay claim we were on the clock for the whole draft.
+dom.window.document.title = '8 picks until your turn | Live NFL Draft';
+eq('waiting title does not mean on the clock', R.readStatus().upIn, 5);
+const noBody = dom.window.document.querySelector('._ys_sts');
+const keep = noBody.textContent;
+noBody.textContent = '';
+dom.window.document.title = 'YOUR TURN, DRAFT NOW | Live NFL Draft';
+eq('on-clock title detected when no "up in N"', R.readStatus().upIn, 0);
+noBody.textContent = keep;
+dom.window.document.title = '';
+
 console.log('--- available table');
 const av = R.readAvailable();
 eq('rows found', av.rows.length, 5);
