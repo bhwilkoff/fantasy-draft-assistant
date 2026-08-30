@@ -50,7 +50,16 @@
 
   function readStatus() {
     // "Eric Hollinger's Pick • You're up in 5 Picks • Round 3, Pick 33"
+    //
+    // Read the ROOM, not ourselves. Our own panel renders "Round R, pick P",
+    // so scanning document.body.innerText makes the parser consume its own
+    // output -- a feedback loop that would happily pin the pick number to a
+    // stale value forever. Subtract the overlay's text before parsing.
     var body = document.body.innerText || '';
+    var panel = document.getElementById('hc-advisor');
+    if (panel && panel.innerText) {
+      body = body.split(panel.innerText).join(' ');
+    }
     var out = { round: null, pick: null, upIn: null, onClock: null, clock: null };
     /* Take the HIGHEST "Round R, Pick P" on the page, not the first.
      *
