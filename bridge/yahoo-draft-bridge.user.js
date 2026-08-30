@@ -152,9 +152,20 @@
     if (!cur) return [];
     var parent = cur.parentElement;
     if (!parent) return [];
-    return [].slice.call(parent.children)
+    // The strip repeats the whole order once per ROUND, so its raw length is
+    // teams x rounds. Taking it at face value set numTeams to 210, which made
+    // replacement level the 210th-best quarterback (~0 points) and handed
+    // every QB an enormous VOR -- the advisor then recommended quarterbacks
+    // from round 4 on. Dedupe to the first cycle of unique names.
+    var seen = [], names = [].slice.call(parent.children)
       .map(function (c) { return textOf(c).split('\n')[0]; })
       .filter(Boolean);
+    for (var i = 0; i < names.length; i++) {
+      if (seen.indexOf(names[i]) >= 0) break;   // second cycle begins
+      seen.push(names[i]);
+      if (seen.length > 20) break;
+    }
+    return seen;
   }
 
   /* Roster: derive from the pick feed by team label. Yahoo labels our own
@@ -478,11 +489,15 @@
     if (!roster.starters) roster = L.parseRoster('QB,WR,WR,RB,RB,TE,W/R/T,K,DEF');
     var scoring = isMock ? L.SCORING_PRESETS.yahoo_default
                          : L.SCORING_PRESETS.harvey_cup;
-    var numTeams = det.numTeams || (isMock ? 12 : 12);
+    // Guard the range as well: a bad read must never silently become a
+    // 210-team league again.
+    var numTeams = det.numTeams;
+    if (!numTeams || numTeams < 4 || numTeams > 20) numTeams = 12;
     state.league = L.applyLeague(j.players, {
       roster: roster, scoring: scoring, numTeams: numTeams
     });
     state.league.detectedFrom = det.rosterText ? 'room' : 'fallback';
+    window.__hcLeague = state.league;
     state.league.isMock = isMock;
   }
 
