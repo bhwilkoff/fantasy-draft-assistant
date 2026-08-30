@@ -41,23 +41,31 @@
                'bridge/harvest.js', 'bridge/grade.js'];
   load(chain, function () {
     if (window.__hcNoAutopilot) {
+      window.__hcArmed = true;
       console.log('[harvey-cup] advisor armed (no autopilot)');
       return;
     }
     // autopilot needs the bridge's matcher index, which appears only after
     // players.json resolves; poll briefly rather than racing it.
+    // setInterval is throttled in hidden tabs, so poll via MessageChannel --
+    // the one macrotask source Chrome does not throttle in the background.
     var tries = 0;
-    var iv = setInterval(function () {
-      if (window.__hcIndex || ++tries > 40) {
-        clearInterval(iv);
-        if (window.__hcIndex) {
-          load(['bridge/autopilot.js'], function () {
-            console.log('[harvey-cup] advisor + autopilot armed');
-          });
-        } else {
-          console.warn('[harvey-cup] data never loaded; autopilot not armed');
-        }
+    function poll() {
+      if (window.__hcIndex) {
+        load(['bridge/autopilot.js'], function () {
+          window.__hcArmed = true;
+          console.log('[harvey-cup] advisor + autopilot armed');
+        });
+        return;
       }
-    }, 250);
+      if (++tries > 400) {
+        console.warn('[harvey-cup] data never loaded; autopilot not armed');
+        return;
+      }
+      var ch = new MessageChannel();
+      ch.port1.onmessage = poll;
+      ch.port2.postMessage(0);
+    }
+    poll();
   });
 })();

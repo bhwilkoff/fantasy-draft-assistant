@@ -21,6 +21,7 @@
   if (window.__hcAuto && window.__hcAuto.timer) { window.__hcAuto.rearmed = true; return; }
 
   var RELAY = 'http://127.0.0.1:8830';
+  var LOG_KEY = 'hcAutopilotLog';
   var A = window.__hcAuto = {
     on: true, queued: {}, log: [], last: null, results: null,
     timer: null, autodraftOn: false, relay: true
@@ -129,7 +130,8 @@
       rosterCount: roster.length, poolSize: pool.length, unmatched: unmatched,
       queuedAdded: added, ts: Date.now()
     };
-    if (added || (A.log.length && A.log[A.log.length - 1].pick !== cur) || !A.log.length) {
+    var lastPick = A.log.length ? A.log[A.log.length - 1].pick : null;
+    if (added || lastPick !== cur) {
       A.log.push(A.last);
       post('/state', {
         source: 'autopilot', pick: cur, round: st.round, upIn: st.upIn,
@@ -152,8 +154,91 @@
     }
   }
 
+  /* ------------------------------------------------------------ autonomy
+   *
+   * The first version polled with setInterval(2500). That is wrong for a
+   * draft: Chrome throttles timers to roughly once a MINUTE once the tab has
+   * been hidden a while, so the autopilot would miss most of the picks in a
+   * 60-second-per-pick draft and could not keep the queue current.
+   *
+   * A MutationObserver is NOT throttled -- it fires when the DOM actually
+   * changes, which is exactly when a pick lands. So the draft drives us
+   * rather than us polling it, and we react to every pick whether the tab is
+   * visible, hidden, or minimised. The interval stays only as a slow
+   * backstop in case a re-render happens without a mutation we notice.
+   *
+   * We also mirror progress into localStorage after every pick, so a tab
+   * teardown (Yahoo does this periodically) loses nothing: re-arming reads
+   * the log back rather than starting blind. */
+  function persist() {
+    try {
+      localStorage.setItem(LOG_KEY, JSON.stringify({
+        room: location.pathname, log: A.log.slice(-260),
+        queued: A.queued, last: A.last, savedAt: Date.now()
+      }));
+    } catch (e) { /* quota or private mode: the draft still runs */ }
+  }
+  A.persist = persist;
+
+  A.restore = function () {
+    try {
+      var v = JSON.parse(localStorage.getItem(LOG_KEY) || 'null');
+      if (v && v.room === location.pathname) {
+        A.log = v.log || [];
+        A.queued = v.queued || {};
+        A.restored = A.log.length;
+      }
+    } catch (e) {}
+  };
+  A.restore();
+
+  var pending = false;
+  function schedule() {
+    if (pending) return;
+    pending = true;
+    // microtask coalescing: a single pick mutates many nodes, and we want one
+    // tick per pick, not one per node.
+    Promise.resolve().then(function () {
+      pending = false;
+      try { tick(); persist(); } catch (e) { A.lastError = String(e); }
+    });
+  }
+
+  A.observer = new MutationObserver(schedule);
+  A.observer.observe(document.body, {
+    childList: true, subtree: true, characterData: true
+  });
+
+  /* One-line health probe. Monitoring a 210-pick draft must not cost a large
+   * tool result per check, and it must answer the only question that matters:
+   * is this thing still watching, and how far has the draft got? */
+  window.__hcStatus = function () {
+    var l = A.last || {};
+    return [
+      'pick=' + (l.pick == null ? '?' : l.pick),
+      'rd=' + (l.round == null ? '?' : l.round),
+      'upIn=' + (l.upIn == null ? '?' : l.upIn),
+      'rec=' + (l.rec || '-'),
+      'roster=' + (l.rosterCount == null ? '?' : l.rosterCount),
+      'pool=' + (l.poolSize == null ? '?' : l.poolSize),
+      'unmatched=' + (l.unmatched == null ? '?' : l.unmatched),
+      'queued=' + Object.keys(A.queued).length,
+      'autodraft=' + (A.autodraftOn ? 'on' : 'off'),
+      'observed=' + A.log.length,
+      'restored=' + (A.restored || 0),
+      'alive=' + (A.observer ? 'yes' : 'no'),
+      A.lastError ? 'ERR=' + A.lastError.slice(0, 60) : ''
+    ].filter(Boolean).join(' ');
+  };
+
   A.tick = tick;
-  A.stop = function () { A.on = false; clearInterval(A.timer); A.timer = null; };
-  A.timer = setInterval(tick, 2500);
-  tick();
+  A.stop = function () {
+    A.on = false;
+    if (A.timer) clearInterval(A.timer);
+    A.timer = null;
+    if (A.observer) A.observer.disconnect();
+  };
+  // slow backstop only; the observer is the real driver
+  A.timer = setInterval(schedule, 15000);
+  schedule();
 })();
