@@ -12,6 +12,10 @@ echo "=== Yahoo name matching ==="
 ( cd tests && node match_test.js ) || fail=1
 
 echo
+echo "=== drafted roster can field a legal lineup ==="
+( cd tests && node roster_test.js ) || fail=1
+
+echo
 echo "=== draft-room DOM readers (fixture) ==="
 ( cd tests && node dom_test.js ) || fail=1
 
