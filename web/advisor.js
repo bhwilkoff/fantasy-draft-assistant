@@ -1,0 +1,245 @@
+/* Harvey Cup draft advisor -- shared logic.
+ *
+ * This is a faithful port of engine/advisor.py. It is duplicated in JS on
+ * purpose: the in-room overlay must produce advice inside a 60-second pick
+ * clock with no network round-trip, and the standalone board must work from
+ * a static host. engine/sim.py remains the authority on the weights; if you
+ * change a constant here, change it there and re-run the sweep.
+ */
+(function (root) {
+  'use strict';
+
+  var DROPOFF_WEIGHT = 0.0;   // see advisor.py -- VOR already prices scarcity
+  var STARTER_BONUS = 3.0;
+
+  var BASE_STARTERS = { QB: 1, RB: 2, WR: 3, TE: 1, K: 1, DEF: 1 };
+  var BENCH_TARGET = { QB: 1, RB: 3, WR: 3, TE: 1, K: 0, DEF: 0 };
+  var POSITIONS = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
+  var NUM_TEAMS = 12, ROUNDS = 17, ROSTER_SIZE = 17;
+
+  function erf(x) {
+    var s = x < 0 ? -1 : 1; x = Math.abs(x);
+    var a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741,
+        a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+    var t = 1 / (1 + p * x);
+    var y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+    return s * y;
+  }
+  function normCdf(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
+
+  function survival(adp, stdev, pickNumber) {
+    if (adp === null || adp === undefined) return 0.5;
+    var sd = (stdev && stdev > 0) ? stdev : Math.max(2, adp * 0.18);
+    return 1 - normCdf((pickNumber - adp) / sd);
+  }
+
+  function snakePicks(slot, numTeams, rounds) {
+    numTeams = numTeams || NUM_TEAMS; rounds = rounds || ROUNDS;
+    var out = [];
+    for (var r = 1; r <= rounds; r++) {
+      out.push(r % 2 === 1
+        ? (r - 1) * numTeams + slot
+        : (r - 1) * numTeams + (numTeams - slot + 1));
+    }
+    return out;
+  }
+
+  function rosterNeeds(roster) {
+    var counts = {}; POSITIONS.forEach(function (p) { counts[p] = 0; });
+    roster.forEach(function (p) { if (counts[p.pos] !== undefined) counts[p.pos]++; });
+
+    var starterGap = {};
+    POSITIONS.forEach(function (p) {
+      starterGap[p] = Math.max(0, BASE_STARTERS[p] - counts[p]);
+    });
+    var oWR = Math.max(0, counts.WR - BASE_STARTERS.WR);
+    var oRB = Math.max(0, counts.RB - BASE_STARTERS.RB);
+    var oTE = Math.max(0, counts.TE - BASE_STARTERS.TE);
+    var flexOpen = 2 - Math.min(2, oWR + oRB + oTE);
+
+    var totalGap = {};
+    POSITIONS.forEach(function (p) {
+      var cap = BASE_STARTERS[p] + BENCH_TARGET[p];
+      if (p === 'WR' || p === 'RB' || p === 'TE') cap += flexOpen;
+      totalGap[p] = Math.max(0, cap - counts[p]);
+    });
+    return { counts: counts, starterGap: starterGap, totalGap: totalGap, flexOpen: flexOpen };
+  }
+
+  /* Exact E[max VOR] among players at `pos` still available at `nextPick`:
+   * a player is the best available iff he survives AND everyone above him is gone. */
+  function expectedBestLater(pool, pos, nextPick, limit) {
+    limit = limit || 40;
+    var cands = pool.filter(function (p) { return p.pos === pos; }).slice(0, limit);
+    if (!cands.length) return { expected: 0, likely: null };
+    var exp = 0, noneSoFar = 1, likely = null;
+    for (var i = 0; i < cands.length; i++) {
+      var s = survival(cands[i].adp, cands[i].adp_stdev, nextPick);
+      exp += cands[i].vor * s * noneSoFar;
+      if (!likely && s >= 0.5) likely = cands[i];
+      noneSoFar *= (1 - s);
+      if (noneSoFar < 1e-4) break;
+    }
+    return { expected: exp, likely: likely };
+  }
+
+  function advise(available, roster, currentPick, nextPick, recentPositions, topN) {
+    topN = topN || 6;
+    var pool = available.filter(function (p) { return p.vor !== null && p.vor !== undefined; })
+                        .slice().sort(function (a, b) { return b.vor - a.vor; });
+    var need = rosterNeeds(roster);
+    var picksRemaining = Math.max(0, ROSTER_SIZE - roster.length);
+
+    var usable = POSITIONS.filter(function (p) { return need.totalGap[p] > 0; });
+    // K and DEF are worth ~a point a week over the waiver alternative, and
+    // there are exactly 12 of each for 12 teams. Never before the end.
+    ['K', 'DEF'].forEach(function (p) {
+      var i = usable.indexOf(p);
+      if (i >= 0 && picksRemaining > (need.starterGap[p] ? 2 : 1)) usable.splice(i, 1);
+    });
+    if (!usable.length) {
+      usable = ['RB', 'WR', 'TE', 'QB'].filter(function (p) { return need.totalGap[p] > 0; });
+      if (!usable.length) usable = ['WR'];
+    }
+
+    var now = {}, later = {};
+    usable.forEach(function (p) {
+      var c = pool.filter(function (x) { return x.pos === p; });
+      now[p] = c.length ? { vor: c[0].vor, player: c[0] } : { vor: 0, player: null };
+      later[p] = expectedBestLater(pool, p, nextPick);
+    });
+
+    var bestPair = null, bestVal = -1e9;
+    usable.forEach(function (p) {
+      if (!now[p].player) return;
+      usable.forEach(function (q) {
+        var v = now[p].vor + later[q].expected;
+        if (v > bestVal) { bestVal = v; bestPair = [p, q]; }
+      });
+    });
+    var targetPos = bestPair ? bestPair[0] : (usable[0] || 'WR');
+
+    var runs = {};
+    (recentPositions || []).slice(-8).forEach(function (p) { runs[p] = (runs[p] || 0) + 1; });
+
+    var ranked = [];
+    pool.slice(0, 80).forEach(function (c) {
+      if (!(need.totalGap[c.pos] > 0)) return;
+      if ((c.pos === 'K' || c.pos === 'DEF') && usable.indexOf(c.pos) < 0) return;
+      var surv = survival(c.adp, c.adp_stdev, nextPick);
+      var drop = now[c.pos] ? (now[c.pos].vor - later[c.pos].expected) : 0;
+      var tierLeft = pool.filter(function (x) {
+        return x.pos === c.pos && x.tier === c.tier;
+      }).length;
+      var score = c.vor + DROPOFF_WEIGHT * drop * (1 - surv)
+                + (need.starterGap[c.pos] > 0 ? STARTER_BONUS : 0);
+      ranked.push({
+        name: c.name, pos: c.pos, team: c.team, tier: c.tier, bye: c.bye,
+        vor: c.vor, points: c.points, adp: c.adp, edge: c.edge,
+        injury: c.injury, survival_next: Math.round(surv * 1000) / 1000,
+        position_dropoff: Math.round(drop * 10) / 10,
+        tier_players_left: tierLeft,
+        score: Math.round(score * 100) / 100,
+        is_target_position: c.pos === targetPos
+      });
+    });
+    ranked.sort(function (a, b) { return b.score - a.score; });
+
+    var positionView = {};
+    usable.forEach(function (p) {
+      positionView[p] = {
+        best_now: Math.round(now[p].vor * 10) / 10,
+        best_now_player: now[p].player ? now[p].player.name : null,
+        expected_best_later: Math.round(later[p].expected * 10) / 10,
+        dropoff: Math.round((now[p].vor - later[p].expected) * 10) / 10,
+        likely_still_there: later[p].likely ? later[p].likely.name : null
+      };
+    });
+
+    return {
+      current_pick: currentPick, next_pick: nextPick, target_position: targetPos,
+      recommendation: ranked[0] || null, alternatives: ranked.slice(1, topN),
+      position_view: positionView, roster: need,
+      picks_remaining: picksRemaining, recent_runs: runs
+    };
+  }
+
+
+  /* ------------------------------------------------------- name matching */
+  /* The Yahoo draft room renders a first INITIAL only ("T. Higgins"), so the
+   * room-side key can never be more specific than initial+surname+position.
+   * That key genuinely collides in the NFL (B. Robinson = Bijan and Brian,
+   * both RB; A. Brown = Amon-Ra and A.J., both WR), so callers MUST pass the
+   * team, and an unresolvable collision is reported rather than guessed. */
+  var SUFFIXES = { jr: 1, sr: 1, ii: 1, iii: 1, iv: 1, v: 1 };
+  var TEAM_ALIAS = { JAC: 'JAX', WAS: 'WSH', LA: 'LAR', SD: 'LAC', OAK: 'LV',
+                     GNB: 'GB', KAN: 'KC', NWE: 'NE', NOR: 'NO', SFO: 'SF',
+                     TAM: 'TB', ARZ: 'ARI', BLT: 'BAL', CLV: 'CLE', HST: 'HOU' };
+
+  function cleanTeam(t) {
+    if (!t) return '';
+    t = String(t).trim().toUpperCase();
+    return TEAM_ALIAS[t] || t;
+  }
+  function parseName(raw) {
+    var s = String(raw || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    // Match engine/names.py exactly: apostrophes vanish, every other
+    // non-alphanumeric becomes a separator. "A.J. Brown" -> ["a","brown"]
+    // in BOTH languages; tests/parity_test.py guards the equivalence.
+    s = s.replace(/'/g, '').replace(/[^a-z0-9 ]/g, ' ');
+    var parts = s.split(/\s+/).filter(Boolean);
+    // Suffixes are TRAILING only. Filtering them anywhere silently destroys
+    // the initials "V." and "I." -- "V. Jefferson" became ["jefferson",
+    // "jefferson"] and resolved to Justin Jefferson.
+    while (parts.length > 1 && SUFFIXES[parts[parts.length - 1]]) parts.pop();
+    if (!parts.length) return ['', ''];
+    if (parts.length === 1) return [parts[0], parts[0]];
+    return [parts[0], parts[parts.length - 1]];
+  }
+  function roomKey(name, pos, team) {
+    pos = (pos || '').toUpperCase().replace('D/ST', 'DEF').replace('DST', 'DEF');
+    if (pos === 'DEF') return 'DEF|' + cleanTeam(team);
+    var p = parseName(name);
+    return pos + '|' + p[0].charAt(0) + '|' + p[1];
+  }
+  function buildIndex(players) {
+    var byKey = {};
+    players.forEach(function (p) {
+      var k = roomKey(p.name, p.pos, p.team);
+      (byKey[k] = byKey[k] || []).push(p);
+    });
+    return byKey;
+  }
+  function lookup(index, name, pos, team, adpHint) {
+    var bucket = index[roomKey(name, pos, team)];
+    if (!bucket || !bucket.length) return { player: null, ambiguous: false };
+    if (bucket.length === 1) return { player: bucket[0], ambiguous: false };
+    var exact = bucket.filter(function (p) { return cleanTeam(p.team) === cleanTeam(team); });
+    if (exact.length === 1) return { player: exact[0], ambiguous: false };
+    var pool = exact.length ? exact : bucket;
+    // Teammates can share initial+surname+position: in 2026 Bijan Robinson
+    // and Brian Robinson Jr. are both ATL running backs, so the room's
+    // "B. Robinson" is ambiguous on name and team alike. The draft table
+    // also renders ADP, which separates them cleanly.
+    if (adpHint != null && !isNaN(adpHint)) {
+      var byAdp = pool.slice().filter(function (p) { return p.adp != null; })
+        .sort(function (a, b) {
+          return Math.abs(a.adp - adpHint) - Math.abs(b.adp - adpHint);
+        });
+      if (byAdp.length) {
+        return { player: byAdp[0], ambiguous: false, resolvedBy: 'adp' };
+      }
+    }
+    var sorted = pool.slice().sort(function (a, b) { return b.vor - a.vor; });
+    return { player: sorted[0], ambiguous: true,
+             candidates: pool.map(function (p) { return p.name; }) };
+  }
+
+  root.HarveyCup = {
+    advise: advise, survival: survival, snakePicks: snakePicks,
+    rosterNeeds: rosterNeeds, expectedBestLater: expectedBestLater,
+    parseName: parseName, roomKey: roomKey, buildIndex: buildIndex,
+    lookup: lookup, cleanTeam: cleanTeam,
+    POSITIONS: POSITIONS, NUM_TEAMS: NUM_TEAMS, ROUNDS: ROUNDS
+  };
+})(typeof window !== 'undefined' ? window : globalThis);

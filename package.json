@@ -1,0 +1,12 @@
+{
+  "name": "harvey-cup-draft-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Projection/VOR engine and live draft advisor for Yahoo league 539156",
+  "scripts": {
+    "test": "./run_tests.sh"
+  },
+  "devDependencies": {
+    "jsdom": "^30.0.1"
+  }
+}

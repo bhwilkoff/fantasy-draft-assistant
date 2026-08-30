@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Harvey Cup Draft Board</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>Harvey Cup Draft Board</h1>
+  <span class="sub" id="leagueLine">loading…</span>
+  <span class="sp">
+    <label class="sub">Slot
+      <select id="slot"></select>
+    </label>
+    <button id="undo">Undo</button>
+    <button id="reset">Reset</button>
+  </span>
+</header>
+
+<main>
+  <section class="panel">
+    <div class="filters" id="filters"></div>
+    <table>
+      <thead><tr>
+        <th>#</th><th>Player</th><th>Pos</th><th class="num">Pts</th>
+        <th class="num">VOR</th><th class="num">ADP</th><th class="num">Edge</th>
+        <th class="num">Tier</th><th class="num">Bye</th>
+      </tr></thead>
+      <tbody id="board"></tbody>
+    </table>
+  </section>
+
+  <aside class="panel side">
+    <h2>On the clock</h2>
+    <div id="clock" class="small muted"></div>
+    <h2>Take</h2>
+    <div id="rec"></div>
+    <h2>Then</h2>
+    <div id="alts"></div>
+    <h2>Cost of waiting</h2>
+    <div id="posview"></div>
+    <h2>My roster</h2>
+    <div id="roster" class="small"></div>
+  </aside>
+</main>
+
+<div id="status"></div>
+
+<script src="advisor.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
