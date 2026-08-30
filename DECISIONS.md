@@ -1,0 +1,109 @@
+# Architecture decisions
+
+Each entry leads with the rule, then why, then how to apply it.
+
+---
+
+## 001 — Score raw stat projections, never a provider's point total
+
+**Rule:** ingest raw stat lines and apply `engine/league.py`. Never consume a
+`Proj Pts` / `FPTS` column from anyone.
+
+**Why:** Harvey Cup pays 1.0 per reception and 6 per passing TD. Every
+published point total is computed under the publisher's own rules, so
+consuming one silently imports the wrong league. Josh Allen is 434 points
+under our rules and 370 on ESPN's own board.
+
+**How to apply:** if a new source only exposes computed points, it can be a
+cross-check but never the projection of record.
+
+---
+
+## 002 — Simulate replacement level; never hardcode "WR36"
+
+**Rule:** fill all 12 lineups greedily (base starters, then flex to the best
+eligible) and read replacement off the last player actually started.
+
+**Why:** this league starts 3 WR plus a W/T and a W/R flex, both WR-eligible.
+The result is 47 startable WRs, not 36. Hardcoding the common shortcut
+misprices every receiver on the board.
+
+**How to apply:** if the lineup changes, change nothing — the simulation
+re-derives it. Never paste a replacement rank from an article.
+
+---
+
+## 003 — Keep valuation and timing separate
+
+**Rule:** VOR comes only from projections; ADP is used only for availability.
+Report the difference as `edge`; never blend them into one number.
+
+**Why:** the gap between what a player is worth and when he will be drafted
+*is* the edge. Public "value" boards blend them and destroy exactly the
+signal a live advisor needs.
+
+---
+
+## 004 — Do not weight positional dropoff (DROPOFF_WEIGHT = 0)
+
+**Rule:** show the positional cliff to the human; do not let it modify the
+recommendation score.
+
+**Why:** sweeping the weight against simulated projection error degraded
+results monotonically (mean finish 3.13 → 3.90 across w = 0 → 1). VOR already
+prices scarcity, because the replacement baseline *is* the last startable
+player at the position. Adding a dropoff term double-counts it and, at pick
+10, adds ~+89 to every RB and WR against +0.7 to a QB.
+
+**How to apply:** before adding any new "urgency" term, ask whether the
+replacement baseline already contains it, then prove it in `engine/sim.py`
+under projection error — not under perfect projections, where every term
+looks like it helps.
+
+---
+
+## 005 — Read the draft room's DOM, not its WebSocket
+
+**Rule:** the bridge scrapes the DOM and binds only to `ys-*` semantic hooks.
+
+**Why:** the client opens one WebSocket during page load, so a hook installed
+afterwards captures nothing, and re-navigating still loses the race. There is
+no XHR polling to read instead. The official API needs OAuth and lags the
+room. Hashed CSS-in-JS classes (`_ys_17wruqx`) churn on every deploy, so
+binding to them guarantees silent breakage.
+
+**How to apply:** any new selector goes in `tests/fixtures/draftroom.html`
+first, so `tests/dom_test.js` fails loudly when Yahoo changes it.
+
+---
+
+## 006 — Match on full first names between sources, initials only in the room
+
+**Rule:** `names.key()` (full first name) merges projection sources.
+`roomKey()` (first initial) is only for the draft room, and must be
+disambiguated by team and then by the room's ADP column.
+
+**Why:** two bugs, both of which produced confident wrong advice. An
+initial-based merge key gave Bijan Robinson the ADP of Brian Robinson Jr.
+(156.7 instead of 2.3). And stripping suffixes positionally rather than from
+the tail ate the initial "V." as a roman numeral, resolving "V. Jefferson" to
+Justin Jefferson. In 2026 Bijan and Brian are *teammates*, so team alone is
+not enough — the ADP column is the only remaining separator.
+
+**How to apply:** never widen a match without a test in
+`tests/match_test.js`; an ambiguous match must be reported, never guessed.
+
+---
+
+## 007 — Duplicate the advisor in Python and JS, and guard it with a golden test
+
+**Rule:** `engine/advisor.py` and `web/advisor.js` are the same algorithm, and
+`tests/parity_test.py` runs both over shared fixtures and diffs the numbers.
+
+**Why:** the overlay must answer inside a 60-second pick clock with no network
+hop, and the simulator needs Python. Two implementations will drift, and the
+drift is invisible — both keep producing plausible advice for different
+players.
+
+**How to apply:** change a constant in one, change it in the other, re-run the
+sweep in `engine/sim.py`, and re-run the parity test.
