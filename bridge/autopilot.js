@@ -183,8 +183,21 @@
     var HC = window.HarveyCup, R = window.__hcReaders, idx = window.__hcIndex;
     if (!HC || !R || !idx) return;
 
+    /* If there is no player table we are on the wrong view (Results, Picks,
+     * Board) -- usually because a seed or harvest switched tabs and the
+     * switch back failed. Previously tick() just returned, silently, forever,
+     * while __hcStatus still reported alive=yes. An instrument must say when
+     * it is blind, and this one can also fix itself: click back to Players. */
     var rows = readRows();
-    if (!rows.length) return;
+    if (!rows.length) {
+      A.blind = 'no player table (wrong view?)';
+      var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
+        .filter(function (x) { return x.children.length === 0; })
+        .find(function (x) { return (x.innerText || '').trim() === 'Players'; });
+      if (pl) { A.blindRecoveries = (A.blindRecoveries || 0) + 1; pl.click(); }
+      return;
+    }
+    A.blind = null;
     var st = R.readStatus();
     recordLastPick(st);
 
@@ -356,12 +369,17 @@
       'picklog=' + Object.keys(A.picks).length,
       'restored=' + (A.restored || 0),
       'alive=' + (A.observer ? 'yes' : 'no'),
+      // staleness is the failure that looks like success: report it loudly
+      'lastTick=' + (A.last ? Math.round((Date.now() - A.last.ts) / 1000) + 's' : 'NEVER'),
+      A.blind ? 'BLIND=' + A.blind : '',
+      A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
       'harvested=' + (A.finalHarvest ? A.finalHarvest.teams + 'teams' : 'no'),
       'seed=' + (A.seedRoster ? A.seedRoster.length : 0),
       A.lastError ? 'ERR=' + A.lastError.slice(0, 60) : ''
     ].filter(Boolean).join(' ');
   };
 
+  A.rows = readRows;
   A.tick = tick;
   A.stop = function () {
     A.on = false;
