@@ -13,17 +13,36 @@
 
   function T(e) { return (e && e.innerText ? e.innerText : '').trim(); }
 
-  /* Synchronous busy-wait, deliberately, instead of `await sleep(ms)`.
+  /* Yielding in a hidden tab, which is harder than it looks.
    *
-   * Chrome throttles setTimeout in a hidden tab to roughly once a MINUTE, so
-   * an async harvester that waits 450ms between fourteen teams takes fourteen
-   * minutes instead of six seconds -- it looks like a hang. Blocking the main
-   * thread for a few hundred milliseconds is fine here: nothing else on the
-   * page needs to run while we page through the Results tab, and it makes the
-   * harvest work identically whether the tab is visible or not. */
-  function settle(ms) {
-    var end = Date.now() + ms;
-    while (Date.now() < end) { /* spin */ }
+   * setTimeout is throttled to roughly once a MINUTE when the tab is hidden,
+   * so `await sleep(450)` across fourteen teams takes fourteen minutes.
+   * requestAnimationFrame is worse -- it stops entirely. And a synchronous
+   * busy-wait is self-defeating: it blocks the main thread, so React can
+   * never perform the re-render we are waiting for.
+   *
+   * MessageChannel is the one macrotask source Chrome does NOT throttle in
+   * background tabs, so we yield through it. React flushes discrete events
+   * (like `change`) synchronously, so a couple of yields is usually plenty;
+   * we poll for the DOM to actually change rather than guessing a duration. */
+  function tick() {
+    return new Promise(function (resolve) {
+      var ch = new MessageChannel();
+      ch.port1.onmessage = function () { resolve(); };
+      ch.port2.postMessage(0);
+    });
+  }
+  async function yieldTimes(n) {
+    for (var i = 0; i < n; i++) await tick();
+  }
+  /* Wait until `read()` returns something different from `prev`, or give up. */
+  async function until(read, prev, tries) {
+    for (var i = 0; i < (tries || 40); i++) {
+      var v = read();
+      if (v && v !== prev) return v;
+      await tick();
+    }
+    return read();
   }
 
   function clickByText(text) {
@@ -100,11 +119,11 @@
       .filter(Boolean).join(',');
   }
 
-  window.__hcHarvest = function () {
+  window.__hcHarvest = async function () {
     clickByText('Results');
-    settle(500);
+    await yieldTimes(30);
     clickByText('Teams');
-    settle(500);
+    await yieldTimes(30);
 
     var sel = teamSelect();
     if (!sel) return { error: 'team <select> not found on Results tab' };
@@ -113,10 +132,17 @@
       .map(function (o) { return { value: o.value, label: T(o) }; })
       .filter(function (o) { return o.label; });
 
-    var teams = {}, slots = null;
+    var teams = {}, slots = null, prevSig = null;
     for (var i = 0; i < options.length; i++) {
       setSelect(sel, options[i].value);
-      settle(350);
+      // wait for the table to actually become a DIFFERENT roster, rather
+      // than reading the previous team's rows again
+      await until(function () {
+        var t = rosterTable();
+        return t ? t.innerText.slice(0, 400) : null;
+      }, prevSig, 60);
+      var t = rosterTable();
+      prevSig = t ? t.innerText.slice(0, 400) : null;
       var r = readRoster();
       if (r.length) {
         teams[options[i].label] = r;
