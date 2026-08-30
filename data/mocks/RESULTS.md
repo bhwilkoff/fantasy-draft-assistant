@@ -11,6 +11,7 @@ degrades.
 |---|---|---|---|---|---|---|---|---|
 | 1 | 10188821 | 14 | 14 | round 6 | **5 / 14** | 1534.1 | 1569.2 | 265.4 |
 | 2 | 10189877 | 14 | 7 | pick 16 | **14 / 14** | 1404.8 | 1578.3 | 173.5 |
+| 3 | 10191115 | 14 | 14 | **pick 7** | incomplete | — | — | — |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -73,3 +74,30 @@ Draft 1 was hybrid (6 Yahoo picks) and drafted four tight ends because roster
 tracking read zero. Draft 2 had a clean entry but no kicker or defense. Both
 finishes are explained by mechanical defects that are now fixed, not by
 valuation. A third run is the first that would actually test the board.
+
+
+## Draft 3 — room 10191115, abandoned incomplete
+
+The first run with **every parameter correct**: armed at pick 7 of round 1
+(earliest of the three), `rosterSize=15` derived from the room rather than
+Harvey Cup's 17, `teams=14`, `bench=6`, `detected=room`, `unmatched=1/100`,
+and roster tracking correct after the case-insensitive dedupe fix.
+
+Abandoned because the ROOM stalled, not the harness: roughly two picks per
+fifteen minutes, with the draft client's renderer unresponsive to script
+injection for ~45 minutes. That freezes the autopilot, which means the queue
+stops being re-synced and the final-round auto-harvest never fires. Yahoo
+continued autodrafting from a queue built around pick 64, so the late rounds
+came off a five-round-stale board.
+
+**The lesson is about the instrument, not the strategy.** Yahoo mock rooms
+are an unreliable test environment: they fill on no schedule, drafters
+routinely burn the full clock, and a heavy React client in a background tab
+degrades until it stops answering. Three attempts produced zero drafts in
+which the advisor operated correctly end to end. Nine real defects were found
+along the way, which is what the exercise was actually worth.
+
+If this is retried, the useful changes would be: target rooms that are
+already nearly full (they start on schedule), keep the draft tab as the
+active tab in a non-minimised window, and treat a rising `lastTick` age in
+`__hcStatus()` as a signal to recover the tab rather than a cosmetic detail.
