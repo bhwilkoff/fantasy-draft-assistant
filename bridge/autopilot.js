@@ -145,11 +145,20 @@
     });
     // The seed is authoritative for everything drafted before we armed;
     // the observed log covers everything since. Union by name.
-    if (A.seedRoster && A.seedRoster.length >= out.length) {
-      var seen = {};
-      var merged = A.seedRoster.slice();
-      merged.forEach(function (p) { seen[p.name] = 1; });
-      out.forEach(function (p) { if (!seen[p.name]) merged.push(p); });
+    if (A.seedRoster && A.seedRoster.length) {
+      /* Dedupe case-insensitively. The Results tab renders "T. Etienne Jr."
+       * while the status header renders "T. ETIENNE JR.", so a plain name
+       * comparison counted the same player twice -- four picks reported as
+       * six, which inflates the roster and skews every positional need. */
+      var norm = function (n) {
+        return String(n || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      };
+      var seen = {}, merged = [];
+      A.seedRoster.concat(out).forEach(function (p) {
+        var k = norm(p.name) + '|' + (p.pos || '');
+        if (seen[k]) return;
+        seen[k] = 1; merged.push(p);
+      });
       return merged;
     }
     return out;
