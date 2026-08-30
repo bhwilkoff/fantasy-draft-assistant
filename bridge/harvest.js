@@ -104,8 +104,20 @@
       });
       if (!pos && /^(QB|RB|WR|TE|K|DEF)$/i.test(slot || '')) pos = slot.toUpperCase();
       if (name && pos) {
+        /* Yahoo prints its OWN projected points in this table. Capture it:
+         * grading a draft with the same projections we drafted on is
+         * circular and would make us win by construction. Yahoo's number is
+         * independent of our ESPN-derived board, so beating the room on
+         * Yahoo's own arithmetic is a result that means something. */
+        var yProj = null;
+        for (var ci = 1; ci < cells.length; ci++) {
+          var v = parseFloat(String(cells[ci]).replace(/[^0-9.\-]/g, ''));
+          // the points column is a plausible season total, unlike bye week
+          // (1-18) or pick number
+          if (!isNaN(v) && v >= 40 && v <= 600) { yProj = v; break; }
+        }
         out.push({ name: name, pos: pos, team: team, slot: slot,
-                   yid: pe.getAttribute('data-id') });
+                   yahooProj: yProj, yid: pe.getAttribute('data-id') });
       }
     });
     return out;

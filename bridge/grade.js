@@ -43,7 +43,12 @@
     return { total: total, starters: starters };
   }
 
-  window.__hcGrade = function (harvest) {
+  /* source: 'yahoo'  -> grade with Yahoo's own projected points (INDEPENDENT
+   *                      of the board we drafted on; this is the honest test)
+   *          'ours'   -> grade with our projections re-scored for the room
+   *                      (circular, useful only as a cross-check) */
+  window.__hcGrade = function (harvest, source) {
+    source = source || 'yahoo';
     harvest = harvest || window.__hcHarvested;
     if (!harvest || !harvest.teams) return { error: 'nothing harvested' };
     var L = window.HarveyLeague, HC = window.HarveyCup, idx = window.__hcIndex;
@@ -64,7 +69,13 @@
         var q = {};
         for (var k in m.player) q[k] = m.player[k];
         q._id = ++uid;
-        q._pts = L.scorePlayer(q, scoring) * (q.injury_factor == null ? 1 : q.injury_factor);
+        if (source === 'yahoo' && pk.yahooProj != null) {
+          q._pts = pk.yahooProj;
+          q._src = 'yahoo';
+        } else {
+          q._pts = L.scorePlayer(q, scoring) * (q.injury_factor == null ? 1 : q.injury_factor);
+          q._src = 'ours';
+        }
         roster.push(q);
       });
       var r = bestLineup(roster, parsed.base,
@@ -80,8 +91,16 @@
     rows.forEach(function (r, i) { r.rank = i + 1; });
     var mine = rows.filter(function (r) { return r.team === harvest.me; })[0];
 
+    var yahooCount = 0, total = 0;
+    Object.keys(harvest.teams).forEach(function (t) {
+      harvest.teams[t].forEach(function (p) {
+        total++; if (p.yahooProj != null) yahooCount++; });
+    });
+
     return {
       room: harvest.room, me: harvest.me, rules: scoring.name,
+      gradedWith: source,
+      yahooProjCoverage: total ? Math.round(100 * yahooCount / total) + '%' : '0%',
       lineup: rosterText, numTeams: rows.length,
       myRank: mine ? mine.rank : null,
       myPts: mine ? mine.pts : null,
