@@ -79,3 +79,26 @@ def surname_key(name, pos):
     """position + surname; the bucket we disambiguate inside."""
     _, last = parse_name(name)
     return f"{(pos or '').upper()}|{last}"
+
+
+def first_names_compatible(a, b):
+    """Could these two first names be the same person?
+
+    Guards the team-based fallback in build.py. Sharing a team and a surname
+    is NOT enough: Travis and Trevor Etienne are both Jacksonville running
+    backs, and matching them handed a 14-point rookie Travis's ADP of 36.7,
+    which then surfaced as the biggest 'bargain' on the board.
+
+    Accept an exact match, an initial against a full name, or a genuine
+    prefix (Ken/Kenneth). Reject merely sharing a couple of letters."""
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    # one side is an initial
+    if len(a) == 1 or len(b) == 1:
+        return a[0] == b[0]
+    short, long_ = (a, b) if len(a) <= len(b) else (b, a)
+    if long_.startswith(short) and len(short) >= 3:
+        return True
+    return False

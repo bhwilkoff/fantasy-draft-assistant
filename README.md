@@ -19,6 +19,9 @@ is computed, not assumed — see [docs/METHOD.md](docs/METHOD.md).
 
 ```
 engine/          Python: fetch -> score -> VOR -> data/players.json
+  season.py        head-to-head season + playoff sim (scores TITLE ODDS)
+  upside.py        per-player variance -> ceiling / floor
+  opponents.py     availability that accounts for what opponents still need
   league.py        Harvey Cup rules, scraped from the league settings page
   scoring.py       raw stat line -> Harvey Cup points
   vor.py           simulated replacement levels, tiers, survival probability
@@ -29,9 +32,19 @@ web/             Vanilla JS board (no build step)
   advisor.js       port of advisor.py, shared with the bridge
   index.html       standalone board / manual draft tracker
 bridge/          Userscript that overlays advice inside the Yahoo draft room
+tools/           draft_server.py (Claude relay), draft_watch.py, injury_report.py
 tests/           Python<->JS parity, name matching, DOM readers
-docs/            METHOD.md, YAHOO-DRAFT-ROOM-RECON.md
+docs/            METHOD.md, STRATEGY.md, LIVE-DRAFT-PLAYBOOK.md, recon
 ```
+
+**Read [docs/STRATEGY.md](docs/STRATEGY.md)** for what the simulator actually
+says — including the three clever-sounding ideas that measurably lose, and the
+one number that matters (drafting the right rulebook is worth ~13 points of
+title odds; everything else is noise).
+
+**Read [docs/LIVE-DRAFT-PLAYBOOK.md](docs/LIVE-DRAFT-PLAYBOOK.md)** before
+Sep 5 — it is the runbook, including how to put a Claude session in the loop
+so the draft is driven by live judgement rather than a frozen plan.
 
 ## Quick start
 

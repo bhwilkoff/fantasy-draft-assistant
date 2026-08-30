@@ -19,7 +19,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "sources"))
 
 import league as L
-import scoring, vor, names
+import scoring, vor, names, upside
 import espn as espn_src
 import ffc as ffc_src
 import sleeper as sleeper_src
@@ -73,14 +73,20 @@ def build():
             bucket = ffc_by_surname.get(names.surname_key(e["name"], e["pos"]), [])
             same_team = [r for r in bucket
                          if names.clean_team(r["team"]) == names.clean_team(e["team"])]
+            # Same team + same surname is not identity -- teammates exist.
+            same_team = [r for r in same_team
+                         if names.first_names_compatible(
+                             names.parse_name(r["name"])[0],
+                             names.parse_name(e["name"])[0])]
             if len(same_team) == 1:
                 m = same_team[0]
             elif len(bucket) == 1 and not same_team:
                 # single candidate league-wide but team disagrees: treat as a
                 # trade/roster move only if the first initial also agrees.
                 cand = bucket[0]
-                if (names.parse_name(cand["name"])[0][:1]
-                        == names.parse_name(e["name"])[0][:1]):
+                if names.first_names_compatible(
+                        names.parse_name(cand["name"])[0],
+                        names.parse_name(e["name"])[0]):
                     m = cand
             elif len(bucket) > 1:
                 ambiguous += 1
@@ -138,6 +144,10 @@ def build():
 
     levels, counts = vor.apply_vor(players)
     vor.assign_tiers(players)
+    # per-player season spread -> ceiling/floor. Not a breakout predictor;
+    # a statement about who is UNCERTAIN, which is what decides when buying
+    # variance is worth real points. See docs/STRATEGY.md section 4.
+    upside.annotate(players)
 
     # Market-inefficiency signal: our rank vs the market's rank.
     ranked_by_adp = sorted([p for p in players if p["adp"]], key=lambda p: p["adp"])

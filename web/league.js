@@ -160,6 +160,15 @@
       p.replacement = Math.round((rep.levels[p.pos] || 0) * 100) / 100;
       p.vor = Math.round((p.points - p.replacement) * 100) / 100;
     });
+    // ceiling/floor scale with the player's own uncertainty, which
+    // engine/upside.py computed once; re-derive against the new points.
+    players.forEach(function (p) {
+      var sf = p.sigma_frac == null ? 0.35 : p.sigma_frac;
+      p.ceiling = Math.round(p.points * Math.exp(0.95 * sf) * 10) / 10;
+      p.floor = Math.round(p.points * Math.exp(-0.95 * sf) * 10) / 10;
+      p.ceiling_vor = Math.round((p.ceiling - p.replacement) * 10) / 10;
+      p.floor_vor = Math.round((p.floor - p.replacement) * 10) / 10;
+    });
     players.sort(function (a, b) { return b.vor - a.vor; });
     players.forEach(function (p, i) { p.vor_rank = i + 1; });
     assignTiers(players);

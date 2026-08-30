@@ -17,6 +17,9 @@ sys.path.insert(0, HERE)
 import league as L
 import advisor as adv
 import vor as vor_mod
+import opponents as opp_mod
+import season as season_mod
+import upside as upside_mod
 
 DATA = os.path.join(os.path.dirname(HERE), "data", "players.json")
 
@@ -92,10 +95,31 @@ def run_one(players, my_slot, rng, strategy="advisor"):
             overall += 1
             if not pool:
                 break
-            if team == my_slot and strategy == "advisor":
+            if team == my_slot and strategy.startswith("advisor"):
                 nxt = min([p for p in vor_mod.snake_picks(my_slot) if p > overall],
                           default=overall + L.NUM_TEAMS)
-                res = adv.advise(pool, rosters[team], overall, nxt, recent)
+                availability = None
+                if "opp" in strategy:
+                    # who picks between now and our next turn, and what do
+                    # they already have?
+                    opp = {}
+                    for pk in range(overall + 1, nxt):
+                        r = (pk - 1) // L.NUM_TEAMS + 1
+                        i = (pk - 1) % L.NUM_TEAMS
+                        slot = i + 1 if r % 2 == 1 else L.NUM_TEAMS - i
+                        counts = {}
+                        for pl in rosters.get(slot, []):
+                            counts[pl["pos"]] = counts.get(pl["pos"], 0) + 1
+                        opp[pk] = counts
+                    availability = opp_mod.simulate_availability(
+                        pool, overall + 1, nxt, opp,
+                        num_teams=L.NUM_TEAMS, total_rounds=L.ROUNDS,
+                        trials=120, seed=overall * 7 + my_slot)
+                res = adv.advise(pool, rosters[team], overall, nxt, recent,
+                                 availability=availability,
+                                 mode=("lookahead" if "look" in strategy
+                                       else "tiebreak" if "tie" in strategy
+                                       else "value"))
                 rec = res["recommendation"]
                 pick = next((p for p in pool if p["name"] == rec["name"]), pool[0]) \
                     if rec else pool[0]
@@ -116,11 +140,14 @@ def run_one(players, my_slot, rng, strategy="advisor"):
     return {t: best_lineup_points(r) for t, r in rosters.items()}, rosters
 
 
+STRATEGIES = ("vor", "advisor", "advisor_tie", "advisor_tie_opp")
+
+
 def main(trials=30):
     players, meta = load()
     print(f"{len(players)} players with ADP\n")
     results = {}
-    for strategy in ("adp", "vor", "advisor"):
+    for strategy in STRATEGIES:
         mine, ranks, opp = [], [], []
         for t in range(trials):
             rng = random.Random(1000 + t)
@@ -160,7 +187,7 @@ def run_with_projection_error(trials=24, sigma_frac=0.30):
     players, _ = load()
     print(f"\nprojection error test (sigma = {int(sigma_frac*100)}% of mean)")
     out = {}
-    for strategy in ("adp", "vor", "advisor"):
+    for strategy in STRATEGIES:
         mine, ranks = [], []
         for t in range(trials):
             rng = random.Random(5000 + t)
@@ -186,4 +213,106 @@ def run_with_projection_error(trials=24, sigma_frac=0.30):
         print(f"  {strategy:<9} true_lineup={out[strategy][0]:7.1f}  "
               f"avg_finish={out[strategy][1]:.2f}/12  "
               f"win_rate={out[strategy][2]*100:.0f}%")
+    return out
+
+
+# --------------------------------------------------------------- title odds
+LINEUP = {
+    "base": {"QB": 1, "RB": 2, "WR": 3, "TE": 1, "K": 1, "DEF": 1},
+    "flex": [{"slot": "W/T", "eligible": ("WR", "TE")},
+             {"slot": "W/R", "eligible": ("WR", "RB")}],
+}
+
+
+def _pick_by(pool, roster, rnd, key):
+    """Best available by an arbitrary key, respecting roster sanity."""
+    counts = {}
+    for p in roster:
+        counts[p["pos"]] = counts.get(p["pos"], 0) + 1
+    cands = [p for p in pool
+             if counts.get(p["pos"], 0) < BOT_CAP.get(p["pos"], 99)
+             and not (p["pos"] in BOT_MIN_BY_ROUND
+                      and rnd < BOT_MIN_BY_ROUND[p["pos"]])]
+    return max(cands or pool, key=key)
+
+
+def run_one_strategy(players, my_slot, rng, strategy):
+    """Like run_one, but supports the upside-aware strategies."""
+    if strategy in ("adp", "vor", "advisor") or strategy.startswith("advisor"):
+        return run_one(players, my_slot, rng, strategy)
+
+    pool = sorted(players, key=lambda p: p["adp"])
+    rosters = {i: [] for i in range(1, L.NUM_TEAMS + 1)}
+    overall = 0
+    for rnd in range(1, L.ROUNDS + 1):
+        order = (range(1, L.NUM_TEAMS + 1) if rnd % 2 == 1
+                 else range(L.NUM_TEAMS, 0, -1))
+        for team in order:
+            overall += 1
+            if not pool:
+                break
+            if team == my_slot:
+                frac = overall / float(L.NUM_TEAMS * L.ROUNDS)
+                if strategy == "ceiling":
+                    key = lambda p: p.get("ceiling_vor", p["vor"])
+                elif strategy == "floor":
+                    key = lambda p: p.get("floor_vor", p["vor"])
+                elif strategy == "upside_late":
+                    # mean early (protect the starting lineup), variance late
+                    # (a bench pick is only worth owning if it can win a week)
+                    key = ((lambda p: p["vor"]) if frac < 0.45
+                           else (lambda p: p.get("ceiling_vor", p["vor"])))
+                elif strategy == "upside_bench":
+                    # swing only where the pick is genuinely a bench flier:
+                    # the last third of the draft, after the lineup is set
+                    key = ((lambda p: p["vor"]) if frac < 0.68
+                           else (lambda p: p.get("ceiling_vor", p["vor"])))
+                elif strategy == "floor_early_ceiling_late":
+                    key = ((lambda p: p.get("floor_vor", p["vor"])) if frac < 0.45
+                           else (lambda p: p.get("ceiling_vor", p["vor"])))
+                else:
+                    key = lambda p: p["vor"]
+                pick = _pick_by(pool, rosters[team], rnd, key)
+            else:
+                pick = bot_pick(pool, rosters[team], rnd, rng)
+            pool.remove(pick)
+            rosters[team].append(pick)
+    return {t: 0 for t in rosters}, rosters
+
+
+def title_odds_compare(strategies, drafts=12, seasons=120, sigma_frac=None,
+                       learning=0.5, quiet=False):
+    """Draft with each strategy, then play the actual competition.
+
+    Season points are a proxy; this measures the thing you are buying. Each
+    drafted roster plays a 14-week head-to-head schedule against the eleven
+    bot teams from its own draft, top 6 make the playoffs, weeks 15-17 decide
+    the title. Player weekly scores are drawn from engine/season.py.
+    """
+    players, _ = load()
+    upside_mod.annotate(players)
+    out = {}
+    for strat in strategies:
+        titles, playoffs, pts = [], [], []
+        for d in range(drafts):
+            slot = (d % L.NUM_TEAMS) + 1
+            rng = random.Random(7000 + d)
+            _, rosters = run_one_strategy([dict(p) for p in players], slot, rng, strat)
+            # a hidden season-long multiplier per player, width set by his own
+            # uncertainty -- this is what makes "upside" mean anything
+            mults = {}
+            mrng = random.Random(31000 + d)
+            for p in players:
+                sf = sigma_frac if sigma_frac is not None else p.get("sigma_frac", 0.35)
+                mults[p["name"]] = max(0.05, mrng.gauss(1.0, sf))
+            t, po = season_mod.title_odds(rosters, LINEUP, trials=seasons,
+                                          seed=900 + d, season_mults=mults,
+                                          learning=learning)
+            titles.append(t[slot]); playoffs.append(po[slot])
+            pts.append(best_lineup_points(rosters[slot]))
+        out[strat] = (sum(titles) / len(titles), sum(playoffs) / len(playoffs),
+                      sum(pts) / len(pts))
+        if not quiet:
+            print(f"  {strat:<26} title={out[strat][0]*100:5.1f}%  "
+                  f"playoffs={out[strat][1]*100:5.1f}%  projpts={out[strat][2]:7.0f}")
     return out

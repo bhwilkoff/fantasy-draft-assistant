@@ -52,6 +52,7 @@ BENCH_TARGET = {"QB": 1, "RB": 3, "WR": 3, "TE": 1, "K": 0, "DEF": 0}
 # valuation.
 DROPOFF_WEIGHT = 0.0
 STARTER_BONUS = 3.0
+TIEBREAK_BAND = 8.0
 
 
 def roster_needs(roster):
@@ -84,14 +85,23 @@ def roster_needs(roster):
     return starter_gap, total_gap, counts, flex_open
 
 
-def expected_best_later(pool, pos, next_pick, limit=40):
-    """Exact E[max VOR] among players at `pos` surviving to `next_pick`."""
+def expected_best_later(pool, pos, next_pick, limit=40, availability=None):
+    """Exact E[max VOR] among players at `pos` surviving to `next_pick`.
+
+    `availability` optionally supplies empirical survival probabilities from
+    engine/opponents.py, which account for what the teams picking in front of
+    us actually still need. When absent we fall back to the closed-form
+    Normal(ADP, stdev) model.
+    """
     cands = [p for p in pool if p["pos"] == pos][:limit]
     if not cands:
         return 0.0, None
     exp, none_so_far, top = 0.0, 1.0, None
     for c in cands:
-        s = vor_mod.survival_probability(c.get("adp"), c.get("adp_stdev"), next_pick)
+        if availability is not None and c["name"] in availability:
+            s = availability[c["name"]]
+        else:
+            s = vor_mod.survival_probability(c.get("adp"), c.get("adp_stdev"), next_pick)
         contrib = c["vor"] * s * none_so_far
         exp += contrib
         if top is None and s >= 0.5:
@@ -112,7 +122,7 @@ def positional_run(recent_picks, window=8):
 
 
 def advise(available, roster, current_pick, next_pick, recent_pick_positions=None,
-           top_n=6):
+           top_n=6, availability=None, mode="value"):
     """Return a ranked recommendation list plus the reasoning behind it."""
     pool = sorted([p for p in available if p.get("vor") is not None],
                   key=lambda p: -p["vor"])
@@ -136,7 +146,7 @@ def advise(available, roster, current_pick, next_pick, recent_pick_positions=Non
     for p in usable:
         c = [x for x in pool if x["pos"] == p]
         now[p] = (c[0]["vor"], c[0]) if c else (0.0, None)
-        later[p] = expected_best_later(pool, p, next_pick)
+        later[p] = expected_best_later(pool, p, next_pick, availability=availability)
 
     # Two-pick lookahead over ordered position pairs.
     best_pair, best_val = None, -1e9
@@ -161,8 +171,11 @@ def advise(available, roster, current_pick, next_pick, recent_pick_positions=Non
             continue
         if pos in ("K", "DEF") and pos not in usable:
             continue
-        surv = vor_mod.survival_probability(cand.get("adp"), cand.get("adp_stdev"),
-                                            next_pick)
+        if availability is not None and cand["name"] in availability:
+            surv = availability[cand["name"]]
+        else:
+            surv = vor_mod.survival_probability(cand.get("adp"),
+                                                cand.get("adp_stdev"), next_pick)
         dropoff = now[pos][0] - later[pos][0] if pos in now else 0.0
         same_tier_left = sum(1 for x in pool
                              if x["pos"] == pos and x.get("tier") == cand.get("tier"))
@@ -182,7 +195,28 @@ def advise(available, roster, current_pick, next_pick, recent_pick_positions=Non
             "score": round(score, 2),
             "is_target_position": pos == target_pos,
         })
-    ranked.sort(key=lambda r: -r["score"])
+    if mode == "tiebreak":
+        # Availability as a TIE-BREAK, never an override. Among candidates
+        # within TIEBREAK_BAND VOR of the best, prefer the one least likely to
+        # come back to us. This is the only use of availability that does not
+        # trade away real projected points for a timing guess.
+        ranked.sort(key=lambda r: -r["score"])
+        if ranked:
+            top = ranked[0]["score"]
+            band = [r for r in ranked if top - r["score"] <= TIEBREAK_BAND]
+            rest = [r for r in ranked if top - r["score"] > TIEBREAK_BAND]
+            band.sort(key=lambda r: (r["survival_next"], -r["score"]))
+            ranked = band + rest
+    elif mode == "lookahead":
+        # The true two-pick optimisation: we already chose the ordered pair of
+        # positions (p_now, p_next) maximising best_now(p_now) +
+        # E[best_later(p_next)], so the pick is the best player at p_now.
+        # `mode="value"` instead ranks globally by VOR and treats the pair
+        # result as advice for the human. Which of these is actually better is
+        # an empirical question -- see engine/sim.py.
+        ranked.sort(key=lambda r: (0 if r["pos"] == target_pos else 1, -r["score"]))
+    else:
+        ranked.sort(key=lambda r: -r["score"])
 
     return {
         "current_pick": current_pick,

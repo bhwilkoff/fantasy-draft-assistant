@@ -6,7 +6,9 @@
 // @match        https://football.fantasysports.yahoo.com/draftclient/*
 // @match        https://football.fantasysports.yahoo.com/f1/*/draft*
 // @run-at       document-idle
-// @grant        none
+// @grant        GM_xmlhttpRequest
+// @connect      127.0.0.1
+// @connect      localhost
 // ==/UserScript==
 
 /* Why the DOM and not the WebSocket:
@@ -30,7 +32,8 @@
   var state = {
     data: null, index: null, error: null, league: null,
     myTeam: localStorage.getItem(LOCAL_KEY) || null,
-    lastSig: '', collapsed: false, ambiguous: []
+    lastSig: '', collapsed: false, ambiguous: [],
+    claudeNote: null, relayUp: null
   };
 
   /* Name matching lives in web/advisor.js so the bridge, the standalone
@@ -193,6 +196,52 @@
     return mine;
   }
 
+  /* ---------------------------------------------------------------- relay */
+  /* The engine values players; it cannot read a beat writer or notice that
+   * the room has started panicking at quarterback. tools/draft_server.py is a
+   * localhost relay: we push state, a Claude Code session reads it, thinks,
+   * and writes a short note back which we render beside the recommendation.
+   *
+   * A page on https:// cannot fetch http://127.0.0.1 directly, so this needs
+   * the userscript's GM_xmlhttpRequest. Without it the relay is simply off
+   * and the overlay still works -- it is an enhancement, never a dependency.
+   */
+  var RELAY = 'http://127.0.0.1:8830';
+
+  function relay(method, path, body, cb) {
+    try {
+      if (typeof GM_xmlhttpRequest === 'function') {
+        GM_xmlhttpRequest({
+          method: method, url: RELAY + path,
+          headers: { 'Content-Type': 'application/json' },
+          data: body ? JSON.stringify(body) : undefined,
+          onload: function (r) {
+            state.relayUp = true;
+            if (cb) { try { cb(JSON.parse(r.responseText)); } catch (e) {} }
+          },
+          onerror: function () { state.relayUp = false; }
+        });
+        return;
+      }
+      fetch(RELAY + path, {
+        method: method, mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: body ? JSON.stringify(body) : undefined
+      }).then(function (r) { return r.json(); })
+        .then(function (j) { state.relayUp = true; if (cb) cb(j); })
+        .catch(function () { state.relayUp = false; });
+    } catch (e) { state.relayUp = false; }
+  }
+
+  function pollNote() {
+    relay('GET', '/note', null, function (j) {
+      if (j && j.text && j.text !== (state.claudeNote || {}).text) {
+        state.claudeNote = j;
+        render(true);
+      }
+    });
+  }
+
   /* -------------------------------------------------------------- overlay */
   var el = {};
   function buildPanel() {
@@ -316,10 +365,33 @@
           + '</span>');
       }
       why.push('tier ' + rec.tier + ', ' + rec.tier_players_left + ' left in tier');
+      var full = state.index && (state.index[window.HarveyCup.roomKey(
+        rec.name, rec.pos, rec.team)] || []).filter(function (x) {
+          return x.name === rec.name; })[0];
+      if (full && full.ceiling) {
+        why.push('range ' + Math.round(full.floor) + '-' + Math.round(full.ceiling)
+          + (full.sigma_frac > 0.55 ? ' <span class="warn">(high variance)</span>' : ''));
+      }
+      if (full && full.injury && String(full.injury).toLowerCase() !== 'active') {
+        // the body part is the part a multiplier cannot interpret
+        why.push('<span class="warn">' + esc(full.injury)
+          + (full.injury_body_part ? ' - ' + esc(full.injury_body_part) : '')
+          + '</span>');
+      }
       h.push('<div class="rec"><div class="nm">' + esc(rec.name)
         + ' <span class="pill">' + esc(rec.pos) + (rec.team ? ' · ' + esc(rec.team) : '')
         + (rec.bye ? ' · bye ' + esc(rec.bye) : '') + '</span></div>'
         + '<div class="wy">' + why.join(' · ') + '</div></div>');
+    }
+
+    if (state.claudeNote && state.claudeNote.text) {
+      var stale = state.claudeNote.pick != null && st.pick != null
+                && state.claudeNote.pick < st.pick - 2;
+      h.push('<h4>Claude' + (stale ? ' <span class="warn">(stale)</span>' : '')
+        + '</h4><div style="background:#161a22;border:1px solid #2a2f3a;'
+        + 'border-radius:8px;padding:8px;font-size:12px;color:'
+        + (stale ? '#7a8494' : '#dfe5ec') + '">'
+        + esc(state.claudeNote.text) + '</div>');
     }
 
     if (res.alternatives.length) {
@@ -361,9 +433,35 @@
       + ' · ' + esc(state.league.scoring.name) + ' rules ('
       + esc(state.league.detectedFrom) + ')'
       + ' · WR' + state.league.counts.WR + ' RB' + state.league.counts.RB + ' start'
-      + ' · data ' + esc((state.data.meta.generated_at || '').slice(0, 16)) + '</div>');
+      + ' · data ' + esc((state.data.meta.generated_at || '').slice(0, 16))
+      + ' · relay ' + (state.relayUp === true ? 'on'
+                       : state.relayUp === false ? '<span class="warn">off</span>' : '?') + '</div>');
 
     el.body.innerHTML = h.join('');
+
+    if (rec && st.pick != null && st.pick !== state.lastPushed) {
+      state.lastPushed = st.pick;
+      relay('POST', '/state', {
+        source: 'overlay', pick: st.pick, round: st.round, upIn: st.upIn,
+        clock: st.clock, onClock: st.onClock,
+        league: window.__hcLeagueSummary || null,
+        recommendation: rec, alternatives: res.alternatives,
+        position_view: res.position_view, rosterNeeds: res.roster,
+        roster: roster.map(function (p) {
+          return { name: p.name, pos: p.pos, points: p.points, vor: p.vor,
+                   bye: p.bye, injury: p.injury }; }),
+        candidates: res.alternatives.concat([rec]).map(function (a) {
+          var full = (state.index[window.HarveyCup.roomKey(a.name, a.pos, a.team)] || [])
+            .filter(function (x) { return x.name === a.name; })[0] || {};
+          return { name: a.name, pos: a.pos, team: a.team, vor: a.vor,
+                   adp: a.adp, edge: a.edge, tier: a.tier,
+                   survival_next: a.survival_next,
+                   ceiling: full.ceiling, floor: full.floor,
+                   sigma_frac: full.sigma_frac, injury: full.injury,
+                   injury_body_part: full.injury_body_part }; }),
+        poolSize: pool.length
+      });
+    }
   }
 
   /* Decide which rulebook this room is playing under, then re-derive points,
@@ -427,6 +525,8 @@
         new MutationObserver(function () { render(false); })
           .observe(document.body, { childList: true, subtree: true, characterData: true });
         setInterval(function () { render(false); }, 2000);
+        setInterval(pollNote, 4000);
+        pollNote();
       })
       .catch(function (e) {
         el.body.innerHTML = '<div class="err">Could not load projections: '
