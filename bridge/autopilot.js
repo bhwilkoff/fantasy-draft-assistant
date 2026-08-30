@@ -24,7 +24,8 @@
   var LOG_KEY = 'hcAutopilotLog';
   var A = window.__hcAuto = {
     on: true, queued: {}, log: [], last: null, results: null,
-    timer: null, autodraftOn: false, relay: true
+    timer: null, autodraftOn: false, relay: true,
+    picks: {}, numTeams: null
   };
 
   function T(e) { return (e && e.innerText ? e.innerText : '').trim(); }
@@ -63,6 +64,65 @@
     }).filter(Boolean);
   }
 
+  /* Reconstruct the full pick log from the status area.
+   *
+   * The roster rail does not pair slot labels to drafted players, and the
+   * Picks feed is virtualised (our own early picks scroll out of the DOM), so
+   * neither can tell us what WE own. But the header always shows
+   * "Last: <PLAYER> (POS - TEAM) <drafter>" alongside "Round R, Pick P", and
+   * the player named there is pick P-1. Recording those as they land rebuilds
+   * the whole draft -- including our roster, which is just the picks landing
+   * on the numbers our snake slot owns. */
+  function recordLastPick(st) {
+    var body = document.body.innerText || '';
+    var m = body.match(/Last:\s*\n?\s*([^\n(]+)\n?\s*\(([A-Z/]+)\s*[·\-]\s*([A-Z]{2,3})\)\s*\n?\s*([^\n]+)/i);
+    if (!m || st.pick == null) return;
+    var pickNo = st.pick - 1;
+    if (pickNo < 1) return;
+    if (A.picks[pickNo]) return;
+    A.picks[pickNo] = {
+      pick: pickNo,
+      name: m[1].trim(),
+      pos: m[2].toUpperCase().replace('D/ST', 'DEF'),
+      team: m[3].toUpperCase(),
+      drafter: m[4].trim()
+    };
+  }
+
+  function mySnakePicks(numTeams, slot, rounds) {
+    var out = [];
+    for (var r = 1; r <= (rounds || 20); r++) {
+      out.push(r % 2 === 1 ? (r - 1) * numTeams + slot
+                           : (r - 1) * numTeams + (numTeams - slot + 1));
+    }
+    return out;
+  }
+
+  function myRosterFromPicks() {
+    var m = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
+    if (!m) return [];
+    var slot = +m[2];
+    var order = (function () {
+      var cur = document.querySelector('.ys-draftorder-current');
+      if (!cur || !cur.parentElement) return [];
+      var seen = [];
+      [].slice.call(cur.parentElement.children).forEach(function (c) {
+        var n = (c.innerText || '').trim().split('\n')[0];
+        if (n && seen.indexOf(n) < 0 && seen.length < 20) seen.push(n);
+      });
+      return seen;
+    })();
+    var numTeams = order.length || A.numTeams || 12;
+    A.numTeams = numTeams;
+    var mine = mySnakePicks(numTeams, slot, 20);
+    var out = [];
+    mine.forEach(function (pk) {
+      if (A.picks[pk]) out.push(A.picks[pk]);
+    });
+    return out;
+  }
+  A.myRosterFromPicks = myRosterFromPicks;
+
   function enableAutodraft() {
     if (A.autodraftOn) return;
     var b = [].slice.call(document.querySelectorAll('button'))
@@ -93,6 +153,7 @@
     var rows = readRows();
     if (!rows.length) return;
     var st = R.readStatus();
+    recordLastPick(st);
 
     var pool = [], yidOf = {}, unmatched = 0;
     rows.forEach(function (r) {
@@ -101,7 +162,10 @@
       else unmatched++;
     });
 
-    var roster = (R.readMyRoster(rows) || []).map(function (r) {
+    // Prefer the reconstructed pick log; fall back to the DOM scrape.
+    var raw = myRosterFromPicks();
+    if (!raw.length) raw = R.readMyRoster(rows) || [];
+    var roster = raw.map(function (r) {
       var m = HC.lookup(idx, r.name, r.pos, r.team);
       return m.player || { name: r.name, pos: r.pos, vor: 0, points: 0 };
     });
@@ -174,7 +238,7 @@
     try {
       localStorage.setItem(LOG_KEY, JSON.stringify({
         room: location.pathname, log: A.log.slice(-260),
-        queued: A.queued, last: A.last, savedAt: Date.now()
+        picks: A.picks, queued: A.queued, last: A.last, savedAt: Date.now()
       }));
     } catch (e) { /* quota or private mode: the draft still runs */ }
   }
@@ -185,6 +249,7 @@
       var v = JSON.parse(localStorage.getItem(LOG_KEY) || 'null');
       if (v && v.room === location.pathname) {
         A.log = v.log || [];
+        A.picks = v.picks || {};
         A.queued = v.queued || {};
         A.restored = A.log.length;
       }
@@ -225,6 +290,7 @@
       'queued=' + Object.keys(A.queued).length,
       'autodraft=' + (A.autodraftOn ? 'on' : 'off'),
       'observed=' + A.log.length,
+      'picklog=' + Object.keys(A.picks).length,
       'restored=' + (A.restored || 0),
       'alive=' + (A.observer ? 'yes' : 'no'),
       A.lastError ? 'ERR=' + A.lastError.slice(0, 60) : ''
