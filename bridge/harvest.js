@@ -12,7 +12,19 @@
   'use strict';
 
   function T(e) { return (e && e.innerText ? e.innerText : '').trim(); }
-  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  /* Synchronous busy-wait, deliberately, instead of `await sleep(ms)`.
+   *
+   * Chrome throttles setTimeout in a hidden tab to roughly once a MINUTE, so
+   * an async harvester that waits 450ms between fourteen teams takes fourteen
+   * minutes instead of six seconds -- it looks like a hang. Blocking the main
+   * thread for a few hundred milliseconds is fine here: nothing else on the
+   * page needs to run while we page through the Results tab, and it makes the
+   * harvest work identically whether the tab is visible or not. */
+  function settle(ms) {
+    var end = Date.now() + ms;
+    while (Date.now() < end) { /* spin */ }
+  }
 
   function clickByText(text) {
     var e = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
@@ -88,11 +100,11 @@
       .filter(Boolean).join(',');
   }
 
-  window.__hcHarvest = async function () {
+  window.__hcHarvest = function () {
     clickByText('Results');
-    await sleep(600);
+    settle(500);
     clickByText('Teams');
-    await sleep(600);
+    settle(500);
 
     var sel = teamSelect();
     if (!sel) return { error: 'team <select> not found on Results tab' };
@@ -104,7 +116,7 @@
     var teams = {}, slots = null;
     for (var i = 0; i < options.length; i++) {
       setSelect(sel, options[i].value);
-      await sleep(450);
+      settle(350);
       var r = readRoster();
       if (r.length) {
         teams[options[i].label] = r;
