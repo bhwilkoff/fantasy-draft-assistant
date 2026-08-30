@@ -17,6 +17,26 @@
   var POSITIONS = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
   var NUM_TEAMS = 12, ROUNDS = 17, ROSTER_SIZE = 17;
 
+  /* Roster size MUST come from the room, not from Harvey Cup's 17.
+   *
+   * A Yahoo mock has 15 slots. With ROSTER_SIZE frozen at 17,
+   * picksRemaining = 17 - roster.length never fell to <= 2, so the gate that
+   * finally allows a kicker and a defense never opened. The resulting roster
+   * had no K and no DEF -- two starting slots scoring zero -- and finished
+   * dead last of fourteen. Anything that scales with roster size is a
+   * league parameter, never a constant. */
+  function setRosterSize(n) {
+    if (n && n >= 5 && n <= 40) ROSTER_SIZE = n;
+  }
+  function rosterSizeFrom(roster) {
+    if (!roster || !roster.base) return null;
+    var n = 0;
+    Object.keys(roster.base).forEach(function (k) { n += roster.base[k]; });
+    n += (roster.flex ? roster.flex.length : 0);
+    n += (roster.bench || 0);
+    return n;
+  }
+
   function erf(x) {
     var s = x < 0 ? -1 : 1; x = Math.abs(x);
     var a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741,
@@ -238,6 +258,8 @@
   root.HarveyCup = {
     advise: advise, survival: survival, snakePicks: snakePicks,
     rosterNeeds: rosterNeeds, expectedBestLater: expectedBestLater,
+    setRosterSize: setRosterSize, rosterSizeFrom: rosterSizeFrom,
+    getRosterSize: function () { return ROSTER_SIZE; },
     parseName: parseName, roomKey: roomKey, buildIndex: buildIndex,
     lookup: lookup, cleanTeam: cleanTeam,
     POSITIONS: POSITIONS, NUM_TEAMS: NUM_TEAMS, ROUNDS: ROUNDS

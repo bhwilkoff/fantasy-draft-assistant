@@ -529,6 +529,13 @@
                  : 'QB,WR,WR,WR,RB,RB,TE,W/T,W/R,K,DEF,BN,BN,BN,BN,BN,BN');
     var roster = L.parseRoster(rosterText);
     if (!roster.starters) roster = L.parseRoster('QB,WR,WR,RB,RB,TE,W/R/T,K,DEF');
+    // The draft client never prints "Roster Positions" (only the waiting room
+    // does), so without this we silently run on the fallback -- which has no
+    // bench and the wrong WR count.
+    if (window.__hcRosterText) {
+      var fromRoom = L.parseRoster(window.__hcRosterText);
+      if (fromRoom.starters) { roster = fromRoom; rosterText = window.__hcRosterText; }
+    }
     var scoring = isMock ? L.SCORING_PRESETS.yahoo_default
                          : L.SCORING_PRESETS.harvey_cup;
     // Guard the range as well: a bad read must never silently become a
@@ -538,7 +545,13 @@
     state.league = L.applyLeague(j.players, {
       roster: roster, scoring: scoring, numTeams: numTeams
     });
-    state.league.detectedFrom = det.rosterText ? 'room' : 'fallback';
+    state.league.detectedFrom = (det.rosterText || window.__hcRosterText)
+      ? 'room' : 'fallback';
+    state.league.rosterText = rosterText;
+    // teach the advisor how many picks this league actually has
+    if (window.HarveyCup && window.HarveyCup.setRosterSize) {
+      window.HarveyCup.setRosterSize(window.HarveyCup.rosterSizeFrom(roster));
+    }
     state.league.teamsFrom = det.numTeams ? 'room' : 'fallback';
     window.__hcLeague = state.league;
     state.league.isMock = isMock;

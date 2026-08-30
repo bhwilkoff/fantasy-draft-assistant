@@ -231,7 +231,11 @@
       var r = readRoster();
       if (r.length) {
         teams[options[i].label] = r;
-        if (!slots) slots = rosterSlots();
+        if (!slots) {
+          slots = rosterSlots();
+          // publish it so the bridge can stop guessing the roster shape
+          if (slots) window.__hcRosterText = slots.replace(/\n/g, '/');
+        }
       }
     }
 
