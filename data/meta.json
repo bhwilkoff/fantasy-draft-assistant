@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30T17:43:27+00:00",
+  "generated_at": "2026-08-30T18:38:11+00:00",
   "league": {
     "id": 539156,
     "name": "Harvey Cup",
@@ -38,6 +38,7 @@
   },
   "sources": {
     "projections": "ESPN kona_player_info (raw stats, re-scored)",
+    "injuries": "Sleeper (255 statuses)",
     "adp": "FantasyFootballCalculator PPR 12-team, 8234 drafts 2026-08-23..2026-08-30"
   },
   "player_count": 534

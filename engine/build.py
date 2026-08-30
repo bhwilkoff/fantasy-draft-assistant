@@ -22,6 +22,7 @@ import league as L
 import scoring, vor, names
 import espn as espn_src
 import ffc as ffc_src
+import sleeper as sleeper_src
 
 OUT_DIR = os.path.join(os.path.dirname(HERE), "data")
 
@@ -42,6 +43,15 @@ def build():
     print("fetching ESPN projections ...")
     espn_rows = espn_src.normalize(espn_src.fetch(limit=600))
     print(f"  {len(espn_rows)} players")
+
+    print("fetching Sleeper injury feed ...")
+    sleeper_rows = sleeper_src.normalize(sleeper_src.fetch())
+    sleep_by_key, sleep_by_sur = {}, {}
+    for r in sleeper_rows:
+        sleep_by_key[names.key(r["name"], r["pos"], r["team"])] = r
+        sleep_by_sur.setdefault(names.surname_key(r["name"], r["pos"]), []).append(r)
+    n_inj = sum(1 for r in sleeper_rows if r.get("injury_status"))
+    print(f"  {len(sleeper_rows)} players, {n_inj} carrying an injury status")
 
     print("fetching FFC ADP ...")
     ffc_rows, ffc_meta = ffc_src.normalize(ffc_src.fetch(fmt="ppr", teams=12))
@@ -77,7 +87,26 @@ def build():
         if m:
             matched += 1
         raw_pts = scoring.score_player(e)
-        factor = INJURY_FACTOR.get((e.get("injury_status") or "ACTIVE"), 1.0)
+
+        # Sleeper's status is timestamped and tracks to within the hour;
+        # ESPN's moves only when ESPN rebuilds projections. Prefer Sleeper,
+        # fall back to ESPN.
+        sk = names.key(e["name"], e["pos"], e["team"])
+        sl = sleep_by_key.get(sk)
+        if sl is None:
+            bucket = sleep_by_sur.get(names.surname_key(e["name"], e["pos"]), [])
+            same = [r for r in bucket
+                    if names.clean_team(r["team"]) == names.clean_team(e["team"])]
+            if len(same) == 1:
+                sl = same[0]
+        if sl and sl.get("injury_status"):
+            injury = sl["injury_status"]
+            factor = sleeper_src.factor_for(injury)
+            injury_src = "sleeper"
+        else:
+            injury = e.get("injury_status")
+            factor = INJURY_FACTOR.get((injury or "ACTIVE"), 1.0)
+            injury_src = "espn"
         players.append({
             "key": k,
             "name": e["name"],
@@ -88,8 +117,14 @@ def build():
             "points": round(raw_pts * factor, 2),
             "espn_points": e["espn_points"],
             "prior_points": e["prior_points"],
-            "injury": e.get("injury_status"),
+            "injury": injury,
             "injury_factor": factor,
+            "injury_source": injury_src,
+            "injury_body_part": (sl or {}).get("injury_body_part"),
+            "injury_news_updated": (sl or {}).get("news_updated"),
+            "depth_chart_order": (sl or {}).get("depth_chart_order"),
+            "age": (sl or {}).get("age"),
+            "years_exp": (sl or {}).get("years_exp"),
             "adp": (m or {}).get("adp") or e.get("espn_adp"),
             "adp_stdev": (m or {}).get("adp_stdev"),
             "adp_source": "ffc" if m and m.get("adp") else "espn",
@@ -128,6 +163,7 @@ def build():
         "starters_consumed": counts,
         "sources": {
             "projections": "ESPN kona_player_info (raw stats, re-scored)",
+            "injuries": f"Sleeper ({n_inj} statuses)",
             "adp": f"FantasyFootballCalculator PPR 12-team, "
                    f"{ffc_meta.get('total_drafts')} drafts "
                    f"{ffc_meta.get('start_date')}..{ffc_meta.get('end_date')}",

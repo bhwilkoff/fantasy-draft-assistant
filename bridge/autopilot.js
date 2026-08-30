@@ -1,0 +1,159 @@
+/* Autopilot: drive a Yahoo mock draft from the advisor, unattended.
+ *
+ * Purpose is harness validation and data collection, not cheating a real
+ * league -- point it at mock rooms.
+ *
+ * It does NOT click a "Draft Player" button, because that button only exists
+ * during our own 60-second window and a missed click means a lost pick.
+ * Instead it keeps Yahoo's QUEUE synced to the advisor's current ranking and
+ * turns Autodraft on. Yahoo then picks queue-top the instant our turn opens.
+ * The queue is re-synced every few seconds, so it always reflects advice
+ * computed against the CURRENT board -- this is the adaptive decision, not a
+ * pre-draft cheat sheet.
+ *
+ * Re-arm after a page reload with:
+ *   var s=document.createElement('script');
+ *   s.src='https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/autopilot.js?v='+Date.now();
+ *   document.head.appendChild(s);
+ */
+(function () {
+  'use strict';
+  if (window.__hcAuto && window.__hcAuto.timer) { window.__hcAuto.rearmed = true; return; }
+
+  var RELAY = 'http://127.0.0.1:8830';
+  var A = window.__hcAuto = {
+    on: true, queued: {}, log: [], last: null, results: null,
+    timer: null, autodraftOn: false, relay: true
+  };
+
+  function T(e) { return (e && e.innerText ? e.innerText : '').trim(); }
+
+  function biggestTable() {
+    var ts = [].slice.call(document.querySelectorAll('table'));
+    ts.sort(function (a, b) {
+      return b.querySelectorAll('.ys-player[data-id]').length
+           - a.querySelectorAll('.ys-player[data-id]').length;
+    });
+    return ts[0] && ts[0].querySelectorAll('.ys-player[data-id]').length ? ts[0] : null;
+  }
+
+  function readRows() {
+    var t = biggestTable();
+    if (!t) return [];
+    var head = [].slice.call((t.querySelectorAll('tr')[0] || {}).cells || []);
+    var adpCol = -1;
+    head.forEach(function (c, i) { if (/^ADP$/i.test(T(c))) adpCol = i; });
+    return [].slice.call(t.querySelectorAll('tr')).map(function (tr) {
+      var pe = tr.querySelector('.ys-player[data-id]');
+      if (!pe) return null;
+      var parts = T(pe).split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+      var pos = null, team = null;
+      parts.slice(1).filter(function (s) { return !/^Bye/i.test(s); }).forEach(function (s) {
+        if (/^(QB|RB|WR|TE|K|DEF|D\/ST)$/i.test(s)) pos = s.toUpperCase().replace('D/ST', 'DEF');
+        else if (/^[A-Za-z]{2,3}$/.test(s) && pos && !team) team = s;
+      });
+      var adp = null;
+      if (adpCol >= 0 && tr.cells[adpCol]) {
+        var v = parseFloat(T(tr.cells[adpCol]).replace(/[^0-9.]/g, ''));
+        if (!isNaN(v)) adp = v;
+      }
+      return pos ? { yid: pe.getAttribute('data-id'), name: parts[0],
+                     pos: pos, team: team, adp: adp } : null;
+    }).filter(Boolean);
+  }
+
+  function enableAutodraft() {
+    if (A.autodraftOn) return;
+    var b = [].slice.call(document.querySelectorAll('button'))
+      .find(function (x) { return /^autodraft$/i.test(T(x)); });
+    if (b) { b.click(); A.autodraftOn = true; }
+  }
+
+  function post(path, obj) {
+    if (!A.relay) return;
+    try {
+      if (typeof GM_xmlhttpRequest === 'function') {
+        GM_xmlhttpRequest({ method: 'POST', url: RELAY + path,
+          headers: { 'Content-Type': 'application/json' },
+          data: JSON.stringify(obj), onerror: function () { A.relay = false; } });
+      } else {
+        fetch(RELAY + path, { method: 'POST', mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(obj) }).catch(function () { A.relay = false; });
+      }
+    } catch (e) { A.relay = false; }
+  }
+
+  function tick() {
+    if (!A.on) return;
+    var HC = window.HarveyCup, R = window.__hcReaders, idx = window.__hcIndex;
+    if (!HC || !R || !idx) return;
+
+    var rows = readRows();
+    if (!rows.length) return;
+    var st = R.readStatus();
+
+    var pool = [], yidOf = {}, unmatched = 0;
+    rows.forEach(function (r) {
+      var m = HC.lookup(idx, r.name, r.pos, r.team, r.adp);
+      if (m.player) { pool.push(m.player); yidOf[m.player.name] = r.yid; }
+      else unmatched++;
+    });
+
+    var roster = (R.readMyRoster(rows) || []).map(function (r) {
+      var m = HC.lookup(idx, r.name, r.pos, r.team);
+      return m.player || { name: r.name, pos: r.pos, vor: 0, points: 0 };
+    });
+
+    var cur = st.pick || 1;
+    var next = cur + (st.upIn != null ? Math.max(1, st.upIn) : 12);
+    var res = HC.advise(pool, roster, cur, next, []);
+
+    // keep the queue six deep, in advice order, re-synced every tick
+    var want = [res.recommendation].concat(res.alternatives).filter(Boolean).slice(0, 6);
+    var added = 0;
+    want.forEach(function (w) {
+      var yid = yidOf[w.name];
+      if (!yid || A.queued[yid]) return;
+      var star = document.querySelector('.ys-addqueue[data-id="' + yid + '"] button')
+              || document.querySelector('.ys-addqueue[data-id="' + yid + '"]');
+      if (star) { star.click(); A.queued[yid] = w.name; added++; }
+    });
+    enableAutodraft();
+
+    A.last = {
+      pick: cur, round: st.round, upIn: st.upIn, clock: st.clock,
+      onClock: st.onClock, rec: res.recommendation && res.recommendation.name,
+      recPos: res.recommendation && res.recommendation.pos,
+      target: res.target_position,
+      rosterCount: roster.length, poolSize: pool.length, unmatched: unmatched,
+      queuedAdded: added, ts: Date.now()
+    };
+    if (added || (A.log.length && A.log[A.log.length - 1].pick !== cur) || !A.log.length) {
+      A.log.push(A.last);
+      post('/state', {
+        source: 'autopilot', pick: cur, round: st.round, upIn: st.upIn,
+        room: location.pathname, recommendation: res.recommendation,
+        alternatives: res.alternatives, position_view: res.position_view,
+        roster: roster.map(function (p) {
+          return { name: p.name, pos: p.pos, vor: p.vor, points: p.points }; }),
+        rosterNeeds: res.roster, poolSize: pool.length, unmatched: unmatched,
+        league: window.__hcLeagueSummary || null
+      });
+    }
+
+    // draft over?
+    if (/draft (is )?(complete|over|has ended)/i.test(document.body.innerText || '')) {
+      A.results = { roster: roster, finishedAt: Date.now(), room: location.pathname };
+      post('/state', { source: 'autopilot', event: 'draft_complete',
+                       pick: 9999, room: location.pathname,
+                       roster: A.results.roster });
+      clearInterval(A.timer); A.timer = null; A.on = false;
+    }
+  }
+
+  A.tick = tick;
+  A.stop = function () { A.on = false; clearInterval(A.timer); A.timer = null; };
+  A.timer = setInterval(tick, 2500);
+  tick();
+})();

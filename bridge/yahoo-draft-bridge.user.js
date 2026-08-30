@@ -414,6 +414,15 @@
         state.data = j;
         applyDetectedLeague(j);
         state.index = buildIndex(j.players);
+        // autopilot.js and any external driver reuse the same matcher index
+        // and league read, so there is exactly one interpretation of the room.
+        window.__hcIndex = state.index;
+        window.__hcLeagueSummary = {
+          scoring: state.league.scoring.name,
+          detectedFrom: state.league.detectedFrom,
+          counts: state.league.counts,
+          roster: state.league.roster
+        };
         render(true);
         new MutationObserver(function () { render(false); })
           .observe(document.body, { childList: true, subtree: true, characterData: true });
