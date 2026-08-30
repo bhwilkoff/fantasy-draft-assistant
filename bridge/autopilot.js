@@ -208,6 +208,36 @@
       });
     }
 
+    /* Auto-harvest in the FINAL round, while the room is still alive.
+     *
+     * Once a draft ends Yahoo refuses to reload the client ("Unable to load,
+     * return and re-enter your draft") and mock leagues have no public
+     * results page -- so a harvest attempted after the fact gets nothing. We
+     * therefore grab all rosters during the last round and persist them, then
+     * restore the Players view so the remaining picks still work.
+     */
+    if (!A.harvestedFinal && A.numTeams && st.pick) {
+      var rounds = A.rounds || 15;
+      var totalPicks = A.numTeams * rounds;
+      if (st.pick >= totalPicks - A.numTeams) {
+        A.harvestedFinal = true;
+        try {
+          Promise.resolve(window.__hcHarvest()).then(function (h) {
+            try {
+              localStorage.setItem('hcFinalHarvest', JSON.stringify(h));
+              A.finalHarvest = { teams: Object.keys(h.teams || {}).length,
+                                 me: h.me, at: Date.now() };
+            } catch (e) {}
+            // put the player list back so the last picks still advise
+            var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
+              .filter(function (x) { return x.children.length === 0; })
+              .find(function (x) { return (x.innerText || '').trim() === 'Players'; });
+            if (pl) pl.click();
+          });
+        } catch (e) { A.harvestError = String(e); }
+      }
+    }
+
     // draft over?
     if (/draft (is )?(complete|over|has ended)/i.test(document.body.innerText || '')) {
       A.results = { roster: roster, finishedAt: Date.now(), room: location.pathname };
@@ -293,6 +323,7 @@
       'picklog=' + Object.keys(A.picks).length,
       'restored=' + (A.restored || 0),
       'alive=' + (A.observer ? 'yes' : 'no'),
+      'harvested=' + (A.finalHarvest ? A.finalHarvest.teams + 'teams' : 'no'),
       A.lastError ? 'ERR=' + A.lastError.slice(0, 60) : ''
     ].filter(Boolean).join(' ');
   };
