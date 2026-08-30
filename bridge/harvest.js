@@ -1,122 +1,127 @@
-/* Harvest every team's roster from a finished (or in-progress) Yahoo draft.
+/* Harvest every team's roster from a Yahoo draft room's Results tab.
  *
- * Produces the payload tools/score_mock.py grades:
- *   {room, me, roster, numTeams, teams: {"Team": [{name,pos,team}, ...]}}
+ * The first version walked every .ys-player on the page, which also swept in
+ * the AVAILABLE-players table and produced nonsense (numTeams 210, a team
+ * called "Draft"). The Results tab is the right source: it has a <select> of
+ * team names and, per team, a clean Slot/Player/Bye/Pick table.
  *
- * Identifying WHICH team is ours is the subtle part. The draft-order strip
- * renders us as the literal string "You", while the pick feed uses our real
- * team name -- so the two cannot be joined on the label. Instead we compute
- * the overall pick numbers our slot owns in a snake draft (the slot is in the
- * URL) and read off whichever team name actually appears at those picks.
- *
- * Call: window.__hcHarvest()  ->  the payload, also POSTed to the relay.
+ * Async because switching teams re-renders. Usage:
+ *   await window.__hcHarvest()
  */
 (function () {
   'use strict';
 
   function T(e) { return (e && e.innerText ? e.innerText : '').trim(); }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
-  function parsePlayerCell(pe) {
-    var parts = T(pe).split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
-    if (!parts.length) return null;
-    var name = parts[0], pos = null, team = null;
-    parts.slice(1).filter(function (s) { return !/^Bye/i.test(s); }).forEach(function (s) {
-      if (/^(QB|RB|WR|TE|K|DEF|D\/ST)$/i.test(s)) pos = s.toUpperCase().replace('D/ST', 'DEF');
-      else if (/^[A-Za-z]{2,3}$/.test(s) && pos && !team) team = s;
+  function clickByText(text) {
+    var e = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
+      .filter(function (x) { return x.children.length === 0; })
+      .find(function (x) { return T(x) === text; });
+    if (e) { e.click(); return true; }
+    return false;
+  }
+
+  /* The team <select> is the one whose options are not obviously a filter
+   * (positions, rounds). We take the select with the most options that are
+   * not position codes. */
+  function teamSelect() {
+    var best = null, bestN = 0;
+    [].slice.call(document.querySelectorAll('select')).forEach(function (s) {
+      var opts = [].slice.call(s.options).map(function (o) { return T(o); });
+      var teamish = opts.filter(function (o) {
+        return o && !/^(QB|RB|WR|TE|K|DEF|D\/ST|ALL|Round \d+|\d+)$/i.test(o);
+      });
+      if (teamish.length > bestN) { bestN = teamish.length; best = s; }
     });
-    return pos ? { name: name, pos: pos, team: team,
-                   yid: pe.getAttribute('data-id') } : null;
+    return bestN >= 4 ? best : null;
   }
 
-  function draftOrder() {
-    var cur = document.querySelector('.ys-draftorder-current');
-    if (!cur || !cur.parentElement) return [];
-    return [].slice.call(cur.parentElement.children)
-      .map(function (c) { return T(c).split('\n')[0]; })
-      .filter(Boolean);
+  /* React controls the select's value, so assigning .value directly is
+   * ignored on re-render. Poke the native setter, then fire `change`. */
+  function setSelect(sel, value) {
+    var proto = Object.getPrototypeOf(sel);
+    var setter = Object.getOwnPropertyDescriptor(proto, 'value');
+    if (setter && setter.set) setter.set.call(sel, value);
+    else sel.value = value;
+    sel.dispatchEvent(new Event('input', { bubbles: true }));
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
-  function rosterText() {
-    var m = (document.body.innerText || '').match(/Roster Positions\s*\n\s*([^\n]+)/i);
-    if (m) return m[1];
-    return null;
+  function rosterTable() {
+    return [].slice.call(document.querySelectorAll('table')).find(function (t) {
+      var head = [].slice.call((t.rows[0] || {}).cells || [])
+        .map(function (c) { return T(c); });
+      return head.indexOf('Slot') >= 0 && head.indexOf('Player') >= 0;
+    });
   }
 
-  /* Walk the pick feed. Each pick row contains exactly one .ys-player, a pick
-   * number, and the drafting team's name. We climb from the player element to
-   * the nearest ancestor that still holds only that one player -- past it we
-   * are in the feed and would absorb the neighbouring pick's team name. */
-  function readPicks() {
+  function readRoster() {
+    var t = rosterTable();
+    if (!t) return [];
     var out = [];
-    [].slice.call(document.querySelectorAll('.ys-player[data-id]')).forEach(function (pe) {
-      var row = pe.parentElement, chosen = null;
-      for (var i = 0; row && i < 6; i++, row = row.parentElement) {
-        if (row.querySelectorAll('.ys-player[data-id]').length > 1) break;
-        chosen = row;
+    [].slice.call(t.rows).slice(1).forEach(function (tr) {
+      var pe = tr.querySelector('.ys-player[data-id]');
+      var cells = [].slice.call(tr.cells).map(function (c) { return T(c); });
+      var slot = cells[0] || null;
+      if (!pe) return;
+      var parts = T(pe).split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+      var name = parts[0], pos = null, team = null;
+      parts.slice(1).filter(function (s) { return !/^Bye/i.test(s); }).forEach(function (s) {
+        if (/^(QB|RB|WR|TE|K|DEF|D\/ST)$/i.test(s)) pos = s.toUpperCase().replace('D/ST', 'DEF');
+        else if (/^[A-Za-z]{2,3}$/.test(s) && pos && !team) team = s;
+      });
+      if (!pos && /^(QB|RB|WR|TE|K|DEF)$/i.test(slot || '')) pos = slot.toUpperCase();
+      if (name && pos) {
+        out.push({ name: name, pos: pos, team: team, slot: slot,
+                   yid: pe.getAttribute('data-id') });
       }
-      if (!chosen) return;
-      var txt = T(chosen);
-      var pm = txt.match(/(?:^|\n)\s*(\d{1,3})\s*(?:\n|$)/);
-      var player = parsePlayerCell(pe);
-      if (!player) return;
-      // team name = a line that is not the pick number and not part of the
-      // player cell
-      var playerLines = T(pe).split('\n').map(function (s) { return s.trim(); });
-      var lines = txt.split('\n').map(function (s) { return s.trim(); })
-        .filter(function (s) {
-          return s && playerLines.indexOf(s) < 0 && !/^\d{1,3}$/.test(s)
-                 && !/^Bye/i.test(s) && s.length < 40;
-        });
-      out.push({ pick: pm ? +pm[1] : null, team: lines[0] || null, player: player });
     });
-    return out.filter(function (p) { return p.team; });
-  }
-
-  function snakePicks(slot, numTeams, rounds) {
-    var out = [];
-    for (var r = 1; r <= rounds; r++) {
-      out.push(r % 2 === 1 ? (r - 1) * numTeams + slot
-                           : (r - 1) * numTeams + (numTeams - slot + 1));
-    }
     return out;
   }
 
-  window.__hcHarvest = function () {
-    var mSlot = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
-    var mlid = mSlot ? mSlot[1] : null;
-    var slot = mSlot ? +mSlot[2] : null;
+  function rosterSlots() {
+    var t = rosterTable();
+    if (!t) return null;
+    return [].slice.call(t.rows).slice(1)
+      .map(function (tr) { return T(tr.cells[0] || {}); })
+      .filter(Boolean).join(',');
+  }
 
-    var order = draftOrder();
-    var numTeams = order.length || 12;
-    var picks = readPicks();
+  window.__hcHarvest = async function () {
+    clickByText('Results');
+    await sleep(600);
+    clickByText('Teams');
+    await sleep(600);
 
-    var teams = {};
-    picks.forEach(function (p) {
-      (teams[p.team] = teams[p.team] || []).push(p.player);
-    });
+    var sel = teamSelect();
+    if (!sel) return { error: 'team <select> not found on Results tab' };
 
-    // which team is us? read the names at the picks our slot owns
-    var me = null;
-    if (slot) {
-      var mine = snakePicks(slot, numTeams, 20);
-      var votes = {};
-      picks.forEach(function (p) {
-        if (p.pick && mine.indexOf(p.pick) >= 0 && p.team) {
-          votes[p.team] = (votes[p.team] || 0) + 1;
-        }
-      });
-      var best = 0;
-      Object.keys(votes).forEach(function (k) {
-        if (votes[k] > best) { best = votes[k]; me = k; }
-      });
+    var options = [].slice.call(sel.options)
+      .map(function (o) { return { value: o.value, label: T(o) }; })
+      .filter(function (o) { return o.label; });
+
+    var teams = {}, slots = null;
+    for (var i = 0; i < options.length; i++) {
+      setSelect(sel, options[i].value);
+      await sleep(450);
+      var r = readRoster();
+      if (r.length) {
+        teams[options[i].label] = r;
+        if (!slots) slots = rosterSlots();
+      }
     }
 
+    var m = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
+    var slot = m ? +m[2] : null;
+    // Our team is the option at our draft slot; the list is in draft order.
+    var me = (slot && options[slot - 1]) ? options[slot - 1].label : null;
+
     var payload = {
-      room: mlid, slot: slot, me: me, numTeams: numTeams,
-      roster: rosterText() || (window.__hcLeagueSummary
-        && window.__hcLeagueSummary.rosterText) || null,
-      order: order, teams: teams,
-      pickCount: picks.length,
+      room: m ? m[1] : null, slot: slot, me: me,
+      numTeams: options.length,
+      roster: slots,
+      teams: teams,
       harvestedAt: Date.now()
     };
 
