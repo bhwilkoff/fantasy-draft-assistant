@@ -55,7 +55,14 @@ recommendation. It needs `data/players.json` served over **https** (GitHub
 Pages is set up for this); a page on `https://` cannot fetch `http://localhost`.
 
 Click **team** in the panel once and enter your team name exactly as the draft
-room shows it, so roster needs are tracked.
+room shows it, so roster needs are tracked. In a mock room that name is
+literally `You`; in a real league it is your team name.
+
+**Keep the players table sorted by rank/ADP and unfiltered.** Yahoo only
+renders about 100 rows at a time, and the bridge can only see what is
+rendered — the footer shows how many it matched. The top ~100 by ADP always
+contains every player worth considering, but if you filter the table to one
+position, the overlay's view of the board narrows with it.
 
 **Option B — the standalone board.** Open `web/index.html`, set your draft
 slot, click a player to mark him drafted, shift-click to mark him yours. This

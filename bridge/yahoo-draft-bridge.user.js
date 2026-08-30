@@ -320,6 +320,11 @@
       }).join(' · ')
       + ' · flex open ' + need.flexOpen + '</div>');
 
+    if (pool.length < 25) {
+      h.push('<div class="warn" style="margin-top:6px">Only ' + pool.length
+        + ' players visible — clear any filter on the players table so the '
+        + 'advisor can see the whole board.</div>');
+    }
     h.push('<div style="margin-top:8px;font-size:10px;color:#6b7480">'
       + pool.length + ' available matched'
       + (unmatched ? ' · <span class="warn">' + unmatched + ' unmatched</span>' : '')

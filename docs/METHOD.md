@@ -112,5 +112,9 @@ this tool is confidently wrong about him too.
 - **DST is approximate** (see §1); kickers are exact but barely matter.
 - **Injury handling is a blunt multiplier** on projected points
   (`QUESTIONABLE` 0.97 … `INJURY_RESERVE` 0.35), not a games-missed model.
+- **The overlay sees only the ~100 rendered rows** of Yahoo's players table,
+  not the full pool. Verified live: the footer reported "100 available
+  matched". Sorted by ADP this is always a superset of the reasonable
+  candidates, but filtering the table narrows what the advisor can consider.
 - **Draft slot is unknown until draft day.** Team 7 in the league URL is a
   team ID, not a draft position; set the slot in the board before you start.
