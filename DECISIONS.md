@@ -131,3 +131,22 @@ to its first cycle. When adding any new scraped input, ask "what is the
 absurd value here, and what happens if I get it?" — then encode the answer.
 The overlay also surfaces the detected league (`WR35 RB35 start`) precisely so
 a wrong read is visible on screen rather than buried in the maths.
+
+---
+
+## 009 — Seed state from the authoritative view; never assume you saw the start
+
+**Rule:** when the harness can attach mid-stream, it must reconstruct prior
+state from a source of record, not from what it happened to observe.
+
+**Why:** our roster was derived purely from picks observed after arming. Arm
+at round 6 and the advisor believes it owns nothing, so every position reads
+as an unfilled starting slot. In a completed mock this produced **four tight
+ends and three receivers**, and a 5th-of-14 finish that looked like a
+strategy failure and was actually a state-tracking failure.
+
+**How to apply:** the Results tab knows every roster regardless of when we
+arrived — read it once at arm time and merge with the observed log. More
+generally, any observer that can start late needs a catch-up read, and any
+metric derived from "what I saw" should be labelled with how much of the
+event it actually covered.
