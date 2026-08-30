@@ -98,6 +98,30 @@
     return out;
   }
 
+  /* Seed our roster from the Results tab once, at arm time.
+   *
+   * myRosterFromPicks() can only see picks that landed while we were armed.
+   * Arming at round 6 therefore reported roster=0, so every position looked
+   * like an unfilled starting slot and the advisor drafted FOUR tight ends
+   * in one mock. The Results tab knows the truth regardless of when we
+   * arrived, so read it once and merge. */
+  A.seedRoster = null;
+  A.seedRosterFromResults = async function () {
+    try {
+      var h = await window.__hcHarvest();
+      if (h && h.teams && h.me && h.teams[h.me]) {
+        A.seedRoster = h.teams[h.me].map(function (p) {
+          return { name: p.name, pos: p.pos, team: p.team, seeded: true };
+        });
+      }
+      var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
+        .filter(function (x) { return x.children.length === 0; })
+        .find(function (x) { return (x.innerText || '').trim() === 'Players'; });
+      if (pl) pl.click();
+    } catch (e) { A.seedError = String(e); }
+    return A.seedRoster ? A.seedRoster.length : 0;
+  };
+
   function myRosterFromPicks() {
     var m = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
     if (!m) return [];
@@ -119,6 +143,15 @@
     mine.forEach(function (pk) {
       if (A.picks[pk]) out.push(A.picks[pk]);
     });
+    // The seed is authoritative for everything drafted before we armed;
+    // the observed log covers everything since. Union by name.
+    if (A.seedRoster && A.seedRoster.length >= out.length) {
+      var seen = {};
+      var merged = A.seedRoster.slice();
+      merged.forEach(function (p) { seen[p.name] = 1; });
+      out.forEach(function (p) { if (!seen[p.name]) merged.push(p); });
+      return merged;
+    }
     return out;
   }
   A.myRosterFromPicks = myRosterFromPicks;
@@ -324,6 +357,7 @@
       'restored=' + (A.restored || 0),
       'alive=' + (A.observer ? 'yes' : 'no'),
       'harvested=' + (A.finalHarvest ? A.finalHarvest.teams + 'teams' : 'no'),
+      'seed=' + (A.seedRoster ? A.seedRoster.length : 0),
       A.lastError ? 'ERR=' + A.lastError.slice(0, 60) : ''
     ].filter(Boolean).join(' ');
   };
