@@ -1,0 +1,97 @@
+/* Grade a harvested draft in the browser and return a compact table.
+ *
+ * Shipping fourteen rosters back out of the page hits the tool-output size
+ * limit, and the localhost relay is unreachable from an https page without
+ * the userscript's GM_xmlhttpRequest. But the page already holds the entire
+ * projection set (window.__hcIndex) and the scoring code (HarveyLeague), so
+ * the cheapest place to grade is right here -- return fourteen numbers
+ * instead of two hundred and ten rows.
+ *
+ * Scored under the ROOM's rules, not Harvey Cup's: grading a Yahoo mock with
+ * our own full-PPR, 6-point-TD rulebook would flatter us for optimising a
+ * game nobody else in the room was playing.
+ *
+ * Mirrors tools/score_mock.py; that file stays the offline authority.
+ */
+(function () {
+  'use strict';
+
+  function bestLineup(roster, base, flex) {
+    var by = {};
+    roster.forEach(function (p) { (by[p.pos] = by[p.pos] || []).push(p); });
+    Object.keys(by).forEach(function (k) {
+      by[k].sort(function (a, b) { return b._pts - a._pts; });
+    });
+    var used = {}, total = 0, starters = [];
+    Object.keys(base).forEach(function (pos) {
+      var got = 0;
+      (by[pos] || []).forEach(function (p) {
+        if (got >= base[pos] || used[p._id]) return;
+        used[p._id] = 1; total += p._pts; starters.push(p); got++;
+      });
+    });
+    flex.forEach(function (elig) {
+      var pool = [];
+      elig.forEach(function (pos) {
+        (by[pos] || []).forEach(function (p) { if (!used[p._id]) pool.push(p); });
+      });
+      if (pool.length) {
+        var b = pool.reduce(function (a, c) { return c._pts > a._pts ? c : a; });
+        used[b._id] = 1; total += b._pts; starters.push(b);
+      }
+    });
+    return { total: total, starters: starters };
+  }
+
+  window.__hcGrade = function (harvest) {
+    harvest = harvest || window.__hcHarvested;
+    if (!harvest || !harvest.teams) return { error: 'nothing harvested' };
+    var L = window.HarveyLeague, HC = window.HarveyCup, idx = window.__hcIndex;
+    if (!L || !HC || !idx) return { error: 'stack not armed' };
+
+    var rosterText = (harvest.roster || '').replace(/\n/g, '/');
+    var parsed = L.parseRoster(rosterText);
+    var scoring = (window.__hcLeagueSummary
+      && /harvey/i.test(window.__hcLeagueSummary.scoring))
+      ? L.SCORING_PRESETS.harvey_cup : L.SCORING_PRESETS.yahoo_default;
+
+    var uid = 0, rows = [], unresolved = [];
+    Object.keys(harvest.teams).forEach(function (team) {
+      var roster = [];
+      harvest.teams[team].forEach(function (pk) {
+        var m = HC.lookup(idx, pk.name, pk.pos, pk.team);
+        if (!m.player) { unresolved.push(pk.name + '/' + pk.pos); return; }
+        var q = {};
+        for (var k in m.player) q[k] = m.player[k];
+        q._id = ++uid;
+        q._pts = L.scorePlayer(q, scoring) * (q.injury_factor == null ? 1 : q.injury_factor);
+        roster.push(q);
+      });
+      var r = bestLineup(roster, parsed.base,
+        parsed.flex.map(function (f) { return f.eligible; }));
+      rows.push({ team: team, pts: Math.round(r.total * 10) / 10,
+                  n: harvest.teams[team].length, resolved: roster.length,
+                  lineup: r.starters.map(function (s) {
+                    return s.pos + ':' + s.name.split(' ').slice(-1)[0]
+                         + ':' + Math.round(s._pts); }) });
+    });
+
+    rows.sort(function (a, b) { return b.pts - a.pts; });
+    rows.forEach(function (r, i) { r.rank = i + 1; });
+    var mine = rows.filter(function (r) { return r.team === harvest.me; })[0];
+
+    return {
+      room: harvest.room, me: harvest.me, rules: scoring.name,
+      lineup: rosterText, numTeams: rows.length,
+      myRank: mine ? mine.rank : null,
+      myPts: mine ? mine.pts : null,
+      spread: rows.length ? Math.round((rows[0].pts - rows[rows.length - 1].pts) * 10) / 10 : 0,
+      table: rows.map(function (r) {
+        return r.rank + '. ' + r.team + ' ' + r.pts
+             + (r.team === harvest.me ? '  <== US' : ''); }),
+      myLineup: mine ? mine.lineup : null,
+      unresolvedCount: unresolved.length,
+      unresolved: unresolved.slice(0, 6)
+    };
+  };
+})();
