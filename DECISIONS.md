@@ -150,3 +150,24 @@ arrived — read it once at arm time and merge with the observed log. More
 generally, any observer that can start late needs a catch-up read, and any
 metric derived from "what I saw" should be labelled with how much of the
 event it actually covered.
+
+---
+
+## 010 — Anything that scales with the league is a parameter, never a constant
+
+**Rule:** roster size, team count, round count, and lineup shape are read from
+the room at runtime. No Harvey Cup number may sit in a shared code path as a
+literal.
+
+**Why:** `ROSTER_SIZE` was hardcoded to 17 (Harvey Cup) while a Yahoo mock has
+15. Every gate expressed as "picks remaining" therefore mis-fired — most
+visibly the one that finally allows a kicker and a defense, which never
+opened. The roster finished with no K and no DEF, two starting slots scoring
+zero, and came **dead last of fourteen**. The advisor was working correctly on
+the wrong league.
+
+**How to apply:** the same failure already happened twice in the other
+direction — `numTeams` read as 210 from a repeating strip, and `numTeams`
+frozen at the fallback 12 in a 14-team room. Treat every league quantity as
+untrusted input: read it, range-check it, surface it in the overlay so a bad
+value is visible on screen, and never let a constant stand in for it.
