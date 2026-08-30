@@ -52,8 +52,21 @@
     // "Eric Hollinger's Pick • You're up in 5 Picks • Round 3, Pick 33"
     var body = document.body.innerText || '';
     var out = { round: null, pick: null, upIn: null, onClock: null, clock: null };
-    var m = body.match(/Round\s+(\d+),\s*Pick\s+(\d+)/i);
-    if (m) { out.round = +m[1]; out.pick = +m[2]; }
+    /* Take the HIGHEST "Round R, Pick P" on the page, not the first.
+     *
+     * The draft room renders that phrase in more than one place (the live
+     * header, and historical rows in the Picks / Round-by-Round views), so
+     * matching the first occurrence can pin us to a stale pick. Observed
+     * live: the header read "Round 2, Pick 28" while readStatus kept
+     * reporting pick 22, which silently corrupts the next-pick estimate and
+     * therefore every survival probability. The current pick is always the
+     * largest one present. */
+    var best = null, re = /Round\s+(\d+),\s*Pick\s+(\d+)/gi, mm;
+    while ((mm = re.exec(body)) !== null) {
+      var pk = +mm[2];
+      if (best === null || pk > best.pick) best = { round: +mm[1], pick: pk };
+    }
+    if (best) { out.round = best.round; out.pick = best.pick; }
     var u = body.match(/You'?re up in\s+(\d+)\s+Pick/i);
     if (u) {
       out.upIn = +u[1];
