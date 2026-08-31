@@ -25,7 +25,8 @@
   var A = window.__hcAuto = {
     on: true, queued: {}, log: [], last: null, results: null,
     timer: null, autodraftOn: false, relay: true,
-    picks: {}, numTeams: null
+    picks: {}, numTeams: null,
+    RATE_MS: 1500          // floor between heavy passes; see schedule()
   };
 
   function T(e) { return (e && e.innerText ? e.innerText : '').trim(); }
@@ -342,12 +343,22 @@
   };
   A.restore();
 
-  var pending = false;
+  var pending = false, lastRun = 0;
   function schedule() {
+    /* Rate-limit to at most one heavy pass per RATE_MS.
+     *
+     * The observer previously coalesced only into a microtask, so a pass ran
+     * on every batch of mutations -- and the draft room mutates once a second
+     * from the pick clock alone. Each pass parses 100+ player rows, does 100
+     * index lookups and runs the full advisor, so this was pegging the main
+     * thread for the whole draft. A timestamp guard is used rather than
+     * setTimeout because timers are throttled in a hidden tab and Date.now()
+     * is not. */
+    var now = Date.now();
+    if (now - lastRun < A.RATE_MS) return;
     if (pending) return;
     pending = true;
-    // microtask coalescing: a single pick mutates many nodes, and we want one
-    // tick per pick, not one per node.
+    lastRun = now;
     Promise.resolve().then(function () {
       pending = false;
       try { tick(); persist(); } catch (e) { A.lastError = String(e); }
@@ -355,9 +366,9 @@
   }
 
   A.observer = new MutationObserver(schedule);
-  A.observer.observe(document.body, {
-    childList: true, subtree: true, characterData: true
-  });
+  // characterData:true fires on every clock tick for no benefit -- childList
+  // is enough to catch a pick landing.
+  A.observer.observe(document.body, { childList: true, subtree: true });
 
   /* One-line health probe. Monitoring a 210-pick draft must not cost a large
    * tool result per check, and it must answer the only question that matters:

@@ -55,10 +55,33 @@
     // so scanning document.body.innerText makes the parser consume its own
     // output -- a feedback loop that would happily pin the pick number to a
     // stale value forever. Subtract the overlay's text before parsing.
-    var body = document.body.innerText || '';
-    var panel = document.getElementById('hc-advisor');
-    if (panel && panel.innerText) {
-      body = body.split(panel.innerText).join(' ');
+    /* PERFORMANCE, not cosmetics: `document.body.innerText` forces a full
+     * layout of the page. This runs on every observed mutation, and the draft
+     * room mutates once a second just from the pick clock -- so reading the
+     * whole body here was triggering a reflow storm on a heavy React app for
+     * the entire draft. That is the most likely cause of the renderer going
+     * unresponsive part-way through every run.
+     *
+     * Cache the smallest element that actually contains the status line and
+     * read only that. Fall back to the body scan only when the cache misses. */
+    var body = '';
+    if (state.statusEl && document.contains(state.statusEl)) {
+      body = state.statusEl.innerText || '';
+    }
+    if (!/Round\s+\d+,\s*Pick\s+\d+/i.test(body)) {
+      var full = document.body.innerText || '';
+      var panel = document.getElementById('hc-advisor');
+      if (panel && panel.innerText) full = full.split(panel.innerText).join(' ');
+      body = full;
+      // find and cache a compact host for next time
+      var cands = [].slice.call(document.querySelectorAll('div,section,header'))
+        .filter(function (e) {
+          if (e.id === 'hc-advisor' || e.closest('#hc-advisor')) return false;
+          if (e.children.length > 12) return false;
+          var t = e.innerText || '';
+          return t.length < 600 && /Round\s+\d+,\s*Pick\s+\d+/i.test(t);
+        });
+      if (cands.length) state.statusEl = cands[cands.length - 1];
     }
     var out = { round: null, pick: null, upIn: null, onClock: null, clock: null };
     /* Take the HIGHEST "Round R, Pick P" on the page, not the first.
@@ -593,9 +616,17 @@
           roster: state.league.roster
         };
         render(true);
-        new MutationObserver(function () { render(false); })
-          .observe(document.body, { childList: true, subtree: true, characterData: true });
-        setInterval(function () { render(false); }, 2000);
+        /* Rate-limit with a timestamp rather than a timer: setTimeout is
+         * throttled to ~1/min in a hidden tab, but Date.now() is not, so this
+         * bounds the work without depending on scheduling we do not get. */
+        var lastRender = 0;
+        new MutationObserver(function () {
+          var now = Date.now();
+          if (now - lastRender < 1200) return;
+          lastRender = now;
+          render(false);
+        }).observe(document.body, { childList: true, subtree: true });
+        setInterval(function () { render(false); }, 3000);
         setInterval(pollNote, 4000);
         pollNote();
       })
