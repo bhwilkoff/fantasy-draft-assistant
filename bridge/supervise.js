@@ -29,20 +29,29 @@
     return false;
   }
 
+  /* Read the page WITHOUT forcing a layout.
+   *
+   * `document.body.innerText` triggers a full reflow, and on this draft
+   * client that is slow enough that the CDP evaluate calling it times out --
+   * which looks exactly like "the renderer is frozen" and sent me chasing
+   * ghosts. `textContent` needs no layout at all; we lose the line breaks,
+   * which none of these checks depend on. Player counting stays a selector
+   * query, which is also layout-free. */
   function pageState() {
-    var body = (document.body && document.body.innerText) || '';
+    var host = document.querySelector('#root, #app, [data-reactroot]') || document.body;
+    var text = (host && host.textContent) || '';
     var players = document.querySelectorAll('.ys-player[data-id]').length;
     var m = null, re = /Round\s+(\d+),\s*Pick\s+(\d+)/gi, mm;
-    while ((mm = re.exec(body)) !== null) {
+    while ((mm = re.exec(text)) !== null) {
       if (!m || +mm[2] > m.pick) m = { round: +mm[1], pick: +mm[2] };
     }
     return {
       players: players,
       pick: m ? m.pick : null,
       round: m ? m.round : null,
-      complete: /Draft Complete|draft (is )?(complete|over|has ended)/i.test(body),
-      unloadable: /Unable to load/i.test(body),
-      notMember: /not currently a member/i.test(body),
+      complete: /Draft Complete|draft (is )?(complete|over|has ended)/i.test(text),
+      unloadable: /Unable to load/i.test(text),
+      notMember: /not currently a member/i.test(text),
       inRoom: /\/draftclient\//.test(location.pathname)
     };
   }

@@ -11,7 +11,34 @@
 (function () {
   'use strict';
 
-  function T(e) { return (e && e.innerText ? e.innerText : '').trim(); }
+  function T(e) { return (e && e.textContent ? e.textContent : '').trim(); }
+
+  /* Split a player cell into its text parts WITHOUT forcing layout.
+   *
+   * The obvious approach -- innerText.split('\n') -- relies on layout to
+   * produce the line breaks, so it forces a reflow PER CELL. readRows() runs
+   * over 100+ cells on every tick, which meant 100+ forced layouts per pass
+   * on an already-heavy React app. That is the reflow storm that made the
+   * draft client stop answering.
+   *
+   * The cell's parts are separate child elements, so read their textContent
+   * directly: same data, no layout. Falls back to a whitespace split for
+   * cells that have no element children. */
+  function cellParts(el) {
+    if (!el) return [];
+    var kids = el.children;
+    if (kids && kids.length) {
+      var out = [];
+      for (var i = 0; i < kids.length; i++) {
+        var t = (kids[i].textContent || '').trim();
+        if (t) out.push(t);
+      }
+      if (out.length) return out;
+    }
+    return String(el.textContent || '').split('\n')
+      .map(function (s) { return s.trim(); }).filter(Boolean);
+  }
+
 
   /* Yielding in a hidden tab, which is harder than it looks.
    *
@@ -96,7 +123,7 @@
       var cells = [].slice.call(tr.cells).map(function (c) { return T(c); });
       var slot = cells[0] || null;
       if (!pe) return;
-      var parts = T(pe).split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+      var parts = cellParts(pe);
       var name = parts[0], pos = null, team = null;
       parts.slice(1).filter(function (s) { return !/^Bye/i.test(s); }).forEach(function (s) {
         if (/^(QB|RB|WR|TE|K|DEF|D\/ST)$/i.test(s)) pos = s.toUpperCase().replace('D/ST', 'DEF');

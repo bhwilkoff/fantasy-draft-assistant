@@ -46,7 +46,34 @@
   }
 
   /* ----------------------------------------------------------- DOM reading */
-  function textOf(el) { return (el && el.innerText ? el.innerText : '').trim(); }
+  function textOf(el) { return (el && el.textContent ? el.textContent : '').trim(); }
+
+  /* Split a player cell into its text parts WITHOUT forcing layout.
+   *
+   * The obvious approach -- innerText.split('\n') -- relies on layout to
+   * produce the line breaks, so it forces a reflow PER CELL. readRows() runs
+   * over 100+ cells on every tick, which meant 100+ forced layouts per pass
+   * on an already-heavy React app. That is the reflow storm that made the
+   * draft client stop answering.
+   *
+   * The cell's parts are separate child elements, so read their textContent
+   * directly: same data, no layout. Falls back to a whitespace split for
+   * cells that have no element children. */
+  function cellParts(el) {
+    if (!el) return [];
+    var kids = el.children;
+    if (kids && kids.length) {
+      var out = [];
+      for (var i = 0; i < kids.length; i++) {
+        var t = (kids[i].textContent || '').trim();
+        if (t) out.push(t);
+      }
+      if (out.length) return out;
+    }
+    return String(el.textContent || '').split('\n')
+      .map(function (s) { return s.trim(); }).filter(Boolean);
+  }
+
 
   function readStatus() {
     // "Eric Hollinger's Pick • You're up in 5 Picks • Round 3, Pick 33"
@@ -66,19 +93,22 @@
      * read only that. Fall back to the body scan only when the cache misses. */
     var body = '';
     if (state.statusEl && document.contains(state.statusEl)) {
-      body = state.statusEl.innerText || '';
+      body = state.statusEl.textContent || '';
     }
     if (!/Round\s+\d+,\s*Pick\s+\d+/i.test(body)) {
-      var full = document.body.innerText || '';
+      // textContent needs no layout; innerText forces a full reflow and is
+      // slow enough here to time out the caller.
+      var host = document.querySelector('#root, #app, [data-reactroot]') || document.body;
+      var full = (host && host.textContent) || '';
       var panel = document.getElementById('hc-advisor');
-      if (panel && panel.innerText) full = full.split(panel.innerText).join(' ');
+      if (panel && panel.textContent) full = full.split(panel.textContent).join(' ');
       body = full;
       // find and cache a compact host for next time
       var cands = [].slice.call(document.querySelectorAll('div,section,header'))
         .filter(function (e) {
           if (e.id === 'hc-advisor' || e.closest('#hc-advisor')) return false;
           if (e.children.length > 12) return false;
-          var t = e.innerText || '';
+          var t = e.textContent || '';
           return t.length < 600 && /Round\s+\d+,\s*Pick\s+\d+/i.test(t);
         });
       if (cands.length) state.statusEl = cands[cands.length - 1];
@@ -130,7 +160,7 @@
     [].slice.call(best.querySelectorAll('tr')).forEach(function (tr) {
       var pe = tr.querySelector('.ys-player[data-id]');
       if (!pe) return;
-      var parts = textOf(pe).split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+      var parts = cellParts(pe);
       if (parts.length < 2) return;
       var name = parts[0];
       // optional injury tag sits between name and position: "J. Love|Q|RB|Ari"
@@ -238,8 +268,7 @@
       if (!chosen) return;
       if (textOf(chosen).indexOf(team) < 0) return;
 
-      var parts = textOf(pe).split('\n').map(function (s) { return s.trim(); })
-                            .filter(Boolean);
+      var parts = cellParts(pe);
       var pos = null, tm = null;
       parts.slice(1).filter(function (s) { return !/^Bye/i.test(s); })
            .forEach(function (s) {
