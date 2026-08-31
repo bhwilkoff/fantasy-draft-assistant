@@ -12,6 +12,10 @@ echo "=== Yahoo name matching ==="
 ( cd tests && node match_test.js ) || fail=1
 
 echo
+echo "=== queue actuator reflects the CURRENT ranking ==="
+( cd tests && node queue_test.js ) || fail=1
+
+echo
 echo "=== drafted roster can field a legal lineup ==="
 ( cd tests && node roster_test.js ) || fail=1
 

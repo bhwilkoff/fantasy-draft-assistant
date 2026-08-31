@@ -1,0 +1,129 @@
+/* The queue is the ACTUATOR: Yahoo drafts queue[0], so if the queue does not
+ * express the current ranking, the advice never reaches the draft.
+ *
+ * Four mock drafts were lost to this. The autopilot only ever added stars, so
+ * queue[0] stayed whatever was queued first and round 15 drafted from a queue
+ * built in round 2. This test drives two ticks with DIFFERENT rankings and
+ * asserts the queue ends up holding exactly the second one, in order.
+ */
+const fs = require('fs');
+const path = require('path');
+const { JSDOM } = require('jsdom');
+
+const ROOT = path.join(__dirname, '..');
+
+// A minimal room: a player table whose rows each carry a queue star.
+const PLAYERS = [
+  { yid: '1', name: 'A. One', pos: 'RB', team: 'DET' },
+  { yid: '2', name: 'B. Two', pos: 'WR', team: 'LAR' },
+  { yid: '3', name: 'C. Three', pos: 'TE', team: 'ARI' },
+  { yid: '4', name: 'D. Four', pos: 'QB', team: 'BUF' },
+  { yid: '5', name: 'E. Five', pos: 'K', team: 'DAL' },
+  { yid: '6', name: 'F. Six', pos: 'DEF', team: 'HOU' },
+];
+const rows = PLAYERS.map(p => `
+  <tr>
+    <td><div class="ys-addqueue" data-id="${p.yid}"><button>star</button></div></td>
+    <td><div class="ys-player" data-id="${p.yid}"><span>${p.name}</span><span>${p.pos}</span><span>${p.team}</span><span>Bye 6</span></div></td>
+    <td>10</td><td>12.5</td><td>6</td><td>200</td>
+  </tr>`).join('');
+
+const html = `
+<div class="_ys_hdr">Colton's Pick • You're up in 3 Picks • Round 2, Pick 20</div>
+<div class="_ys_order"><div class="ys-draftorder-team">A</div>
+  <div class="ys-draftorder-team ys-draftorder-current">B</div>
+  <div class="ys-draftorder-team">You</div></div>
+<table>
+  <tr><th>Queue</th><th>Player</th><th>XRank</th><th>ADP</th><th>Bye</th><th>Proj Pts</th></tr>
+  ${rows}
+</table>`;
+
+const dom = new JSDOM('<!doctype html><html><body>' + html + '</body></html>',
+  { url: 'https://football.fantasysports.yahoo.com/draftclient/f1/999/3' });
+const W = dom.window;
+global.window = W; global.document = W.document;
+global.localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+// the autopilot runs with `this` = the jsdom window, so globals it touches
+// must exist there
+W.MutationObserver = W.MutationObserver || global.MutationObserver;
+W.localStorage = W.localStorage || global.localStorage;
+global.MutationObserver = W.MutationObserver;
+global.setInterval = W.setInterval ? W.setInterval.bind(W) : setInterval;
+global.clearInterval = W.clearInterval ? W.clearInterval.bind(W) : clearInterval;
+global.location = W.location;
+global.Event = W.Event;
+global.fetch = () => Promise.reject(new Error('offline'));
+
+// record every star click so we can see what the actuator actually did
+const clicks = [];
+W.document.querySelectorAll('.ys-addqueue').forEach(el => {
+  const yid = el.getAttribute('data-id');
+  el.querySelector('button').addEventListener('click', () => clicks.push(yid));
+});
+
+// these attach to `window`, which we have pointed at the jsdom window
+require(path.join(ROOT, 'web', 'league.js'));
+require(path.join(ROOT, 'web', 'advisor.js'));
+if (!W.HarveyCup && global.HarveyCup) W.HarveyCup = global.HarveyCup;
+if (!W.HarveyLeague && global.HarveyLeague) W.HarveyLeague = global.HarveyLeague;
+if (!W.HarveyCup) throw new Error('HarveyCup did not attach to the jsdom window');
+
+// minimal reader + index stubs; we are testing the queue, not the parsing
+W.__hcReaders = {
+  readStatus: () => ({ round: 2, pick: 20, upIn: 3, onClock: 'B', clock: '00:30' }),
+  readMyRoster: () => []
+};
+W.__hcIndex = {};
+PLAYERS.forEach(p => {
+  W.__hcIndex[W.HarveyCup.roomKey(p.name, p.pos, p.team)] =
+    [{ name: p.name, pos: p.pos, team: p.team, vor: 100, points: 200, adp: 12, tier: 1 }];
+});
+
+// drive advise() to return a ranking we control
+let ranking = [];
+const realAdvise = W.HarveyCup.advise;
+W.HarveyCup.advise = function () {
+  return {
+    recommendation: ranking[0] || null,
+    alternatives: ranking.slice(1),
+    position_view: {}, roster: { counts: {}, starterGap: {}, totalGap: {}, flexOpen: 0 },
+    target_position: 'RB', picks_remaining: 10, recent_runs: {}
+  };
+};
+
+W.__HC_TEST = 1;
+new Function(fs.readFileSync(path.join(ROOT, 'bridge', 'autopilot.js'), 'utf8')).call(W);
+const A = W.__hcAuto;
+A.RATE_MS = 0;
+
+function mk(p) { return { name: p.name, pos: p.pos, team: p.team, vor: 100,
+                          points: 200, adp: 12, tier: 1, survival_next: 0.5 }; }
+
+let fails = 0;
+function check(label, got, want) {
+  const ok = JSON.stringify(got) === JSON.stringify(want);
+  if (!ok) fails++;
+  console.log(`  ${ok ? 'ok  ' : 'FAIL'}  ${label} = ${JSON.stringify(got)}`
+    + (ok ? '' : `  (want ${JSON.stringify(want)})`));
+}
+
+// --- tick 1: recommend players 1,2,3
+ranking = [mk(PLAYERS[0]), mk(PLAYERS[1]), mk(PLAYERS[2])];
+clicks.length = 0;
+A.tick();
+check('tick1 starred 1,2,3', clicks.slice(), ['1', '2', '3']);
+check('tick1 queue', Object.keys(A.queued).sort(), ['1', '2', '3']);
+check('tick1 queueTop', A.queueTop, 'A. One');
+
+// --- tick 2: ranking changes completely to 5,6 (a kicker and a defense)
+ranking = [mk(PLAYERS[4]), mk(PLAYERS[5])];
+clicks.length = 0;
+A.tick();
+console.log('  (tick2 clicks: ' + JSON.stringify(clicks) + ')');
+check('tick2 queue is exactly the new set', Object.keys(A.queued).sort(), ['5', '6']);
+check('tick2 queueTop is the live recommendation', A.queueTop, 'E. Five');
+check('tick2 un-starred all three stale entries',
+  ['1', '2', '3'].every(y => clicks.includes(y)), true);
+
+console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL QUEUE ACTUATOR CHECKS PASS'));
+process.exit(fails ? 1 : 0);
