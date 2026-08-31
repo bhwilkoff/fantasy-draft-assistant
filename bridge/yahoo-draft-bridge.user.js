@@ -414,7 +414,19 @@
      * finds nothing and numTeams silently falls back to 12. In a 14-team room
      * that mis-prices every replacement level. So if we booted on fallbacks,
      * re-derive as soon as the room is actually on screen. */
-    if (state.league && state.league.teamsFrom === 'fallback'
+    /* Re-derive when EITHER the team count was a fallback, or the roster
+     * string has since become available.
+     *
+     * The draft client never prints "Roster Positions" -- only the waiting
+     * room does -- so the league boots on a fallback roster with the wrong
+     * bench and WR count, and roster size drives the gate that finally allows
+     * a kicker and defense. The harvester reads the true slots off the
+     * Results tab and publishes them as __hcRosterText; pick that up as soon
+     * as it appears instead of requiring someone to set it by hand. */
+    var rosterTextChanged = window.__hcRosterText
+      && state.league && state.league.rosterText !== window.__hcRosterText;
+    if (state.league
+        && (state.league.teamsFrom === 'fallback' || rosterTextChanged)
         && document.querySelector('.ys-draftorder-current')) {
       applyDetectedLeague(state.data);
       state.index = buildIndex(state.data.players);
