@@ -171,3 +171,24 @@ direction — `numTeams` read as 210 from a repeating strip, and `numTeams`
 frozen at the fallback 12 in a 14-team room. Treat every league quantity as
 untrusted input: read it, range-check it, surface it in the overlay so a bad
 value is visible on screen, and never let a constant stand in for it.
+
+---
+
+## 011 — An actuator that only appends is not an actuator
+
+**Rule:** any mechanism that turns advice into action must express the
+CURRENT ranking, not the accumulated history of past rankings.
+
+**Why:** the autopilot added its top recommendations to Yahoo's queue and
+never removed anything. Yahoo drafts `queue[0]` — the earliest entry — so a
+draft that ran fifteen rounds was still picking from a queue assembled in
+round two. The advisor recommended a kicker in round fifteen and the room
+took a receiver queued in round two. Four mock drafts produced rosters that
+looked nothing like the board, and the natural conclusion — "the valuation is
+wrong" — was the wrong conclusion.
+
+**How to apply:** the queue is now rebuilt to exactly the top N each pass:
+un-star what is no longer wanted, then star the wanted set in order. More
+generally, when a system advises and something else acts, verify the ACTION
+matches the advice — do not infer it from the advice being correct. The
+status line now carries `qtop=` for exactly this reason.

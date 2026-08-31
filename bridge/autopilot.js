@@ -26,7 +26,8 @@
     on: true, queued: {}, log: [], last: null, results: null,
     timer: null, autodraftOn: false, relay: true,
     picks: {}, numTeams: null,
-    RATE_MS: 1500          // floor between heavy passes; see schedule()
+    RATE_MS: 1500,         // floor between heavy passes; see schedule()
+    QUEUE_DEPTH: 4         // keep the queue small so its ORDER stays correct
   };
 
   function T(e) { return (e && e.textContent ? e.textContent : '').trim(); }
@@ -269,9 +270,33 @@
     var next = cur + (st.upIn != null ? Math.max(1, st.upIn) : 12);
     var res = HC.advise(pool, roster, cur, next, []);
 
-    // keep the queue six deep, in advice order, re-synced every tick
-    var want = [res.recommendation].concat(res.alternatives).filter(Boolean).slice(0, 6);
-    var added = 0;
+    /* Keep the queue EXACTLY the current top N, in order.
+     *
+     * The first version only ever ADDED. Yahoo drafts queue[0], which is
+     * whatever was queued first -- so by round 15 it was still drafting from
+     * a queue built in round 2. Every roster came out looking nothing like
+     * the advice: three quarterbacks, four tight ends, and no kicker or
+     * defense even while the advisor was recommending one. The
+     * recommendation was right the whole time; the queue ignored it.
+     *
+     * So: drop anything no longer in the top N, then add the top N in order.
+     * Yahoo appends new stars to the end of the queue, which means clearing
+     * first is what makes the order correct. */
+    var want = [res.recommendation].concat(res.alternatives)
+      .filter(Boolean).slice(0, A.QUEUE_DEPTH);
+    var wantYids = {};
+    want.forEach(function (w) { if (yidOf[w.name]) wantYids[yidOf[w.name]] = w.name; });
+
+    var added = 0, removed = 0;
+    // 1. unqueue anything stale (clicking the star again toggles it off)
+    Object.keys(A.queued).forEach(function (yid) {
+      if (wantYids[yid]) return;
+      var star = document.querySelector('.ys-addqueue[data-id="' + yid + '"] button')
+              || document.querySelector('.ys-addqueue[data-id="' + yid + '"]');
+      if (star) { star.click(); removed++; }
+      delete A.queued[yid];
+    });
+    // 2. add the wanted set in advice order, so queue[0] is the recommendation
     want.forEach(function (w) {
       var yid = yidOf[w.name];
       if (!yid || A.queued[yid]) return;
@@ -279,6 +304,8 @@
               || document.querySelector('.ys-addqueue[data-id="' + yid + '"]');
       if (star) { star.click(); A.queued[yid] = w.name; added++; }
     });
+    A.queueTop = want.length ? want[0].name : null;
+
     enableAutodraft();
 
     A.last = {
@@ -287,7 +314,8 @@
       recPos: res.recommendation && res.recommendation.pos,
       target: res.target_position,
       rosterCount: roster.length, poolSize: pool.length, unmatched: unmatched,
-      queuedAdded: added, ts: Date.now()
+      queuedAdded: added, queuedRemoved: removed, queueTop: A.queueTop,
+      ts: Date.now()
     };
     var lastPick = A.log.length ? A.log[A.log.length - 1].pick : null;
     if (added || lastPick !== cur) {
@@ -423,6 +451,7 @@
       'pool=' + (l.poolSize == null ? '?' : l.poolSize),
       'unmatched=' + (l.unmatched == null ? '?' : l.unmatched),
       'queued=' + Object.keys(A.queued).length,
+      'qtop=' + (A.queueTop || '-'),
       'autodraft=' + (A.autodraftOn ? 'on' : 'off'),
       'observed=' + A.log.length,
       'picklog=' + Object.keys(A.picks).length,

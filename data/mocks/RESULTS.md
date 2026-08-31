@@ -12,6 +12,7 @@ degrades.
 | 1 | 10188821 | 14 | 14 | round 6 | **5 / 14** | 1534.1 | 1569.2 | 265.4 |
 | 2 | 10189877 | 14 | 7 | pick 16 | **14 / 14** | 1404.8 | 1578.3 | 173.5 |
 | 3 | 10191115 | 14 | 14 | **pick 7** | incomplete | — | — | — |
+| 4 | 10276029 | **12** | 6 | pick 126 | **12 / 12** | 1235.7 | 1451.8 | 216.1 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -101,3 +102,40 @@ If this is retried, the useful changes would be: target rooms that are
 already nearly full (they start on schedule), keep the draft tab as the
 active tab in a non-minimised window, and treat a rising `lastTick` age in
 `__hcStatus()` as a signal to recover the tab rather than a cosmetic detail.
+
+
+## Draft 4 — room 10276029 (12-team), 2026-08-31
+
+First run on a **12-team** room, matching Harvey Cup's team count, and the
+first that never froze: the harness tracked continuously from arming to the
+final whistle, auto-harvested all 12 rosters during the last round, and
+graded at 100% Yahoo-projection coverage. `lastTick` stayed at 1s throughout.
+
+Finished **12 of 12**. Roster:
+`QB,WR,WR,RB,RB,TE,WR,TE,QB,QB,WR,TE,TE,WR,WR` — three quarterbacks, four
+tight ends, no kicker, no defense.
+
+**And this exposed the flaw that invalidates every earlier draft.**
+
+The autopilot only ever ADDED to Yahoo's queue; it never reordered it. Yahoo
+drafts `queue[0]`, which is whatever was queued FIRST -- so by round 15 the
+room was still drafting from a queue assembled in round 2. The advisor was
+recommending a kicker (`rec=Harrison Mevis`) while Yahoo took a wide
+receiver, because that receiver had been sitting at the top of the queue for
+thirteen rounds.
+
+Every roster in drafts 1-4 was therefore built from stale advice. The
+recommendations were fine; the mechanism that turned them into picks was
+not. That is why the rosters never resembled the board, and it is a much
+better explanation than "the strategy is wrong".
+
+Fixed: the queue is now maintained as exactly the current top four, in order
+-- stale entries are un-starred before the new set is added, so `queue[0]` is
+always the live recommendation.
+
+**What draft 4 did prove:** no freezing (the layout fix), continuous
+tracking, correct league detection on a 12-team room (`teams=12`,
+`rosterSize=15`, `detected=room`), the K/DEF gate opening at the right time,
+auto-harvest firing during the final round, and non-circular grading at 100%
+coverage. Every piece of the pipeline now works. The picks themselves were
+being fed from a stale queue, which is the one thing left to re-test.
