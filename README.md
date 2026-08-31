@@ -100,6 +100,26 @@ CSS-in-JS class names, which churn on every deploy. Full findings, including
 the URL patterns and the exact table schema, are in
 [docs/YAHOO-DRAFT-ROOM-RECON.md](docs/YAHOO-DRAFT-ROOM-RECON.md).
 
+## Status
+
+**The harness is validated; the strategy is not validated against live mocks.**
+
+Five mock drafts were run against Yahoo. They were valuable as a bug-finding
+instrument and are worthless as a strategy test, because Yahoo mock rooms run
+DEFAULT settings (half PPR, 4-point passing TDs, 2WR + one flex) -- a
+different game from Harvey Cup. All five results and their causes are in
+[data/mocks/RESULTS.md](data/mocks/RESULTS.md).
+
+What the mocks did establish, live: entry and auth handshake, league detection
+from the room, name matching at `unmatched<=1/100`, full-draft tracking that
+does not freeze, persistence across tab teardowns, the queue actuator carrying
+current advice, auto-harvest during the final round, and non-circular grading
+at 100% Yahoo-projection coverage.
+
+The nine defects they surfaced are in [DECISIONS.md](DECISIONS.md). Every one
+produced a confident wrong answer rather than an error, which is the whole
+reason to run the thing live at all.
+
 ## Honest limits
 
 The engine is only as good as ESPN's projections, which are its single

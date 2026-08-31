@@ -1,28 +1,48 @@
 """Live draft advisor.
 
-The recommendation is a two-pick lookahead, not a ranked list read top-down.
+The recommendation is the highest-VOR player we can still use, plus a small
+bonus for filling an empty starting slot. That is deliberately boring, and it
+is what survived testing.
 
-A cheat sheet answers "who is best?". In a snake draft that is the wrong
-question, because you are never choosing between a player and nothing -- you
-are choosing between taking player X now and taking someone at X's position
-at your *next* pick instead. The quantity that matters is therefore the
-DROPOFF at each position between now and your next turn, and the only honest
-way to get it is to model who will still be on the board.
+The obvious alternative -- weigh how much a position DROPS between now and
+your next pick, and take the position about to fall off a cliff -- is
+implemented here and scores zero weight, because it lost. Sweeping
+DROPOFF_WEIGHT against simulated projection error degraded results
+monotonically (mean finish 3.13 -> 3.90 across 0.0 .. 1.0). The cause is
+structural rather than statistical: VOR *already* prices positional scarcity,
+since the replacement baseline is the last player at that position who gets
+started league-wide. Adding a dropoff term double-counts it, and at pick 10 it
+adds ~+89 to every RB and WR against +0.7 to a QB -- a systematic thumb on a
+scale that was already balanced.
 
-We compute, for every position:
+Two further variants were tried and also lost, and are kept only so the
+experiments in sim.py stay reproducible:
 
-    best_now(p)   VOR of the best available player at p
-    best_later(p) EXPECTED VOR of the best player at p still available at our
-                  next pick, as an exact expectation over survival:
+    mode="lookahead"  pick the best player at the position chosen by a
+                      two-pick lookahead. The formulation
+                      argmax over (p,q) of now[p] + later[q] is SEPARABLE, so
+                      it always picks p = argmax now[p] regardless of later --
+                      mathematically vacuous. Correcting it reduces to the
+                      dropoff rule above, which loses.
+    mode="tiebreak"   among near-equals, prefer the player least likely to
+                      last. Also lost, and worse as the band widened
+                      (3.15 -> 3.65 -> 4.85 for bands of 5, 8, 15 VOR).
 
-                      E[max] = sum_i  VOR_i * P(i survives) * prod_{j above i} (1 - P(j survives))
+What the advisor still COMPUTES and SHOWS, without letting it move the pick:
 
-                  (players ordered by VOR descending; survivals treated as
-                  independent draws around each player's ADP)
+    best_now(p)    VOR of the best available player at p
+    best_later(p)  EXPECTED VOR of the best player at p still available at our
+                   next pick, as an exact expectation over survival:
 
-then choose the ordered pair of positions (p_now, p_next) maximising
-best_now(p_now) + best_later(p_next). The position that wins p_now is the one
-where waiting actually costs something.
+                       E[max] = sum_i VOR_i * P(i survives)
+                                * prod_{j above i} (1 - P(j survives))
+
+                   (ordered by VOR descending; survivals treated as
+                   independent draws around each player's ADP)
+
+"An RB like this will be gone but a TE like this will not" is exactly the
+judgement a human should be making, so it is on screen. It just does not get
+to overrule the valuation. See docs/STRATEGY.md.
 """
 import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
