@@ -61,15 +61,25 @@
    * cells that have no element children. */
   function cellParts(el) {
     if (!el) return [];
-    var kids = el.children;
-    if (kids && kids.length) {
-      var out = [];
-      for (var i = 0; i < kids.length; i++) {
-        var t = (kids[i].textContent || '').trim();
+    /* Collect LEAF elements, not direct children.
+     *
+     * First cut used el.children, which breaks the moment the cell nests --
+     * one wrapper child collapses to a single blob, and textContent joins
+     * with no separator ("T. HigginsWRCinBye 6"), so the position never
+     * parses and every row is skipped. Walk to the leaves instead: those are
+     * the actual text spans, in document order, still layout-free. */
+    var out = [], stack = [el], seen = 0;
+    while (stack.length && seen < 400) {
+      var n = stack.shift(); seen++;
+      var kids = n.children;
+      if (!kids || !kids.length) {
+        var t = (n.textContent || '').trim();
         if (t) out.push(t);
+      } else {
+        for (var i = kids.length - 1; i >= 0; i--) stack.unshift(kids[i]);
       }
-      if (out.length) return out;
     }
+    if (out.length) return out;
     return String(el.textContent || '').split('\n')
       .map(function (s) { return s.trim(); }).filter(Boolean);
   }
