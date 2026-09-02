@@ -20,6 +20,22 @@
   'use strict';
   if (window.__hcAuto && window.__hcAuto.timer) { window.__hcAuto.rearmed = true; return; }
 
+  /* A native alert()/confirm() blocks the page's event loop -- every pass,
+   * every observer, and any script evaluation from outside -- until a human
+   * clicks it. Yahoo raises one when it puts an inactive team into auto-pick
+   * mode. In a mock room nobody is there to click, and the room looked
+   * frozen for minutes (10502966). Make them non-blocking and keep a log. */
+  try {
+    window.__hcDialogs = window.__hcDialogs || [];
+    if (!window.__hcDialogsPatched) {
+      window.__hcDialogsPatched = true;
+      window.alert = function (m) { window.__hcDialogs.push({ t: Date.now(), kind: 'alert', text: String(m).slice(0, 200) }); };
+      window.confirm = function (m) { window.__hcDialogs.push({ t: Date.now(), kind: 'confirm', text: String(m).slice(0, 200) }); return true; };
+      window.prompt = function (m) { window.__hcDialogs.push({ t: Date.now(), kind: 'prompt', text: String(m).slice(0, 200) }); return ''; };
+      window.onbeforeunload = null;
+    }
+  } catch (e) {}
+
   var RELAY = 'http://127.0.0.1:8830';
   var LOG_KEY = 'hcAutopilotLog';
   var A = window.__hcAuto = {
@@ -829,6 +845,7 @@
       'pass=' + (A.passMs == null ? '?' : A.passMs + 'ms') + '/max' + (A.passMax || 0)
         + '/avg' + (A.passCount ? Math.round(A.passTotal / A.passCount) : 0) + '/every' + A.RATE_MS,
       'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ']',
+      'dialogs=' + ((window.__hcDialogs || []).length),
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
       A.filterFixes ? 'filterfix=' + A.filterFixes : '',
