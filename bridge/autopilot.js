@@ -82,8 +82,11 @@
     var t = biggestTable();
     if (!t) return [];
     var head = [].slice.call((t.querySelectorAll('tr')[0] || {}).cells || []);
-    var adpCol = -1;
-    head.forEach(function (c, i) { if (/^ADP$/i.test(T(c))) adpCol = i; });
+    var adpCol = -1, xrCol = -1;
+    head.forEach(function (c, i) {
+      if (/^ADP$/i.test(T(c))) adpCol = i;
+      if (/^XRank$/i.test(T(c))) xrCol = i;   // Yahoo's own rank: what autodraft follows
+    });
     return [].slice.call(t.querySelectorAll('tr')).map(function (tr) {
       var pe = tr.querySelector('.ys-player[data-id]');
       if (!pe) return null;
@@ -93,13 +96,17 @@
         if (/^(QB|RB|WR|TE|K|DEF|D\/ST)$/i.test(s)) pos = s.toUpperCase().replace('D/ST', 'DEF');
         else if (/^[A-Za-z]{2,3}$/.test(s) && pos && !team) team = s;
       });
-      var adp = null;
+      var adp = null, xrank = null;
       if (adpCol >= 0 && tr.cells[adpCol]) {
         var v = parseFloat(T(tr.cells[adpCol]).replace(/[^0-9.]/g, ''));
         if (!isNaN(v)) adp = v;
       }
+      if (xrCol >= 0 && tr.cells[xrCol]) {
+        var x = parseInt(T(tr.cells[xrCol]).replace(/[^0-9]/g, ''), 10);
+        if (!isNaN(x)) xrank = x;
+      }
       return pos ? { yid: pe.getAttribute('data-id'), name: parts[0],
-                     pos: pos, team: team, adp: adp } : null;
+                     pos: pos, team: team, adp: adp, xrank: xrank } : null;
     }).filter(Boolean);
   }
 
@@ -166,6 +173,12 @@
     };
     var prev = A.picks[pickNo];
     if (prev && prev.name === entry.name) return;
+    /* When did it land? Yahoo's autodraft picks within a second or two of
+     * the turn opening; a human burns clock. The gap since the previous
+     * pick is therefore a fingerprint for who is autodrafting. */
+    entry.t = Date.now();
+    var before = A.picks[pickNo - 1];
+    if (before && before.t) entry.dt = Math.round((entry.t - before.t) / 1000);
     A.picks[pickNo] = entry;
   }
 
@@ -319,7 +332,10 @@
     var pool = [], yidOf = {}, unmatched = 0;
     rows.forEach(function (r) {
       var m = HC.lookup(idx, r.name, r.pos, r.team, r.adp);
-      if (m.player) { pool.push(m.player); yidOf[m.player.name] = r.yid; }
+      if (m.player) {
+        m.player.xrank = r.xrank;   // Yahoo's rank, for modelling autodrafters
+        pool.push(m.player); yidOf[m.player.name] = r.yid;
+      }
       else unmatched++;
     });
 
@@ -349,8 +365,11 @@
     if (window.__hcOpp && A.numTeams && next > cur) {
       try {
         var oppRosters = window.__hcOpp.inferOpponentRosters(A.picks, A.numTeams, cur, next);
+        A.autodraftSlots = window.__hcOpp.inferAutodraftSlots(A.picks, A.numTeams,
+          slotM ? +slotM[1] : null);
         availability = window.__hcOpp.simulateAvailability(pool, cur, next, oppRosters, {
-          numTeams: A.numTeams, totalRounds: rounds, trials: 150, seed: cur * 7919 + pool.length
+          numTeams: A.numTeams, totalRounds: rounds, trials: 150, seed: cur * 7919 + pool.length,
+          autodraftSlots: A.autodraftSlots
         });
         A.availabilityAt = cur;
       } catch (e) { A.availError = String(e); availability = null; }
@@ -611,6 +630,7 @@
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
       'harvested=' + (A.finalHarvest ? A.finalHarvest.teams + 'teams' : 'no'),
       'avail=' + (A.availabilityAt != null ? 'opp@' + A.availabilityAt : 'adp'),
+      'autodrafters=' + ((A.autodraftSlots || []).join(',') || '-'),
       'seed=' + (A.seedRoster ? A.seedRoster.length : 0) + (A.reseeds ? '(x' + A.reseeds + ')' : ''),
       A.lastError ? 'ERR=' + A.lastError.slice(0, 60) : ''
     ].filter(Boolean).join(' ');

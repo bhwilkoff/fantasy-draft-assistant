@@ -44,5 +44,24 @@ check('slot 1 owns picks 1, 24, 25 -> two RBs', JSON.stringify(inferred[25]) ===
 check('slot 2 owns picks 2, 23, 26 -> RB + TE', inferred[26].RB === 1 && inferred[26].TE === 1, JSON.stringify(inferred[26]));
 check('slot 3 owns pick 27 -> one WR', JSON.stringify(inferred[27]) === JSON.stringify({ WR: 1 }), JSON.stringify(inferred[27]));
 
+// autodrafters: detected by pick timing, simulated by Yahoo's rank with no noise
+// snake, 12 teams: slot 1 owns 1 and 24; slot 2 owns 2 and 23; slot 3 owns 3
+const timed = {
+  1: { pos: 'RB', dt: 1 }, 24: { pos: 'WR', dt: 2 },      // slot 1: instant, instant
+  2: { pos: 'RB', dt: 40 }, 23: { pos: 'WR', dt: 2 },     // slot 2: slow once
+  3: { pos: 'RB', dt: 1 }                                 // slot 3: only one pick
+};
+const auto = O.inferAutodraftSlots(timed, 12, 8);
+check('slot 1 (always instant) is an autodrafter', JSON.stringify(auto) === '[1]', JSON.stringify(auto));
+
+// Yahoo ranks WR1 first even though ADP says RB1; an autodrafting slot follows XRank
+const xpool = pool.map(p => Object.assign({}, p, { xrank: p.name === 'WR1' ? 1 : (p.name === 'RB1' ? 2 : 100 + p.adp) }));
+const oneAuto = { 10: {} };
+const sA = O.simulateAvailability(xpool, 10, 11, oneAuto, { numTeams: 12, totalRounds: 15, trials: 50, seed: 3, autodraftSlots: [O.owner(10, 12)] });
+const sH = O.simulateAvailability(xpool, 10, 11, oneAuto, { numTeams: 12, totalRounds: 15, trials: 50, seed: 3, autodraftSlots: [] });
+check('autodrafter takes Yahoo\'s #1 (WR1) every time', sA.WR1 === 0 && sA.RB1 === 1, `WR1=${sA.WR1} RB1=${sA.RB1}`);
+check('a person is noisy: WR1 sometimes survives, RB1 sometimes goes',
+  sH.WR1 > 0 && sH.RB1 < 1, `WR1=${sH.WR1.toFixed(2)} RB1=${sH.RB1.toFixed(2)}`);
+
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL OPPONENT CHECKS PASS'));
 process.exit(fails ? 1 : 0);
