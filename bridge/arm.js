@@ -39,7 +39,7 @@
 
   var chain = ['web/league.js', 'web/advisor.js', 'bridge/yahoo-draft-bridge.user.js',
                'bridge/harvest.js', 'bridge/grade.js', 'bridge/supervise.js',
-               'bridge/opponents.js'];
+               'bridge/opponents.js', 'bridge/report.js'];
   load(chain, function () {
     if (window.__hcNoAutopilot) {
       window.__hcArmed = true;

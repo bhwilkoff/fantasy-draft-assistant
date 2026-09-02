@@ -486,6 +486,29 @@
     }
 
     var st = readStatus();
+    /* Final round, no autopilot (the real draft): harvest every roster with
+     * Yahoo's projections while the room is still alive, then write the
+     * league-wide report (bridge/report.js). The autopilot does the same in
+     * mocks; never twice. */
+    if (!window.__hcAuto && !state.finalHarvestStarted && st.pick && state.league
+        && state.league.numTeams && window.__hcHarvest) {
+      var slotsN = (state.league.rosterText || '').split(/[,/]/).filter(Boolean).length || 15;
+      var totalN = state.league.numTeams * slotsN;
+      if (st.pick >= totalN - state.league.numTeams) {
+        state.finalHarvestStarted = true;
+        Promise.resolve(window.__hcYahooProj ? window.__hcYahooProj() : null)
+          .then(function () { return window.__hcHarvest(); })
+          .then(function (h) {
+            try { localStorage.setItem('hcFinalHarvest', JSON.stringify(h)); } catch (e) {}
+            try { if (window.__hcReport) state.report = window.__hcReport(h); } catch (e) { state.reportError = String(e); }
+            var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
+              .filter(function (x) { return x.children.length === 0; })
+              .find(function (x) { return (x.innerText || '').trim() === 'Players'; });
+            if (pl) pl.click();
+          })
+          .catch(function (e) { state.reportError = String(e); });
+      }
+    }
     var av = readAvailable();
     var sig = [st.pick, st.upIn, av.rows.length, state.myTeam,
                (window.__hcAuto && window.__hcAuto.passSeq) || 0].join('|');

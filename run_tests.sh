@@ -28,6 +28,10 @@ echo "=== draft-room DOM readers (fixture) ==="
 ( cd tests && node dom_test.js ) || fail=1
 
 echo
+echo "=== league-wide draft report ==="
+( cd tests && node report_test.js ) || fail=1
+
+echo
 echo "=== league config round-trips into the data plane ==="
 python3 - <<'PY' || fail=1
 import json, sys

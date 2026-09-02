@@ -1,5 +1,16 @@
 # Running Yahoo mock drafts against the advisor
 
+## The league-wide report (2026-09-02)
+
+At the final-round harvest the autopilot also runs `bridge/report.js`:
+every team graded on Yahoo's projections under the room's rules, strong
+and weak positions, best values and worst reaches by ADP, bye-week
+stacks, autodrafting seats (seconds on the clock per pick), our own near
+misses from the advice log, league-wide "one pick late" misses, and a
+round-by-round story. `__hcStatus()` shows `report=ready`;
+`__hcReportShow()` puts it on the page as text. Mock reports live in
+`data/mocks/reports/`.
+
 ## The autopilot drafts the pick itself (2026-09-02, DECISIONS 020)
 
 With Tampermonkey's loader installed and `localStorage.hcMockAutopilot`

@@ -913,6 +913,9 @@
               A.finalHarvest = { teams: Object.keys(h.teams || {}).length,
                                  me: h.me, at: Date.now() };
             } catch (e) {}
+            // the league-wide report: every team graded, the near misses,
+            // the story of the draft (bridge/report.js)
+            try { if (window.__hcReport) A.report = window.__hcReport(h); } catch (e) { A.reportError = String(e); }
             // put the player list back so the last picks still advise
             var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
               .filter(function (x) { return x.children.length === 0; })
@@ -1081,6 +1084,7 @@
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
       A.filterFixes ? 'filterfix=' + A.filterFixes : '',
+      A.report ? 'report=ready' : (A.reportError ? 'report=ERR ' + A.reportError.slice(0, 40) : ''),
       'draftclick=' + (A.draftClicks || 0) + (A.draftMiss ? '(' + A.draftMiss + (A.draftDiag ? ' cells' + A.draftDiag.cells + '/table' + A.draftDiag.inTable + '/btns' + A.draftDiag.draftButtons : '') + ')' : '')
         + (A.draftLog && A.draftLog.length ? '[' + A.draftLog[A.draftLog.length - 1] + ']' : ''),
       'harvested=' + (A.finalHarvest ? A.finalHarvest.teams + 'teams' : 'no'),

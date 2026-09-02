@@ -146,6 +146,21 @@ from the start so you are never scrambling.
 
 ## After
 
+The overlay harvests every roster during the final round and writes the
+league-wide report by itself: a grade and summary for each team, the
+values and reaches, the near misses, and a round-by-round story of the
+draft. In the room's console:
+
+```js
+window.__hcReportShow()     // the report as plain text over the page; select all, copy
+window.__hcReportHide()
+```
+
+It is also in `localStorage.hcReport`, and the harvest it was built from
+in `localStorage.hcFinalHarvest`. Paste the report into
+`data/harvey-cup-2026-report.md`; it is what "who am I up against" looks
+like for the season, and the input for next year's calibration.
+
 ```bash
 curl -s localhost:8830/log > data/harvey-cup-2026-draft.json
 ```
