@@ -526,20 +526,32 @@
      * a row when the roster has none, and the room took two of them. So
      * entry k is what the advisor would say AFTER entries 1..k-1 have been
      * drafted onto the roster and off the board. */
-    var seqPool = pool.slice(), seqRoster = roster.slice(), seq = [];
+    /* Entry k answers "who, if entries 1..k-1 are GONE" -- gone to
+     * opponents, which is what usually happens between passes; Yahoo drafts
+     * queue[0] the instant our turn opens, so the entry beneath a player
+     * an opponent just took must be the right pick for THIS roster. (The
+     * first version put entries 1..k-1 on our roster instead, and when an
+     * opponent took the queued tight end the entry beneath it was a receiver
+     * chosen as if we already had that tight end.) The one thing the
+     * roster-based version prevented -- three quarterbacks in a row, two of
+     * which a snake turn-around then drafted -- is prevented by a cap: at
+     * most one queued player at each onesie position (QB, TE, K, DEF). */
+    var seqPool = pool.slice(), seq = [], onesie = { QB: 0, TE: 0, K: 0, DEF: 0 };
     var seqOpts = { availability: availability };
+    if (remaining != null) seqOpts.picksRemaining = remaining;
     var tSeq = Date.now();
-    for (var qi = 0; qi < A.QUEUE_DEPTH; qi++) {
-      var r = qi === 0 ? res
-        : HC.advise(seqPool, seqRoster, cur, next, [], 3,
-                    Object.assign({}, seqOpts,
-                      remaining != null ? { picksRemaining: Math.max(0, remaining - qi) } : {}));
+    for (var qi = 0; qi < A.QUEUE_DEPTH && seqPool.length; qi++) {
+      var r = qi === 0 ? res : HC.advise(seqPool, roster, cur, next, [], 3, seqOpts);
       var pickd = r && r.recommendation;
       if (!pickd) break;
+      if (onesie[pickd.pos] != null && onesie[pickd.pos] >= 1) {
+        // a second QB/TE/K/DEF: drop him from the pool and ask again
+        seqPool = seqPool.filter(function (p) { return p.name !== pickd.name; });
+        qi--; continue;
+      }
+      if (onesie[pickd.pos] != null) onesie[pickd.pos]++;
       seq.push(pickd);
       seqPool = seqPool.filter(function (p) { return p.name !== pickd.name; });
-      seqRoster = seqRoster.concat([{ name: pickd.name, pos: pickd.pos, team: pickd.team,
-                                      vor: pickd.vor, points: pickd.points }]);
     }
     A.seqMs = Date.now() - tSeq;
 
