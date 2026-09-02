@@ -168,3 +168,30 @@ plausible but untested here — it protects a concentrated investment, which
 the season simulator would need injury dynamics to evaluate honestly, and it
 does not have them. Treat §6's late-round guidance as the tested part and
 handcuffing as a judgement call.
+
+
+## 10. One source is an opinion; a consensus is a projection (added 2026-09-01)
+
+The first mock draft in which the room took our advice pick for pick
+(data/mocks/RESULTS.md, draft 6) finished last under Yahoo's projections
+and 11th under our own. Every starter we drafted was a player ESPN rated
+well above everyone else. That is not bad luck; it is what maximising over a
+single noisy forecast does -- it selects that forecast's errors.
+
+Measured with `tools/consensus_test.py` (24 drafts against ADP bots, each
+roster scored by a source the drafting board did NOT use):
+
+| draft on | scored by | avg finish | wins |
+|---|---|---|---|
+| ESPN only | Sleeper | 3.25 / 12 | 6 / 24 |
+| Sleeper only | ESPN | 5.21 / 12 | 3 / 24 |
+| ESPN + Sleeper blend | ESPN | 1.29 / 12 | 20 / 24 |
+| ESPN + Sleeper blend | Sleeper | 1.04 / 12 | 23 / 24 |
+
+The blend rows are flattered (the blend contains half of whichever source
+scores it), so read the table as: a single source still beats the ADP room
+out of sample, and it is measurably worse than the consensus. The data plane
+now blends ESPN and Sleeper per stat before scoring; the overlay shows both
+totals for the recommendation and flags a split of 25+ points. When one
+source loves a player and the other does not, that is a reason to trust the
+consensus, not to draft him.
