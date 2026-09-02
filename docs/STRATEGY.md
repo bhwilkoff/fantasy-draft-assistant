@@ -218,3 +218,22 @@ wide enough to ever change a pick is wide enough to give away real value,
 and a bye week costs every roster one week of one player regardless of how
 the byes line up. The overlay shows the bye next to every recommendation so
 a human can break a genuine coin-flip with it; the engine does not.
+
+
+## 12. The public 3-WR advice, measured (added 2026-09-01)
+
+The 2026 consensus guides for 3-WR / two-flex leagues say "two receivers and
+a tight end in the first four rounds" and, more mildly, "one anchor running
+back then receivers" (Hero RB). Measured against the advisor's plain
+best-available, same consensus board, byes modelled, 36 drafts x 150 seasons:
+
+| rule for rounds 1-4 | title odds | playoff odds |
+|---|---|---|
+| best available (the advisor) | 14.2% | 70.8% |
+| force 2 WR (or TE) before round 5 | 13.1% | 62.4% |
+| Hero RB: one RB, then WR/TE until round 5 | 15.1% | 69.7% |
+
+Forcing receivers early loses. Hero RB is within noise of best-available,
+which makes sense: with 47 startable receivers the engine's replacement
+math already leans it toward receivers after the first back, so the
+constraint rarely changes a pick. Nothing here justifies overriding value.
