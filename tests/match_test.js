@@ -31,6 +31,12 @@ var OBSERVED = [
 /* Initial+surname+position collisions. Note Bijan and Brian Robinson are
  * BOTH Atlanta running backs in 2026, so team cannot separate them and the
  * ADP column is the only signal the room actually gives us. */
+/* The Results tab names a defense by nickname only, with no team. */
+var DEFENSES = [
+  ['Jaguars',  'DEF', null, null, data.players.filter(function (p) { return p.pos === 'DEF' && p.team === 'JAX'; }).map(function (p) { return p.name; })[0]],
+  ['Eagles',   'DEF', null, null, data.players.filter(function (p) { return p.pos === 'DEF' && p.team === 'PHI'; }).map(function (p) { return p.name; })[0]]
+];
+
 var COLLISIONS = [
   ['A. Brown',    'WR', 'NE',  null, 'A.J. Brown'],
   ['A. Brown',    'WR', 'DET', null, 'Amon-Ra St. Brown'],
@@ -57,6 +63,7 @@ function check(label, rows) {
 }
 check('observed in the live room', OBSERVED);
 check('initial-key collisions', COLLISIONS);
+check('defenses by nickname (Results tab)', DEFENSES);
 
 /* Round trip: render every draftable player the way the room would, then
  * resolve it back. Anything that does not come home is a live mis-advice. */

@@ -118,18 +118,55 @@
     var body = (host && host.textContent) || '';
     var m = body.match(/Last:\s*\n?\s*([^\n(]+)\n?\s*\(([A-Z/]+)\s*[·\-]\s*([A-Z]{2,3})\)\s*\n?\s*([^\n]+)/i);
     if (!m || st.pick == null) return;
-    var pickNo = st.pick - 1;
+
+    /* Which pick number was that?
+     *
+     * The obvious answer -- "Round R, Pick P" minus one -- is wrong often
+     * enough to matter: the "Last:" line and the pick counter are separate
+     * React updates, and a pass that lands between them attributes the
+     * pick to the wrong number. Live, that logged Justin's Malik Willis as
+     * OUR pick 125 and then refused to record our real pick 125 because
+     * the slot was taken. The audit reported a mismatch that never
+     * happened.
+     *
+     * The drafter's name is in the same line, and a drafter's picks are a
+     * fixed set of numbers in a snake. The last pick is therefore the
+     * LARGEST of that drafter's numbers that is <= the counter, whether the
+     * counter has advanced yet or not. Fall back to P-1 only when the name
+     * cannot be placed in the order strip. */
+    var rawDrafter = m[4].trim();
+    var order = (window.__hcReaders && window.__hcReaders.readDraftOrder)
+      ? window.__hcReaders.readDraftOrder() : [];
+    var numTeams = order.length || A.numTeams || 12;
+    var mySlot = (location.pathname.match(/\/draftclient\/f1\/\d+\/(\d+)/) || [])[1];
+    var slot = null, best = 0;
+    order.forEach(function (name, i) {
+      if (name === 'You' || !name) return;
+      if (rawDrafter.indexOf(name) === 0 && name.length > best) { best = name.length; slot = i + 1; }
+    });
+    // our own entry in the strip is "You", but the header uses our team name
+    if (slot === null && order.length && mySlot) slot = +mySlot;
+
+    var pickNo;
+    if (slot !== null) {
+      var candidates = mySnakePicks(numTeams, slot, 25)
+        .filter(function (pk) { return pk <= st.pick; });
+      pickNo = candidates.length ? candidates[candidates.length - 1] : st.pick - 1;
+    } else {
+      pickNo = st.pick - 1;
+    }
     if (pickNo < 1) return;
-    if (A.picks[pickNo]) return;
-    A.picks[pickNo] = {
+    var entry = {
       pick: pickNo,
       name: m[1].trim(),
       pos: m[2].toUpperCase().replace('D/ST', 'DEF'),
       team: m[3].toUpperCase(),
-      // textContent has no line breaks, so the trailing group would run on
-      // into the rest of the page; keep only a short prefix
-      drafter: m[4].trim().slice(0, 40)
+      // textContent has no line breaks, so keep only the name we matched
+      drafter: (best ? order[slot - 1] : (slot === +mySlot ? 'You' : rawDrafter.slice(0, 24)))
     };
+    var prev = A.picks[pickNo];
+    if (prev && prev.name === entry.name) return;
+    A.picks[pickNo] = entry;
   }
 
   function mySnakePicks(numTeams, slot, rounds) {
@@ -230,6 +267,32 @@
     } catch (e) { A.relay = false; }
   }
 
+  /* Yahoo's queue, in order, from its queue panel. Queued players carry a
+   * `.ys-removequeue[data-id]` star; the same star also appears in the
+   * players table row, which we skip so each player is counted once. */
+  function readYahooQueue() {
+    var seen = {}, out = [];
+    [].slice.call(document.querySelectorAll('.ys-removequeue[data-id]')).forEach(function (e) {
+      if (e.closest('table')) return;
+      var yid = e.getAttribute('data-id');
+      if (!seen[yid]) { seen[yid] = 1; out.push(yid); }
+    });
+    if (!out.length) {
+      // panel not rendered (collapsed?) -- fall back to the table's stars
+      [].slice.call(document.querySelectorAll('table .ys-removequeue[data-id]')).forEach(function (e) {
+        var yid = e.getAttribute('data-id');
+        if (!seen[yid]) { seen[yid] = 1; out.push(yid); }
+      });
+    }
+    return out;
+  }
+  A.readYahooQueue = readYahooQueue;
+
+  function starButton(cls, yid) {
+    var e = document.querySelector('.' + cls + '[data-id="' + yid + '"]');
+    return e ? (e.querySelector('button') || e) : null;
+  }
+
   function tick() {
     if (!A.on) return;
     var HC = window.HarveyCup, R = window.__hcReaders, idx = window.__hcIndex;
@@ -272,40 +335,87 @@
     var next = cur + (st.upIn != null ? Math.max(1, st.upIn) : 12);
     var res = HC.advise(pool, roster, cur, next, []);
 
-    /* Keep the queue EXACTLY the current top N, in order.
+    /* Re-read our roster from the Results tab right after each of our picks.
      *
-     * The first version only ever ADDED. Yahoo drafts queue[0], which is
-     * whatever was queued first -- so by round 15 it was still drafting from
-     * a queue built in round 2. Every roster came out looking nothing like
-     * the advice: three quarterbacks, four tight ends, and no kicker or
-     * defense even while the advisor was recommending one. The
-     * recommendation was right the whole time; the queue ignored it.
+     * The header-derived pick log is the fast path, but it has now been
+     * wrong in three different ways across five mocks, and every time the
+     * roster count came out LOW -- which is the one direction that matters,
+     * because the gate that finally permits a kicker and a defense is
+     * "picks remaining <= 2". Two mocks ended with neither. The Results tab
+     * is authoritative and a read costs about two seconds, once a round. */
+    if (A.lastUpIn === 0 && st.upIn > 0 && !A.reseeding) {
+      A.reseeding = true;
+      Promise.resolve(A.seedRosterFromResults())
+        .then(function () { A.reseeding = false; A.reseeds = (A.reseeds || 0) + 1; },
+              function () { A.reseeding = false; });
+    }
+    A.lastUpIn = st.upIn;
+
+    /* Keep the queue EXACTLY the current top N, in order -- and read the
+     * queue from YAHOO, not from our own memory of what we clicked.
      *
-     * So: drop anything no longer in the top N, then add the top N in order.
-     * Yahoo appends new stars to the end of the queue, which means clearing
-     * first is what makes the order correct. */
+     * Two generations of this were wrong. The first only ever added, so
+     * queue[0] stayed whatever was queued in round two. The second tracked
+     * its own `queued` map and un-starred by clicking `.ys-addqueue[data-id]`
+     * -- but once a player is queued Yahoo swaps that element's class to
+     * `.ys-removequeue`, so the un-star never found anything, the map forgot
+     * him, and Yahoo kept him. Live, that left Bo Nix and Matthew Stafford at
+     * the top of the queue with Josh Allen already rostered, and drafted
+     * Jaxson Dart at pick 92 while the advisor wanted a receiver.
+     *
+     * So every pass reads Yahoo's queue panel (the `.ys-removequeue`
+     * elements outside the players table, in document order), removes what
+     * is not wanted, and adds what is missing. Additions are ONE per pass:
+     * several star clicks in one pass reach the server in arbitrary order
+     * and the queue comes back shuffled. The passes run every ~1.5 s, so the
+     * queue is full and correctly ordered within a few seconds anyway. */
     var want = [res.recommendation].concat(res.alternatives)
       .filter(Boolean).slice(0, A.QUEUE_DEPTH);
-    var wantYids = {};
-    want.forEach(function (w) { if (yidOf[w.name]) wantYids[yidOf[w.name]] = w.name; });
-
-    var added = 0, removed = 0;
-    // 1. unqueue anything stale (clicking the star again toggles it off)
-    Object.keys(A.queued).forEach(function (yid) {
-      if (wantYids[yid]) return;
-      var star = document.querySelector('.ys-addqueue[data-id="' + yid + '"] button')
-              || document.querySelector('.ys-addqueue[data-id="' + yid + '"]');
-      if (star) { star.click(); removed++; }
-      delete A.queued[yid];
-    });
-    // 2. add the wanted set in advice order, so queue[0] is the recommendation
+    var wantIds = [], wantName = {};
     want.forEach(function (w) {
       var yid = yidOf[w.name];
-      if (!yid || A.queued[yid]) return;
-      var star = document.querySelector('.ys-addqueue[data-id="' + yid + '"] button')
-              || document.querySelector('.ys-addqueue[data-id="' + yid + '"]');
-      if (star) { star.click(); A.queued[yid] = w.name; added++; }
+      if (yid) { wantIds.push(yid); wantName[yid] = w.name; }
     });
+
+    var real = readYahooQueue();
+    var added = 0, removed = 0;
+    // 1. drop anything Yahoo has that we no longer want
+    real.forEach(function (yid) {
+      if (wantIds.indexOf(yid) >= 0) return;
+      var b = starButton('ys-removequeue', yid);
+      if (b) { b.click(); removed++; }
+    });
+    // 2. drop anything that is out of order relative to our ranking, so the
+    //    re-add below restores queue[0] = the live recommendation
+    var present = real.filter(function (yid) { return wantIds.indexOf(yid) >= 0; });
+    var lastRank = -1, keep = [];
+    present.forEach(function (yid) {
+      var rank = wantIds.indexOf(yid);
+      if (rank > lastRank) { lastRank = rank; keep.push(yid); return; }
+      var b = starButton('ys-removequeue', yid);
+      if (b) { b.click(); removed++; }
+    });
+    // a kept entry ahead of a missing higher-ranked one is also out of order
+    // (queue[0] would not be the recommendation); drop from that point on
+    var firstMissing = wantIds.length;
+    for (var wi = 0; wi < wantIds.length; wi++) {
+      if (keep.indexOf(wantIds[wi]) < 0) { firstMissing = wi; break; }
+    }
+    keep = keep.filter(function (yid) {
+      if (wantIds.indexOf(yid) < firstMissing) return true;
+      var b = starButton('ys-removequeue', yid);
+      if (b) { b.click(); removed++; }
+      return false;
+    });
+    // 3. add the first missing wanted player (one per pass, see above)
+    for (var ai = 0; ai < wantIds.length && !added; ai++) {
+      if (keep.indexOf(wantIds[ai]) >= 0) continue;
+      var sb = starButton('ys-addqueue', wantIds[ai]);
+      if (sb) { sb.click(); added++; }
+    }
+    A.queued = {};
+    keep.forEach(function (yid) { A.queued[yid] = wantName[yid]; });
+    A.yahooQueue = real.map(function (yid) { return wantName[yid] || yid; });
     A.queueTop = want.length ? want[0].name : null;
 
     enableAutodraft();
@@ -454,6 +564,7 @@
       'unmatched=' + (l.unmatched == null ? '?' : l.unmatched),
       'queued=' + Object.keys(A.queued).length,
       'qtop=' + (A.queueTop || '-'),
+      'yq=' + ((A.yahooQueue || []).slice(0, 2).join('>') || '-'),
       'autodraft=' + (A.autodraftOn ? 'on' : 'off'),
       'observed=' + A.log.length,
       'picklog=' + Object.keys(A.picks).length,
@@ -464,7 +575,7 @@
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
       'harvested=' + (A.finalHarvest ? A.finalHarvest.teams + 'teams' : 'no'),
-      'seed=' + (A.seedRoster ? A.seedRoster.length : 0),
+      'seed=' + (A.seedRoster ? A.seedRoster.length : 0) + (A.reseeds ? '(x' + A.reseeds + ')' : ''),
       A.lastError ? 'ERR=' + A.lastError.slice(0, 60) : ''
     ].filter(Boolean).join(' ');
   };

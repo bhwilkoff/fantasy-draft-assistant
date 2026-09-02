@@ -104,7 +104,7 @@ the URL patterns and the exact table schema, are in
 
 **The harness is validated; the strategy is not validated against live mocks.**
 
-Five mock drafts were run against Yahoo. They were valuable as a bug-finding
+Six mock drafts were run against Yahoo. They were valuable as a bug-finding
 instrument and are worthless as a strategy test, because Yahoo mock rooms run
 DEFAULT settings (half PPR, 4-point passing TDs, 2WR + one flex) -- a
 different game from Harvey Cup. All five results and their causes are in
@@ -116,7 +116,10 @@ does not freeze, persistence across tab teardowns, the queue actuator carrying
 current advice, auto-harvest during the final round, and non-circular grading
 at 100% Yahoo-projection coverage.
 
-The nine defects they surfaced are in [DECISIONS.md](DECISIONS.md). Every one
+The defects they surfaced are in [DECISIONS.md](DECISIONS.md) -- fourteen
+so far, the latest three (stale queue entries, scrambled queue order, pick
+attribution race) from draft 5, which was the first in which the room's
+picks could be audited against the advice. Every one
 produced a confident wrong answer rather than an error, which is the whole
 reason to run the thing live at all.
 

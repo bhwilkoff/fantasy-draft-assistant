@@ -13,6 +13,7 @@ degrades.
 | 2 | 10189877 | 14 | 7 | pick 16 | **14 / 14** | 1404.8 | 1578.3 | 173.5 |
 | 3 | 10191115 | 14 | 14 | **pick 7** | incomplete | — | — | — |
 | 4 | 10276029 | **12** | 6 | pick 126 | **12 / 12** | 1235.7 | 1451.8 | 216.1 |
+| 5 | 10426834 | 12 | 5 | pick 10 | **12 / 12** | 1257.5 | 1443.4 | 185.9 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -139,3 +140,73 @@ tracking, correct league detection on a 12-team room (`teams=12`,
 auto-harvest firing during the final round, and non-circular grading at 100%
 coverage. Every piece of the pipeline now works. The picks themselves were
 being fed from a stale queue, which is the one thing left to re-test.
+
+
+## Draft 5 — room 10426834 (12-team), 2026-09-01
+
+Armed at pick 10, so every pick but the first (J. Taylor, Yahoo's autodraft)
+was ours to make. Finished **12 of 12** again, and again for mechanical
+reasons -- but this is the first draft where each pick can be traced to its
+cause, because the autopilot now audits *what the room took* against *what
+it advised* (`__hcAuto.audit()`).
+
+Roster: `QB Allen · WR Adams, Sutton, Worthy, Meyers, Jeudy, Boutte · RB
+Taylor, J. Williams, Judkins, Spears · TE Kittle, Fannin · QB Dart, Stafford`
+-- three quarterbacks, no kicker, no defense.
+
+What the room took, pick by pick, against the live recommendation:
+
+| pick | advised | taken | why |
+|---|---|---|---|
+| 20 | Josh Allen | Josh Allen | ok |
+| 44 | Judkins | Judkins | ok |
+| 53 | Adams | Adams | ok |
+| 68 | Kittle | Kittle | ok |
+| 77 | Sutton (advice changed as the turn opened) | Fannin | queue re-sync lost the race with autodraft |
+| 92 | Sutton | **Dart** | stale queue: un-star never worked (defect 1) |
+| 101 | Sutton | Sutton | ok |
+| 116 | A. Jones | **Stafford** | stale queue (defect 1) |
+| 125 | A. Jones | Worthy | queue order scrambled by parallel star clicks (defect 2) |
+| 140 | Meyers | Meyers | ok |
+| 149 | Spears | Spears | ok |
+| 164 | Jeudy | Jeudy | ok |
+| 173 | Mevis (K) | Boutte | stale alternative ahead in queue (defect 1); K/DEF gate also opened two picks late (defect 3) |
+
+**Defect 1 -- un-starring never worked.** Once a player is queued, Yahoo
+swaps his star's class from `.ys-addqueue` to `.ys-removequeue`. The
+actuator looked for the former to remove him, found nothing, forgot him,
+and Yahoo kept him. That is why Bo Nix and Matthew Stafford sat at the top
+of the queue with Josh Allen already rostered. The offline queue test passed
+because its fixture never swapped the class. Fixed: the actuator reads
+Yahoo's queue panel every pass and reconciles against it; the test fixture
+now behaves like Yahoo.
+
+**Defect 2 -- parallel star clicks scramble the order.** Wanted
+`Jones, Worthy, Meyers, White`; Yahoo held `Worthy, White, Jones, Meyers`
+and drafted Worthy. Several clicks in one pass reach the server in arbitrary
+order. Fixed: one addition per pass; passes run every ~1.5 s so the queue
+still fills within seconds.
+
+**Defect 3 -- pick attribution race.** `Last: <player>` and
+`Round R, Pick P` are separate React updates, and a pass between them logged
+the pick under the wrong number, then refused to record the real one. The
+audit blamed us for Justin's Malik Willis. Worse, our roster count ran two
+low all draft, so the "picks remaining <= 2" gate that permits K/DEF opened
+two picks late. Fixed: picks are numbered from the drafter's name and snake
+slot, and the roster is re-read from the Results tab after each of our
+picks.
+
+Also found and fixed this draft: the Results tab renders the flex slot as
+`WRT` (slashes are decoration), which the parser dropped; the bridge's boot
+reloaded advisor.js without a cache-buster and overwrote a freshly pushed
+fix with a ten-minute-old cached copy; defenses are rendered by nickname
+only on the Results tab and graded as unresolved for every team; and the
+advisor valued a backup quarterback at his full VOR (Lamar Jackson
+recommended at pick 53 with Allen rostered), now discounted.
+
+**What worked, and is new:** the queue mechanism itself, when the queue was
+correct -- eight of thirteen picks took exactly the live recommendation,
+against zero in drafts 1-4. League detection (12 teams, 15 slots once the
+flex was restored, mock lineup shape), name matching at `unmatched=0`,
+continuous tracking through a Yahoo tab teardown, and grading at 100%
+Yahoo-projection coverage.

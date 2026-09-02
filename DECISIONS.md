@@ -192,3 +192,43 @@ un-star what is no longer wanted, then star the wanted set in order. More
 generally, when a system advises and something else acts, verify the ACTION
 matches the advice — do not infer it from the advice being correct. The
 status line now carries `qtop=` for exactly this reason.
+
+---
+
+## 012 — Read the actuated system's state; never trust your own memory of what you did
+
+**Rule:** the queue actuator reconciles against Yahoo's queue panel on every
+pass. It never consults a private record of which stars it clicked.
+
+**Why:** the second-generation actuator kept a `queued` map and un-starred by
+looking up `.ys-addqueue[data-id]`. Yahoo swaps a queued player's star to
+`.ys-removequeue`, so the lookup found nothing, the map forgot the player,
+and Yahoo kept him -- for the rest of the draft. Two quarterbacks were
+drafted from a queue the actuator believed was empty of quarterbacks. The
+offline test passed, because the fixture reflected the actuator's model of
+the page rather than the page.
+
+**How to apply:** an actuator's test fixture must model the target's
+behaviour (here: the class swap and the panel), not the actuator's
+assumptions. And when a click has a side effect you can observe, observe it
+on the next pass instead of remembering it.
+
+---
+
+## 013 — Attribute an event by identity, not by a counter read at the same instant
+
+**Rule:** a pick is numbered from WHO made it (drafter name -> snake slot ->
+the largest of that slot's pick numbers at or below the counter), never from
+"the counter minus one".
+
+**Why:** the room's "Last: <player>" and "Round R, Pick P" are separate
+React updates. A pass that runs between them logs the pick under the wrong
+number, and the entry then blocks the real one. The roster count ran two low
+for an entire draft, which is the one direction that matters: the gate that
+finally permits a kicker and a defense is "picks remaining <= 2", and it
+never opened.
+
+**How to apply:** when two DOM values must agree, assume they will not at
+the moment you read them, and derive the fact from the one that cannot
+drift. Then re-read the authoritative view (the Results tab) at a natural
+checkpoint anyway -- that read costs two seconds a round.

@@ -253,9 +253,26 @@
     if (parts.length === 1) return [parts[0], parts[0]];
     return [parts[0], parts[parts.length - 1]];
   }
+  /* The Results tab renders a defense as its nickname alone ("Jaguars",
+   * pos DEF) with no team column, so a DEF key built from the team is
+   * empty and every defense in the room graded as unresolved -- zero
+   * points for all twelve, which hid that we had drafted none. */
+  var NICKNAME = { cardinals: 'ARI', falcons: 'ATL', ravens: 'BAL', bills: 'BUF',
+    panthers: 'CAR', bears: 'CHI', bengals: 'CIN', browns: 'CLE', cowboys: 'DAL',
+    broncos: 'DEN', lions: 'DET', packers: 'GB', texans: 'HOU', colts: 'IND',
+    jaguars: 'JAX', chiefs: 'KC', raiders: 'LV', chargers: 'LAC', rams: 'LAR',
+    dolphins: 'MIA', vikings: 'MIN', patriots: 'NE', saints: 'NO', giants: 'NYG',
+    jets: 'NYJ', eagles: 'PHI', steelers: 'PIT', '49ers': 'SF', seahawks: 'SEA',
+    buccaneers: 'TB', titans: 'TEN', commanders: 'WSH' };
   function roomKey(name, pos, team) {
     pos = (pos || '').toUpperCase().replace('D/ST', 'DEF').replace('DST', 'DEF');
-    if (pos === 'DEF') return 'DEF|' + cleanTeam(team);
+    if (pos === 'DEF') {
+      if (!team) {
+        var last = String(name || '').trim().split(/\s+/).pop().toLowerCase();
+        team = NICKNAME[last] || team;
+      }
+      return 'DEF|' + cleanTeam(team);
+    }
     var p = parseName(name);
     return pos + '|' + p[0].charAt(0) + '|' + p[1];
   }

@@ -54,12 +54,42 @@ global.location = W.location;
 global.Event = W.Event;
 global.fetch = () => Promise.reject(new Error('offline'));
 
-// record every star click so we can see what the actuator actually did
+/* Behave like Yahoo. A click on a player's star toggles him in the QUEUE
+ * PANEL (a list of `.ys-removequeue[data-id]` rows in insertion order) and
+ * swaps the star's class between ys-addqueue and ys-removequeue. The second
+ * generation of the actuator failed precisely because the fixture did not
+ * do this: it kept looking for `.ys-addqueue` on a queued player. */
 const clicks = [];
-W.document.querySelectorAll('.ys-addqueue').forEach(el => {
+const panel = W.document.createElement('div');
+panel.id = 'queue-panel';
+W.document.body.appendChild(panel);
+function yahooQueue() {
+  return [...panel.querySelectorAll('.ys-removequeue[data-id]')].map(e => e.getAttribute('data-id'));
+}
+function wireStar(el) {
   const yid = el.getAttribute('data-id');
-  el.querySelector('button').addEventListener('click', () => clicks.push(yid));
-});
+  el.querySelector('button').addEventListener('click', () => {
+    clicks.push(yid);
+    const inQueue = panel.querySelector(`.ys-removequeue[data-id="${yid}"]`);
+    if (inQueue) {
+      inQueue.remove();
+      el.className = 'ys-addqueue';
+    } else {
+      const row = W.document.createElement('div');
+      row.className = 'ys-removequeue';
+      row.setAttribute('data-id', yid);
+      row.innerHTML = '<button>remove</button>';
+      row.querySelector('button').addEventListener('click', () => {
+        clicks.push('-' + yid);
+        row.remove();
+        el.className = 'ys-addqueue';
+      });
+      panel.appendChild(row);
+      el.className = 'ys-removequeue';
+    }
+  });
+}
+W.document.querySelectorAll('.ys-addqueue').forEach(wireStar);
 
 // these attach to `window`, which we have pointed at the jsdom window
 require(path.join(ROOT, 'web', 'league.js'));
@@ -107,23 +137,35 @@ function check(label, got, want) {
     + (ok ? '' : `  (want ${JSON.stringify(want)})`));
 }
 
-// --- tick 1: recommend players 1,2,3
+// --- tick 1: recommend players 1,2,3. One add per pass, so three passes.
 ranking = [mk(PLAYERS[0]), mk(PLAYERS[1]), mk(PLAYERS[2])];
 clicks.length = 0;
-A.tick();
-check('tick1 starred 1,2,3', clicks.slice(), ['1', '2', '3']);
-check('tick1 queue', Object.keys(A.queued).sort(), ['1', '2', '3']);
+A.tick(); A.tick(); A.tick();
+check('tick1 Yahoo queue is 1,2,3 in order', yahooQueue(), ['1', '2', '3']);
 check('tick1 queueTop', A.queueTop, 'A. One');
+A.tick();
+check('tick1 a further pass changes nothing', yahooQueue(), ['1', '2', '3']);
 
 // --- tick 2: ranking changes completely to 5,6 (a kicker and a defense)
 ranking = [mk(PLAYERS[4]), mk(PLAYERS[5])];
 clicks.length = 0;
-A.tick();
+A.tick(); A.tick(); A.tick();
 console.log('  (tick2 clicks: ' + JSON.stringify(clicks) + ')');
-check('tick2 queue is exactly the new set', Object.keys(A.queued).sort(), ['5', '6']);
+check('tick2 Yahoo queue is exactly the new set, in order', yahooQueue(), ['5', '6']);
 check('tick2 queueTop is the live recommendation', A.queueTop, 'E. Five');
-check('tick2 un-starred all three stale entries',
-  ['1', '2', '3'].every(y => clicks.includes(y)), true);
+
+// --- tick 3: same players, REVERSED. queue[0] must follow the ranking.
+ranking = [mk(PLAYERS[5]), mk(PLAYERS[4])];
+A.tick(); A.tick(); A.tick();
+check('tick3 reversed ranking reorders the queue', yahooQueue(), ['6', '5']);
+
+// --- tick 4: Yahoo holds a stale player we never asked for (queued by hand,
+//     or left over from before a re-arm). It must be removed.
+const stale = W.document.querySelector('.ys-addqueue[data-id="1"] button');
+stale.click();
+check('tick4 setup: stale entry present', yahooQueue(), ['6', '5', '1']);
+A.tick();
+check('tick4 stale entry removed, wanted order intact', yahooQueue(), ['6', '5']);
 
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL QUEUE ACTUATOR CHECKS PASS'));
 process.exit(fails ? 1 : 0);
