@@ -299,7 +299,11 @@
       prevSig = t ? t.innerText.slice(0, 400) : null;
       var r = readRoster();
       if (r.length) {
-        teams[options[i].label] = r;
+        // two managers can share a display label (two "anthony" in mock
+        // 10430908 collapsed to one team); keep both by suffixing the second
+        var label = options[i].label;
+        if (teams[label]) label = label + ' (' + options[i].value + ')';
+        teams[label] = r;
         if (!slots) {
           slots = rosterSlots();
           // publish it so the bridge can stop guessing the roster shape

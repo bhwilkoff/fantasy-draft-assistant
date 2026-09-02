@@ -17,6 +17,7 @@ degrades.
 | 6 | 10427900 | 12 | 8 | pick 4 | **12 / 12** | 1482.2 | 1744.7 | 262.5 |
 | 7 | 10429138 | 12 | 7 | pick 1 | **7 / 12** (our proj.) | 1749.2 | 1790.0 | 89.3 |
 | 8 | 10430207 | 12 | 2 | pick 70 | **12 / 12** (our proj.) | 1637.3 | 1813.0 | 175.7 |
+| 9 | 10430908 | 12 | 10 | pick 30 | **3 / 11** (our proj.) | 1774.1 | 1819.0 | 157.1 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -312,3 +313,32 @@ shows one position; a reseed pauses passes and times out after 20 s; the
 queue is eight deep with two adds per pass when thin; K/DEF enter the
 ranking at four picks left; the harvester never mistakes the position
 filter for the team list and waits for the Results tab to render.
+
+
+## Draft 9 — room 10430908 (12-team, slot 10), 2026-09-01
+
+Best result so far: **3 of 11** rosters harvested, on our projections (1774
+vs 1819). Roster: `QB Hurts · WR Rice, Evans · RB Barkley, Achane · TE
+Goedert · flex Etienne · K Smack · DEF Steelers · bench Daniels, Sutton,
+Monangai, Worthy, Meyers, Ravens D/ST`. Kicker and defense both came from
+the queue, in the last four picks, as designed.
+
+Caveats, in order of size. Yahoo autodrafted picks 10 and 15 (Barkley,
+Achane) before the harness was armed -- the tab was recreated on entry and
+the first arm attempt starved the renderer (see draft 8). The harness
+believed the room had 11 teams for the middle rounds, because two managers
+are named "anthony" and the draft-order strip was deduplicated by name;
+that shifted the pick numbers the audit and the picks-remaining gate use,
+and it is why a second defense was taken at 159 (our own defense at 154
+was filed under the wrong number, so the roster never showed one). The
+harvest collapsed the two anthonys into one team, hence 11 rosters graded.
+Yahoo-projection coverage came out at 6%, so no Yahoo-scale grade.
+
+Fixed tonight: the strip reader detects the snake's mirrored round rather
+than counting unique names; the team count comes from the Results tab's
+team list once any harvest has run, and the pick recorder uses it; the
+harvester keeps duplicate labels apart.
+
+Of the picks the audit can vouch for after the team count was corrected:
+Evans at 82, Sutton at 87, Worthy at 130, Steelers at 154 all matched the
+live recommendation.
