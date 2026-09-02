@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Harvey Cup Draft Advisor (loader)
 // @namespace    https://github.com/bhwilkoff/fantasy-draft-assistant
-// @version      2.2.0
+// @version      2.2.1
 // @updateURL    https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/loader.user.js
 // @downloadURL  https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/loader.user.js
 // @description  Loads the live draft advisor from GitHub Pages every time, so fixes deploy without reinstalling
@@ -33,12 +33,11 @@
  * rooms; the overlay's footer shows "autopilot" when it is on.
  *
  * NEVER MISS THE START. On the mock waiting room, with the mock flag set,
- * this script enters the draft client as soon as Yahoo's draft server will
- * have it (from three minutes before the countdown ends, or at once if the
- * countdown is gone -- rooms have started before their own clock said so),
- * and on a "Error connecting to draft server" page it retries every ten
- * seconds until the room opens. The stack then arms the moment the player
- * table renders, well before pick one.
+ * this script clicks "Enter Draft" the instant the link appears (a
+ * MutationObserver, which fires even in a background tab), and on a
+ * "Error connecting to draft server" page it retries every ten seconds
+ * until the room opens. The stack then arms the moment the player table
+ * renders, before pick one.
  */
 (function () {
   'use strict';
@@ -47,33 +46,32 @@
 
   function flag(k) { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } }
 
-  /* ---- waiting room: get into the client early (mocks) ---- */
+  /* ---- waiting room (mocks): into the client the instant Yahoo allows ---- */
   if (/\/f1\/mock_waiting/.test(here)) {
     if (!flag('hcMockAutopilot')) return;
-    var mlid = (location.search.match(/mlid=(\d+)/) || [])[1];
-    if (!mlid) return;
-    function slotOf() {
-      var m = (document.body.innerText || '').match(/You will draft (\d+)(?:st|nd|rd|th)/i);
-      return m ? +m[1] : null;
-    }
-    function secondsLeft() {
-      var m = (document.body.innerText || '').match(/Starts In\s*(\d{1,2}):(\d{2})/i);
-      return m ? (+m[1]) * 60 + (+m[2]) : null;
-    }
-    function go() {
-      var slot = slotOf();
-      if (!slot) return false;
+    /* Measured in mock 10515116: the draft client refuses a direct URL
+     * ("Error connecting to draft server") until the waiting room offers
+     * its "Enter Draft" link, about twenty seconds before the start. So
+     * watch for that link and click it at once. A MutationObserver fires
+     * in a background tab; timers there are throttled to once a minute,
+     * which is how mock 15 lost pick 2. The interval is only a fallback. */
+    var entered = false;
+    function tryEnter() {
+      if (entered) return true;
+      var a = [].slice.call(document.querySelectorAll('a, button')).find(function (x) {
+        return (x.textContent || '').trim() === 'Enter Draft';
+      });
+      if (!a) return false;
+      entered = true;
       try { localStorage.setItem('hcEnterUntil', String(Date.now() + 20 * 60 * 1000)); } catch (e) {}
-      location.href = '/draftclient/f1/' + mlid + '/' + slot;
+      a.removeAttribute('target');
+      a.click();
       return true;
     }
-    function check() {
-      var left = secondsLeft();
-      var started = /Draft has Started|Enter Draft/i.test(document.body.innerText || '');
-      if (started || left == null || left <= 180) { if (go()) return; }
-      setTimeout(check, 5000);   // throttled to a minute in a hidden tab; still fine
-    }
-    setTimeout(check, 1500);
+    if (tryEnter()) return;
+    var wmo = new MutationObserver(function () { if (tryEnter()) wmo.disconnect(); });
+    wmo.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+    setInterval(tryEnter, 1000);
     return;
   }
 
