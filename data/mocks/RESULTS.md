@@ -16,6 +16,7 @@ degrades.
 | 5 | 10426834 | 12 | 5 | pick 10 | **12 / 12** | 1257.5 | 1443.4 | 185.9 |
 | 6 | 10427900 | 12 | 8 | pick 4 | **12 / 12** | 1482.2 | 1744.7 | 262.5 |
 | 7 | 10429138 | 12 | 7 | pick 1 | **7 / 12** (our proj.) | 1749.2 | 1790.0 | 89.3 |
+| 8 | 10430207 | 12 | 2 | pick 70 | **12 / 12** (our proj.) | 1637.3 | 1813.0 | 175.7 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -281,3 +282,33 @@ autopilot when a freshly pushed players.json was not yet cached.
 Also this draft: Autodraft was OFF after arming (the click landed before
 React attached its handler) and would have let Yahoo pick from its own
 rankings; the autopilot now reads the button's state every pass.
+
+
+## Draft 8 — room 10430207 (12-team, slot 2), 2026-09-01
+
+Not a valuation test; a harness test that found four more defects. Yahoo
+made picks 2, 23, 26, 47, 50 and 74 for us: the tab was recreated on entry
+(the zero-viewport case), the arm.js served to the fresh tab was a ten-
+minute-old cached copy whose data wait gave up, and a busy-loop version of
+the wait (pushed an hour earlier) starved the renderer so that every script
+evaluation timed out. Armed properly at pick ~73, the first pass ran while
+a harvest had left the players table on Team Defenses with Drafted on, so
+the pool was 32 defenses and the advisor's next recommendation was Jahmyr
+Gibbs in round nine. From pick 119 the mechanism was clean: Ferguson,
+Murray, Steelers D/ST all as advised; picks 143 and 146 were lost to an
+end-game moving a pick every two seconds (queue four deep, defense entering
+the ranking on the very pick it was needed), and the last pick took a
+second defense because no kicker had reached the queue.
+
+Roster: `QB C. Williams · WR A. Brown, Nabers · RB B. Robinson, Skattebo ·
+TE Fannin · flex McLaurin · DEF Steelers, Ravens · no K`. **12 of 12** on
+our projections (1637 vs 1813); Yahoo coverage 86%, so no Yahoo-scale grade.
+
+Fixed tonight, all deployed: arm.js loads the autopilot when the index
+appears (a property hook, no polling); the arm one-liner carries a
+cache-buster; the autopilot reads the Drafted toggle's state (check icon)
+and puts the filter back, and re-selects All Positions when the table
+shows one position; a reseed pauses passes and times out after 20 s; the
+queue is eight deep with two adds per pass when thin; K/DEF enter the
+ranking at four picks left; the harvester never mistakes the position
+filter for the team list and waits for the Results tab to render.
