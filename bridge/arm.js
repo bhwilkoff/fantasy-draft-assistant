@@ -50,30 +50,44 @@
     // players.json resolves; poll briefly rather than racing it.
     // setInterval is throttled in hidden tabs, so poll via MessageChannel --
     // the one macrotask source Chrome does not throttle in the background.
-    /* Bound the wait by TIME, not by a count of yields. MessageChannel
-     * yields take well under a millisecond each, so "400 tries" was a few
-     * hundred milliseconds -- enough only when players.json was already in
-     * the browser cache. A fresh data plane (pushed mid-draft) took longer
-     * than that to fetch, the poll gave up, and the room ran with the
-     * overlay but NO autopilot: a queue nobody was updating. */
-    var started = Date.now();
-    function poll() {
-      if (window.__hcIndex) {
-        load(['bridge/autopilot.js'], function () {
-          window.__hcArmed = true;
-          console.log('[harvey-cup] advisor + autopilot armed');
-        });
-        return;
-      }
-      if (Date.now() - started > 90000) {
-        window.__hcArmError = 'data never loaded within 90s; autopilot not armed';
-        console.warn('[harvey-cup] ' + window.__hcArmError);
-        return;
-      }
-      var ch = new MessageChannel();
-      ch.port1.onmessage = poll;
-      ch.port2.postMessage(0);
+    /* Load the autopilot the moment the bridge publishes its matcher index
+     * -- event-driven, not polled. Polling via MessageChannel spins the main
+     * thread (a yield returns in microseconds, so a 90-second wait is a
+     * 90-second busy loop) and starved the draft client badly enough that
+     * script evaluation timed out; polling via setTimeout is throttled to
+     * once a minute in a long-hidden tab. A property setter costs nothing
+     * and fires exactly once, when players.json has resolved. */
+    function armAutopilot() {
+      if (window.__hcArmed) return;
+      load(['bridge/autopilot.js'], function () {
+        window.__hcArmed = true;
+        console.log('[harvey-cup] advisor + autopilot armed');
+      });
     }
-    poll();
+    if (window.__hcIndex) {
+      armAutopilot();
+    } else {
+      var idx;
+      try {
+        Object.defineProperty(window, '__hcIndex', {
+          configurable: true, enumerable: true,
+          get: function () { return idx; },
+          set: function (v) {
+            idx = v;
+            // turn it back into a plain property before anything else runs
+            try { delete window.__hcIndex; } catch (e) {}
+            window.__hcIndex = v;
+            if (v) armAutopilot();
+          }
+        });
+      } catch (e) {
+        window.__hcArmError = 'could not hook __hcIndex: ' + e;
+      }
+      // belt and braces for the throttled case: one slow timer, no loop
+      setTimeout(function () {
+        if (!window.__hcArmed && window.__hcIndex) armAutopilot();
+        else if (!window.__hcArmed) window.__hcArmError = 'data never loaded; autopilot not armed';
+      }, 90000);
+    }
   });
 })();
