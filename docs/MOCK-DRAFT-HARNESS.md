@@ -71,6 +71,31 @@ drafting). Twenty mocks is therefore a ten-hour exercise, which is why the
 statistical work lives in the offline simulator and mocks are reserved for
 harness validation.
 
+## Recovery, in the order it actually happens (2026-09-01)
+
+Yahoo recreates the draft tab a few minutes in. The symptoms, in order:
+the tab ID changes, a script evaluation hangs for its full 45 s timeout,
+and a screenshot fails with "extension must request permission". All three
+are the same event. The room keeps drafting the whole time -- a mock room
+moves a full round every 2-4 minutes, so one stuck evaluation costs picks.
+
+```js
+// 1. navigate the (new) tab to the SAME draftclient URL; nothing else works
+// 2. arm with the one-liner (the multi-line var s=... form is rejected by
+//    the browser tool as "query string data")
+document.head.appendChild(Object.assign(document.createElement('script'),
+  {src:'https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/arm.js'}));
+// 3. picks landed while blind, so rebuild the roster from the Results tab
+await window.__hcAuto.seedRosterFromResults();
+// 4. confirm every pick since arming took the queue top
+window.__hcAuto.audit();
+```
+
+`__hcStatus()` after a re-arm should show `restored=N` (the pick log came
+back from localStorage) and `seed=N` (the roster came from the Results
+tab). If `rosterSize` is not 15 in a mock, the flex slot was dropped: set
+`window.__hcRosterText='QB,WR,WR,RB,RB,TE,W/R/T,K,DEF,BN,BN,BN,BN,BN,BN'`.
+
 ## What to check after each mock
 
 ```js
