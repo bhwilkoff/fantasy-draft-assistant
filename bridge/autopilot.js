@@ -401,6 +401,7 @@
      * Puka Nacua in round eleven and purged the real queue to make room for
      * him; the queue was still being rebuilt when a burst of instant
      * autodraft picks reached our turn (mock 10427900, pick 137). */
+    var tPre = Date.now();
     var st = R.readStatus();
     recordLastPick(st);      // the header is present in every view; read it first
     /* A reseed that never resolves (a re-arm replaced the harvester under
@@ -478,6 +479,7 @@
       return m.player || { name: r.name, pos: r.pos, vor: 0, points: 0 };
     });
 
+    A.preMs = Date.now() - tPre;   // status, pick log, rows, filters, matching, roster
     var cur = st.pick || 1;
     var next = cur + (st.upIn != null ? Math.max(1, st.upIn) : 12);
     /* Exact picks remaining from the snake: how many of OUR pick numbers
@@ -599,7 +601,10 @@
      * ONE click per pass (two only when the queue is empty), and let the
      * passes -- one a second -- do the rest. A pass that clicked four stars
      * cost a full second of main thread. */
-    var clickBudget = real.length ? 1 : 2;
+    // ...except when queue[0] is not the recommendation: Yahoo auto-picks
+    // the instant our turn opens, so the top entry must be right at all
+    // times; spend two clicks (evict + add) to fix it in one pass
+    var clickBudget = (!real.length || real[0] !== wantIds[0]) ? 2 : 1;
     function spend() { if (clickBudget <= 0) return false; clickBudget--; return true; }
     /* 1. drop anything Yahoo has that we no longer want -- but be slow to
      *    evict. A player who slipped from 4th to 6th in our ranking is
@@ -831,7 +836,9 @@
       // a pass that clicks costs ~200-400 ms of Yahoo's re-render by design;
       // back off only when it is worse than that, and never past 4 s, or the
       // queue refills too slowly after our own pick
-      if (ms > 600 && A.RATE_MS < 4000) A.RATE_MS = Math.min(4000, A.RATE_MS * 2);
+      var near = A.last && A.last.upIn != null && A.last.upIn <= 2;
+      if (near) A.RATE_MS = 1000;   // our pick is imminent: the queue must be right now
+      else if (ms > 600 && A.RATE_MS < 4000) A.RATE_MS = Math.min(4000, A.RATE_MS * 2);
       else if (ms < 250 && A.RATE_MS > 1000) A.RATE_MS = Math.max(1000, A.RATE_MS / 2);
     });
   }
@@ -867,7 +874,7 @@
       'lastTick=' + (A.last ? Math.round((Date.now() - A.last.ts) / 1000) + 's' : 'NEVER'),
       'pass=' + (A.passMs == null ? '?' : A.passMs + 'ms') + '/max' + (A.passMax || 0)
         + '/avg' + (A.passCount ? Math.round(A.passTotal / A.passCount) : 0) + '/every' + A.RATE_MS,
-      'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ' reconcile:' + (A.reconcileMs == null ? '?' : A.reconcileMs + 'ms') + ' seq:' + (A.seqMs == null ? '?' : A.seqMs + 'ms') + ']',
+      'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ' pre:' + (A.preMs == null ? '?' : A.preMs + 'ms') + ' reconcile:' + (A.reconcileMs == null ? '?' : A.reconcileMs + 'ms') + ' seq:' + (A.seqMs == null ? '?' : A.seqMs + 'ms') + ']',
       'dialogs=' + ((window.__hcDialogs || []).length),
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
