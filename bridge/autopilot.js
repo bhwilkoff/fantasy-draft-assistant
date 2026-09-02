@@ -290,9 +290,22 @@
       var norm = function (n) {
         return String(n || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       };
+      /* ...and the click records the FULL name ("Josh Allen") while the
+       * Results tab abbreviates ("J. Allen"), so a name key still doubled
+       * every click-drafted player (mock 10513354: three picks, roster of
+       * five). Key by pick number when both sides have one, else by the
+       * matched player's canonical name, else by the normalised text. */
+      var keyOf = function (p) {
+        if (p.pick) return 'pk' + p.pick;
+        try {
+          var mm = window.HarveyCup.lookup(window.__hcIndex, p.name, p.pos, p.team);
+          if (mm && mm.player) return 'id|' + mm.player.name + '|' + mm.player.pos;
+        } catch (e) {}
+        return norm(p.name) + '|' + (p.pos || '');
+      };
       var seen = {}, merged = [];
       A.seedRoster.concat(out).forEach(function (p) {
-        var k = norm(p.name) + '|' + (p.pos || '');
+        var k = keyOf(p);
         if (seen[k]) return;
         seen[k] = 1; merged.push(p);
       });
