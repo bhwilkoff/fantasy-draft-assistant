@@ -133,9 +133,11 @@ draft-guide folklore.
 * **Rounds 13-17 — swing.** Bench picks are the only place upside is free.
   Prefer young, high-variance, unclear-role players over the safe veteran who
   is already priced correctly.
-* **K and DEF: last two rounds, never earlier.** Twelve of each for twelve
-  teams; replacement is a waiver claim away. The advisor refuses to consider
-  them until then.
+* **K and DEF: the last three picks, never earlier.** Twelve of each for
+  twelve teams; replacement is a waiver claim away. The advisor refuses to
+  consider them until three picks remain (it was two; an end-game of
+  autodrafters moves a pick every two seconds and the queue is fed one
+  entry per pass, so the defense missed pick 161 in mock 10427900).
 
 ## 7. QB in a 6-point-passing-TD league
 
