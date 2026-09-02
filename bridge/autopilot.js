@@ -26,7 +26,7 @@
     on: true, queued: {}, log: [], last: null, results: null,
     timer: null, autodraftOn: false, relay: true,
     picks: {}, numTeams: null,
-    RATE_MS: 1500,         // floor between heavy passes; see schedule()
+    RATE_MS: 1000,         // floor between heavy passes; see schedule()
     QUEUE_DEPTH: 4         // keep the queue small so its ORDER stays correct
   };
 
@@ -316,6 +316,13 @@
      * switch back failed. Previously tick() just returned, silently, forever,
      * while __hcStatus still reported alive=yes. An instrument must say when
      * it is blind, and this one can also fix itself: click back to Players. */
+    /* While the roster is being re-read from the Results tab the harvester
+     * has the "Drafted" filter switched on, so the players table briefly
+     * contains DRAFTED players. A pass that ran in that window recommended
+     * Puka Nacua in round eleven and purged the real queue to make room for
+     * him; the queue was still being rebuilt when a burst of instant
+     * autodraft picks reached our turn (mock 10427900, pick 137). */
+    if (A.reseeding) return;
     var rows = readRows();
     if (!rows.length) {
       A.blind = 'no player table (wrong view?)';
@@ -431,15 +438,38 @@
 
     var real = readYahooQueue();
     var added = 0, removed = 0;
-    // 1. drop anything Yahoo has that we no longer want
+    /* 1. drop anything Yahoo has that we no longer want -- but be slow to
+     *    evict. A player who slipped from 4th to 6th in our ranking is
+     *    harmless further down the queue; removing him and re-adding one
+     *    entry per pass leaves the queue thin exactly when picks come
+     *    fastest. Evict only players outside twice the queue depth, and
+     *    anyone no longer on the board. */
+    var tolerated = {};
+    [res.recommendation].concat(res.alternatives).filter(Boolean)
+      .slice(0, A.QUEUE_DEPTH * 2).forEach(function (w) {
+        if (yidOf[w.name]) tolerated[yidOf[w.name]] = 1;
+      });
+    var onBoard = {};
+    rows.forEach(function (r) { onBoard[r.yid] = 1; });
     real.forEach(function (yid) {
       if (wantIds.indexOf(yid) >= 0) return;
+      if (tolerated[yid] && onBoard[yid]) return;
       var b = starButton('ys-removequeue', yid);
       if (b) { b.click(); removed++; }
     });
     // 2. drop anything that is out of order relative to our ranking, so the
     //    re-add below restores queue[0] = the live recommendation
     var present = real.filter(function (yid) { return wantIds.indexOf(yid) >= 0; });
+    // a tolerated extra sitting ABOVE a wanted player would be drafted first:
+    // evict it in that case
+    var firstWantedAt = real.findIndex(function (yid) { return wantIds.indexOf(yid) >= 0; });
+    real.forEach(function (yid, i) {
+      if (wantIds.indexOf(yid) >= 0) return;
+      if (firstWantedAt >= 0 && i < firstWantedAt) {
+        var bb = starButton('ys-removequeue', yid);
+        if (bb) { bb.click(); removed++; }
+      }
+    });
     var lastRank = -1, keep = [];
     present.forEach(function (yid) {
       var rank = wantIds.indexOf(yid);
@@ -480,6 +510,7 @@
       rosterCount: roster.length, picksRemaining: remaining,
       poolSize: pool.length, unmatched: unmatched,
       queuedAdded: added, queuedRemoved: removed, queueTop: A.queueTop,
+      yq: A.yahooQueue.slice(0, 3).join('>'),
       ts: Date.now()
     };
     var lastPick = A.log.length ? A.log[A.log.length - 1].pick : null;
