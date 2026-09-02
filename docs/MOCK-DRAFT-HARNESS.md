@@ -89,6 +89,28 @@ drafting). Twenty mocks is therefore a ten-hour exercise, which is why the
 statistical work lives in the offline simulator and mocks are reserved for
 harness validation.
 
+## Two things only a human at the keyboard can fix (2026-09-02)
+
+**A native dialog.** Yahoo raises a blocking `alert` when it moves an
+inactive team into auto-pick mode ("you have been put into auto pick mode
+due to inactivity"). While it is up, the page's event loop is stopped:
+every pass, the overlay, and any script evaluation from outside hang, and
+the tab title stops advancing. The room looks frozen for minutes and then
+resumes when someone clicks OK. The mock autopilot now overrides
+`alert`/`confirm`/`prompt` to be non-blocking (`__hcDialogs` keeps what
+was said), but that only helps once it is loaded; a dialog raised before
+arming still needs a click.
+
+**Memory Saver.** Chrome discards a background tab under memory pressure
+and restores it on the next access; the restored tab has a NEW tab id, a
+freshly reloaded page (every injected script gone), and spends its first
+minute in "Downloading player data" with the renderer pegged. That is the
+"tab recreated on entry" pattern. Fix it once: `chrome://settings/performance`
+-> Memory Saver -> "Always keep these sites active" -> add
+`football.fantasysports.yahoo.com`. Keeping the draft tab as the active
+tab of a visible window also prevents it. With `bridge/loader.user.js`
+installed the overlay re-arms itself after every restore regardless.
+
 ## Recovery, in the order it actually happens (2026-09-01)
 
 Yahoo recreates the draft tab a few minutes in. The symptoms, in order:
