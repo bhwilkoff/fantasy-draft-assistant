@@ -27,7 +27,8 @@
     timer: null, autodraftOn: false, relay: true,
     picks: {}, numTeams: null,
     RATE_MS: 1000,         // floor between heavy passes; see schedule()
-    QUEUE_DEPTH: 4         // keep the queue small so its ORDER stays correct
+    QUEUE_DEPTH: 8         // deep enough that an autodraft cascade taking
+                           // the top entries still leaves OUR next choice
   };
 
   function T(e) { return (e && e.textContent ? e.textContent : '').trim(); }
@@ -578,8 +579,12 @@
       if (b) { b.click(); removed++; }
       return false;
     });
-    // 3. add the first missing wanted player (one per pass, see above)
-    for (var ai = 0; ai < wantIds.length && !added; ai++) {
+    // 3. add the missing wanted players in order: one per pass while the
+    //    queue is healthy (order safety), two when it has run thin -- an
+    //    end-game of autodrafters moves a pick every two seconds, and a
+    //    queue with one name in it is one pick from empty
+    var maxAdds = keep.length < 3 ? 2 : 1;
+    for (var ai = 0; ai < wantIds.length && added < maxAdds; ai++) {
       if (keep.indexOf(wantIds[ai]) >= 0) continue;
       var sb = starButton('ys-addqueue', wantIds[ai]);
       if (sb) { sb.click(); added++; }

@@ -196,9 +196,9 @@ def advise(available, roster, current_pick, next_pick, recent_pick_positions=Non
 
     # Never spend an early pick on K/DEF: they are worth ~1 point a week over
     # the waiver alternative and there are 12 of each for 12 teams.
-    # Gate opens at 3 picks left (see web/advisor.js for why not 2).
+    # Gate opens at 4 picks left (see web/advisor.js for why).
     for p in ("K", "DEF"):
-        if p in usable and my_picks_remaining > (3 if starter_gap[p] else 1):
+        if p in usable and my_picks_remaining > (4 if starter_gap[p] else 1):
             usable.remove(p)
     if not usable:
         usable = [p for p in ("RB", "WR", "TE", "QB") if total_gap[p] > 0] or ["WR"]
