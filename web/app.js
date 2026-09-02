@@ -48,7 +48,9 @@
     return S.players.filter(function (p) { return S.mine[p.name]; });
   }
 
-  function picks() { return HC.snakePicks(S.slot, HC.NUM_TEAMS, HC.ROUNDS); }
+  function teams() { return (S.meta && S.meta.league && S.meta.league.teams) || HC.NUM_TEAMS; }
+  function rounds() { return (S.meta && S.meta.league && S.meta.league.rounds) || HC.ROUNDS; }
+  function picks() { return HC.snakePicks(S.slot, teams(), rounds()); }
   function currentPick() { return S.drafted.length + 1; }
   function myNextPick() {
     var c = currentPick();
@@ -58,7 +60,7 @@
   function myPickAfter() {
     var n = myNextPick();
     var p = picks().filter(function (x) { return x > n; });
-    return p.length ? p[0] : n + HC.NUM_TEAMS;
+    return p.length ? p[0] : n + teams();
   }
 
   /* ------------------------------------------------------------- rendering */
@@ -119,7 +121,7 @@
 
     $('clock').innerHTML =
       'Pick <b>' + currentPick() + '</b> overall · round '
-      + (Math.floor((currentPick() - 1) / HC.NUM_TEAMS) + 1)
+      + (Math.floor((currentPick() - 1) / teams()) + 1)
       + (onClockNow ? ' · <b class="warn">your pick</b>'
         : ' · yours at <b>' + myNextPick() + '</b>')
       + '<br>then again at ' + myPickAfter();
@@ -188,10 +190,17 @@
     })
     .then(function (j) {
       S.players = j.players; S.meta = j.meta;
+      // the lineup shape and roster size come from the data plane, so the
+      // board's advisor runs the configured league, not a built-in default
+      if (j.meta && j.meta.league && j.meta.league.roster_text && window.HarveyLeague) {
+        var parsed = window.HarveyLeague.parseRoster(j.meta.league.roster_text);
+        HC.setLineup(parsed);
+        HC.setRosterSize(HC.rosterSizeFrom(parsed));
+      }
       load();
 
       var sel = $('slot');
-      for (var i = 1; i <= HC.NUM_TEAMS; i++) {
+      for (var i = 1; i <= teams(); i++) {
         var o = document.createElement('option');
         o.value = i; o.textContent = i;
         if (i === S.slot) o.selected = true;

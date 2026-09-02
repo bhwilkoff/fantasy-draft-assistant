@@ -624,9 +624,13 @@
     var det = readLeagueSettings();
     var isMock = /\/draftclient\/f1\/\d{7,}\//.test(location.pathname)
               || /mock/i.test(location.href);
+    // The data plane carries the configured league (config/league.json via
+    // engine/build.py), so a real room runs exactly the rules the engine was
+    // built with; only a mock falls back to Yahoo's defaults.
+    var cfg = (j.meta && j.meta.league) || {};
     var rosterText = det.rosterText
       || (isMock ? 'QB,WR,WR,RB,RB,TE,W/R/T,K,DEF'
-                 : 'QB,WR,WR,WR,RB,RB,TE,W/T,W/R,K,DEF,BN,BN,BN,BN,BN,BN');
+                 : (cfg.roster_text || 'QB,WR,WR,WR,RB,RB,TE,W/T,W/R,K,DEF,BN,BN,BN,BN,BN,BN'));
     var roster = L.parseRoster(rosterText);
     if (!roster.starters) roster = L.parseRoster('QB,WR,WR,RB,RB,TE,W/R/T,K,DEF');
     // The draft client never prints "Roster Positions" (only the waiting room
@@ -637,11 +641,11 @@
       if (fromRoom.starters) { roster = fromRoom; rosterText = window.__hcRosterText; }
     }
     var scoring = isMock ? L.SCORING_PRESETS.yahoo_default
-                         : L.SCORING_PRESETS.harvey_cup;
+                         : (cfg.scoring || L.SCORING_PRESETS.harvey_cup);
     // Guard the range as well: a bad read must never silently become a
     // 210-team league again.
     var numTeams = det.numTeams;
-    if (!numTeams || numTeams < 4 || numTeams > 20) numTeams = 12;
+    if (!numTeams || numTeams < 4 || numTeams > 20) numTeams = cfg.teams || 12;
     state.league = L.applyLeague(j.players, {
       roster: roster, scoring: scoring, numTeams: numTeams
     });

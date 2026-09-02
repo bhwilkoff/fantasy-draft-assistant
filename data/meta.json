@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-02T02:28:57+00:00",
+  "generated_at": "2026-09-02T14:39:15+00:00",
   "league": {
     "id": 539156,
     "name": "Harvey Cup",
@@ -18,7 +18,32 @@
     },
     "bench": 6,
     "ppr": 1.0,
-    "pass_td": 6.0
+    "pass_td": 6.0,
+    "roster_text": "QB,WR,WR,WR,RB,RB,TE,W/T,W/R,K,DEF,BN,BN,BN,BN,BN,BN",
+    "scoring": {
+      "name": "Harvey Cup",
+      "pass_yd": 0.04,
+      "pass_td": 6.0,
+      "pass_int": -1.0,
+      "rush_yd": 0.1,
+      "rush_td": 6.0,
+      "rec": 1.0,
+      "rec_yd": 0.1,
+      "rec_td": 6.0,
+      "two_pt": 2.0,
+      "fum_lost": -2.0
+    },
+    "flex_eligibility": {
+      "W/T": [
+        "WR",
+        "TE"
+      ],
+      "W/R": [
+        "WR",
+        "RB"
+      ]
+    },
+    "config": "league.json"
   },
   "replacement_points": {
     "QB": 346.57,
@@ -38,8 +63,8 @@
   },
   "sources": {
     "projections": "consensus of ESPN kona_player_info + Sleeper (raw stats blended per stat, re-scored); 421 players with both, K/DEF ESPN-only",
-    "injuries": "Sleeper (282 statuses)",
-    "adp": "FantasyFootballCalculator PPR 12-team, 8101 drafts 2026-08-25..2026-09-01"
+    "injuries": "Sleeper (281 statuses)",
+    "adp": "FantasyFootballCalculator PPR 12-team, 8007 drafts 2026-08-26..2026-09-02"
   },
   "player_count": 531
 }

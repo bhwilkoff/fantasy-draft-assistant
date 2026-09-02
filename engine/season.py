@@ -21,10 +21,15 @@ stable across every published study of weekly fantasy scoring.
 import math
 import random
 
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import league as _L
+
 WEEKLY_CV = {"QB": 0.35, "RB": 0.55, "WR": 0.65, "TE": 0.70, "K": 0.45, "DEF": 0.75}
-REG_WEEKS = 14
-PLAYOFF_WEEKS = 3
-PLAYOFF_TEAMS = 6
+# the competition's shape is a league parameter (config/league.json)
+REG_WEEKS = _L.REGULAR_SEASON_WEEKS
+PLAYOFF_WEEKS = len(_L.PLAYOFF_WEEKS)
+PLAYOFF_TEAMS = _L.PLAYOFF_TEAMS
 
 
 def weekly_mu(player):

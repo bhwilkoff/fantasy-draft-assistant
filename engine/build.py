@@ -227,6 +227,11 @@ def build():
             "rounds": L.ROUNDS, "roster_size": L.ROSTER_SIZE,
             "starters": L.STARTERS, "bench": L.BENCH,
             "ppr": L.OFFENSE["rec"], "pass_td": L.OFFENSE["pass_td"],
+            # what the browser needs to run the SAME rules without guessing:
+            "roster_text": L.roster_text(),
+            "scoring": L.scoring_preset(),
+            "flex_eligibility": {k: list(v) for k, v in L.FLEX_ELIGIBILITY.items()},
+            "config": os.path.basename(L.CONFIG_PATH),
         },
         "replacement_points": {k: round(v, 2) for k, v in levels.items()},
         "starters_consumed": counts,
