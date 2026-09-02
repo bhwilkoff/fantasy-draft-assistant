@@ -171,6 +171,8 @@
       // textContent has no line breaks, so keep only the name we matched
       drafter: (best ? order[slot - 1] : (slot === +mySlot ? 'You' : rawDrafter.slice(0, 24)))
     };
+    A.draftedKeys = A.draftedKeys || {};
+    A.draftedKeys[String(entry.name).toLowerCase().replace(/[^a-z]/g, '') + '|' + entry.pos] = 1;
     var prev = A.picks[pickNo];
     if (prev && prev.name === entry.name) return;
     /* When did it land? Yahoo's autodraft picks within a second or two of
@@ -374,6 +376,44 @@
       return;
     }
     A.blind = null;
+
+    /* Filter sanity. The table must show every undrafted player and no
+     * drafted one. Two ways it silently stops doing that: the Drafted toggle
+     * is left on (a harvest interrupted mid-way, or a stray click), so
+     * already-drafted players look available -- live, the advisor
+     * recommended Jahmyr Gibbs in round nine; or the position select is
+     * left on one position, so the pool is a fraction of the board. Detect
+     * both from the rows themselves and put the filters back. */
+    var drafted = 0;
+    rows.forEach(function (r) {
+      var key = String(r.name || '').toLowerCase().replace(/[^a-z]/g, '') + '|' + r.pos;
+      if (A.draftedKeys && A.draftedKeys[key]) drafted++;
+    });
+    var now0 = Date.now();
+    if (drafted >= 3 && (!A.filterFixAt || now0 - A.filterFixAt > 5000)) {
+      var dr = [].slice.call(document.querySelectorAll('button,div,span'))
+        .filter(function (x) { return x.children.length === 0 && T(x) === 'Drafted'; })[0];
+      var host = dr ? (dr.closest('button') || dr) : null;
+      if (host) { host.click(); A.filterFixAt = now0; A.filterFixes = (A.filterFixes || 0) + 1; }
+      return;   // re-read on the next pass
+    }
+    var posCounts = {};
+    rows.forEach(function (r) { posCounts[r.pos] = (posCounts[r.pos] || 0) + 1; });
+    if (rows.length < 60 && Object.keys(posCounts).length === 1
+        && (!A.filterFixAt || now0 - A.filterFixAt > 5000)) {
+      var sel = [].slice.call(document.querySelectorAll('select')).find(function (x) {
+        return [].slice.call(x.options).some(function (o) { return /All Positions/i.test(T(o)); });
+      });
+      if (sel) {
+        var all = [].slice.call(sel.options).find(function (o) { return /All Positions/i.test(T(o)); });
+        var d = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(sel), 'value');
+        if (d && d.set) d.set.call(sel, all.value); else sel.value = all.value;
+        sel.dispatchEvent(new Event('input', { bubbles: true }));
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+        A.filterFixAt = now0; A.filterFixes = (A.filterFixes || 0) + 1;
+        return;
+      }
+    }
 
     var pool = [], yidOf = {}, unmatched = 0;
     rows.forEach(function (r) {
@@ -704,6 +744,7 @@
       'lastTick=' + (A.last ? Math.round((Date.now() - A.last.ts) / 1000) + 's' : 'NEVER'),
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
+      A.filterFixes ? 'filterfix=' + A.filterFixes : '',
       'harvested=' + (A.finalHarvest ? A.finalHarvest.teams + 'teams' : 'no'),
       'avail=' + (A.availabilityAt != null ? 'opp@' + A.availabilityAt : 'adp'),
       'autodrafters=' + ((A.autodraftSlots || []).join(',') || '-'),
