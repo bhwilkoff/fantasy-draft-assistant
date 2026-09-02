@@ -53,6 +53,13 @@ import vor as vor_mod
 
 BENCH_TARGET = {"QB": 1, "RB": 3, "WR": 3, "TE": 1, "K": 0, "DEF": 0}
 
+# A player who would sit on the bench is worth only the fraction of his VOR
+# he is likely to actually start (byes, injuries, a later flex slot). VOR over
+# positional replacement is right for a starter and badly wrong for a backup:
+# a second quarterback's VOR over QB12 beat every receiver's at pick 53 in a
+# live mock, with a QB already rostered. Mirrored in web/advisor.js.
+BENCH_DISCOUNT = {"QB": 0.2, "RB": 0.6, "WR": 0.6, "TE": 0.35, "K": 0.0, "DEF": 0.0}
+
 # The lineup shape is a league parameter (DECISIONS 010), mirrored in
 # web/advisor.js: base starters per position, how many flex slots exist, and
 # which positions may fill one. Harvey Cup is the default; a room with a
@@ -230,7 +237,9 @@ def advise(available, roster, current_pick, next_pick, recent_pick_positions=Non
                              if x["pos"] == pos and x.get("tier") == cand.get("tier"))
         # Score: the player's own value, plus what we lose by not taking his
         # position now, discounted by how likely he is to come back to us.
-        score = cand["vor"] + DROPOFF_WEIGHT * dropoff * (1.0 - surv)
+        starts = starter_gap.get(pos, 0) > 0 or (pos in FLEX_ELIGIBLE and flex_open > 0)
+        score = (cand["vor"] if starts else cand["vor"] * BENCH_DISCOUNT[pos]) \
+            + DROPOFF_WEIGHT * dropoff * (1.0 - surv)
         if starter_gap.get(pos, 0) > 0:
             score += STARTER_BONUS            # a lineup hole is real value
         ranked.append({

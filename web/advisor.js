@@ -13,6 +13,15 @@
   var STARTER_BONUS = 3.0;
 
   var BENCH_TARGET = { QB: 1, RB: 3, WR: 3, TE: 1, K: 0, DEF: 0 };
+  /* A player who would sit on the bench is worth only the fraction of his
+   * VOR that he is likely to actually start: byes, injuries, and (for
+   * flex-eligible positions) a later flex slot. VOR alone measures value
+   * over positional replacement, which is the right number for a STARTER
+   * and badly wrong for a backup -- in mock 10426834 the advisor recommended
+   * Lamar Jackson at pick 53 with Josh Allen already rostered, because a
+   * second quarterback's VOR over QB12 beat every receiver's. A second QB
+   * starts roughly a game or two a season. */
+  var BENCH_DISCOUNT = { QB: 0.2, RB: 0.6, WR: 0.6, TE: 0.35, K: 0, DEF: 0 };
   var POSITIONS = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
   var NUM_TEAMS = 12, ROUNDS = 17, ROSTER_SIZE = 17;
 
@@ -176,7 +185,10 @@
       var tierLeft = pool.filter(function (x) {
         return x.pos === c.pos && x.tier === c.tier;
       }).length;
-      var score = c.vor + DROPOFF_WEIGHT * drop * (1 - surv)
+      var starts = need.starterGap[c.pos] > 0
+                || (FLEX_ELIGIBLE[c.pos] && need.flexOpen > 0);
+      var score = (starts ? c.vor : c.vor * BENCH_DISCOUNT[c.pos])
+                + DROPOFF_WEIGHT * drop * (1 - surv)
                 + (need.starterGap[c.pos] > 0 ? STARTER_BONUS : 0);
       ranked.push({
         name: c.name, pos: c.pos, team: c.team, tier: c.tier, bye: c.bye,
