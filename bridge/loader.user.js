@@ -23,7 +23,15 @@
  */
 (function () {
   'use strict';
-  window.__hcNoAutopilot = true;
+  /* MOCK ROOMS ONLY: run `localStorage.setItem('hcMockAutopilot','1')` once
+   * in the console and the loader also arms the autopilot, so a mock is a
+   * single step. Remove the flag before a real draft:
+   * `localStorage.removeItem('hcMockAutopilot')`. The flag is per-origin,
+   * so it cannot leak anywhere but Yahoo draft rooms, and the overlay's
+   * footer shows "autopilot" when it is on. */
+  var mock = false;
+  try { mock = localStorage.getItem('hcMockAutopilot') === '1'; } catch (e) {}
+  window.__hcNoAutopilot = !mock;
   function arm() {
     if (window.__hcArmed) return;
     var s = document.createElement('script');

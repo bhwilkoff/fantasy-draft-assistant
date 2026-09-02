@@ -49,7 +49,9 @@ document.head.appendChild(Object.assign(document.createElement('script'),
 ```
 
 If `bridge/loader.user.js` is installed, step 1 has already happened by the
-time the player table renders; only step 2 is needed. Always use a
+time the player table renders; only step 2 is needed -- or, for mocks, run
+`localStorage.setItem('hcMockAutopilot','1')` once and the loader does step
+2 as well (remove the flag before the real draft). Always use a
 cache-buster: GitHub Pages serves a ten-minute cache. The
 autopilot keeps Yahoo's **queue** synced to current advice and switches
 **Autodraft** on, so the room drafts your board for you. It deliberately does
