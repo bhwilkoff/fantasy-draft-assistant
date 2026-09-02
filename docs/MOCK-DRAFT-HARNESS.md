@@ -89,6 +89,15 @@ drafting). Twenty mocks is therefore a ten-hour exercise, which is why the
 statistical work lives in the offline simulator and mocks are reserved for
 harness validation.
 
+## Autodraft stays off (2026-09-02)
+
+Yahoo drafts the top of your queue when your clock expires whether or not
+Autodraft is on. With it off, the actuator has the full clock to settle the
+queue and a burst of instant picks cannot outrun it; with it on, Yahoo
+picks the instant the turn opens. The autopilot therefore leaves Autodraft
+alone. For a fast unattended mock, `localStorage.setItem('hcMockAutodraft','1')`
+makes it switch Autodraft on once the draft has started.
+
 ## Two things only a human at the keyboard can fix (2026-09-02)
 
 **A native dialog.** Yahoo raises a blocking `alert` when it moves an

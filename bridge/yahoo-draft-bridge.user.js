@@ -663,8 +663,10 @@
     // engine/build.py), so a real room runs exactly the rules the engine was
     // built with; only a mock falls back to Yahoo's defaults.
     var cfg = (j.meta && j.meta.league) || {};
+    // a Yahoo mock is always 15 slots: 9 starters and 6 bench. Without the
+    // bench the roster size read 9 and the K/DEF gate opened in round 6.
     var rosterText = det.rosterText
-      || (isMock ? 'QB,WR,WR,RB,RB,TE,W/R/T,K,DEF'
+      || (isMock ? 'QB,WR,WR,RB,RB,TE,W/R/T,K,DEF,BN,BN,BN,BN,BN,BN'
                  : (cfg.roster_text || 'QB,WR,WR,WR,RB,RB,TE,W/T,W/R,K,DEF,BN,BN,BN,BN,BN,BN'));
     var roster = L.parseRoster(rosterText);
     if (!roster.starters) roster = L.parseRoster('QB,WR,WR,RB,RB,TE,W/R/T,K,DEF');

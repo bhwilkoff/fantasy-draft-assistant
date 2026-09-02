@@ -311,7 +311,14 @@
       .find(function (x) { return /^\s*autodraft\s*$/i.test(T(x)); });
     if (!b) { A.autodraftOn = false; return; }
     var on = b.querySelectorAll('svg').length > 0;
-    if (!on) {
+    /* Policy: leave Autodraft OFF. Yahoo drafts the top of the queue when
+     * the clock expires whether or not Autodraft is on; with it off the
+     * actuator has the whole clock to settle the queue, and a burst of
+     * instant picks cannot outrun it. Set localStorage hcMockAutodraft=1 to
+     * have the autopilot switch it on anyway (fast, unattended mocks). */
+    var wantOn = false;
+    try { wantOn = localStorage.getItem('hcMockAutodraft') === '1'; } catch (e) {}
+    if (!on && wantOn) {
       /* One click, then wait: each click is a React re-render of the whole
        * room (~200 ms) and before the draft has started Yahoo ignores it,
        * so a 3-second retry loop was burning a fifth of the CPU for
@@ -851,7 +858,7 @@
       'queued=' + ((A.yahooQueue || []).length) + '/' + Object.keys(A.queued).length,
       'qtop=' + (A.queueTop || '-'),
       'yq=' + ((A.yahooQueue || []).slice(0, 2).join('>') || '-'),
-      'autodraft=' + (A.autodraftOn ? 'on' : 'OFF') + (A.autodraftClicks ? '(clicked' + A.autodraftClicks + ')' : ''),
+      'autodraft=' + (A.autodraftOn ? 'on' : 'off') + (A.autodraftClicks ? '(clicked' + A.autodraftClicks + ')' : ''),
       'observed=' + A.log.length,
       'picklog=' + Object.keys(A.picks).length,
       'restored=' + (A.restored || 0),
