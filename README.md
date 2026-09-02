@@ -68,7 +68,7 @@ takes against the advice, harvests all rosters, grades the draft, and
 writes the league-wide report: every team graded and summarised, the
 values, reaches and near misses, and the story of the draft round by
 round (`bridge/report.js`; the real draft gets the same report from the
-overlay). Fifteen
+overlay). Sixteen
 mocks so far; see `data/mocks/RESULTS.md`.
 
 ## How it is built
@@ -146,7 +146,7 @@ docs/                      method, strategy, playbook, architecture, adapting,
 
 ## Status (2026-09-02)
 
-The harness has run fifteen live mock drafts. It survives Yahoo's tab
+The harness has run sixteen live mock drafts. It survives Yahoo's tab
 teardowns, detects the room's rules and team count, matches names at
 `unmatched <= 1/100`, keeps the queue equal to the live advice, re-reads its
 roster from the Results tab after every pick, and grades the result. The
@@ -156,7 +156,9 @@ end-to-end run (draft 12: armed before pick one, ten of fifteen picks from
 the queue, kicker and defense included) 3rd of 12 on Yahoo's projections,
 five points off the winner; draft 13, armed by Tampermonkey alone with the
 autopilot clicking Draft itself, fourteen of fifteen and 3rd again; draft 14,
-every pick by our own click, fourteen of fifteen exact, 1st of 12 by 66. Every defect found on the way is in
+every pick by our own click, fourteen of fifteen exact, 1st of 12 by 66;
+draft 16, armed before pick one, fifteen of fifteen exact by our click,
+no intervention, 7th of 12. Every defect found on the way is in
 `DECISIONS.md` (twenty decisions), and every one of them produced a
 confident wrong answer rather than an error, which is why the thing is run
 live at all.

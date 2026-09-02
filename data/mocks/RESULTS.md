@@ -24,6 +24,7 @@ degrades.
 | 13 | 10510897 | 12 | 10 | Tampermonkey, before pick 1 | **3 / 12** | 1736.3 | 1743.1 | 96.6 |
 | 14 | 10511947 | 12 | 12 | Tampermonkey, before pick 1 | **1 / 12** | 1709.1 | 1642.8 (2nd) | 236.4 |
 | 15 | 10513354 | 12 | 2 | Tampermonkey, pick 10 (room started early) | **3 / 12** | 1859.1 | 2026.4 | 632.4 |
+| 16 | 10515116 | 12 | 5 | Tampermonkey, before pick 1 | **7 / 12** | 1686.5 | 1739.6 | 204.5 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -610,3 +611,30 @@ Chrome replaced the tab a minute after the draft ended, so the complete
 harvest lived only in localStorage's final-round copy; the saved bundle
 has 169 of 180 picks. Lesson for Saturday: run `__hcReportShow()` and
 copy the report out before leaving the room.
+
+
+## Draft 16 — room 10515116 (12-team, slot 5, Tampermonkey-armed), 2026-09-02
+
+The top-to-bottom run. In the room twenty seconds before the start
+(through the waiting room's "Enter Draft" link; the direct client URL is
+refused until Yahoo offers that link -- loader 2.2.1 now clicks it the
+instant it appears), armed before pick one, and **every one of our fifteen
+picks was the exact recommendation, drafted by our own click**: 5, 20, 29,
+44, 53, 68, 77, 92, 101, 116, 125, 140 (Broncos), 149 (Myers), 164, 173.
+No auto-pick, no missed clock, no re-arm, the roster count right all the
+way (the merge is now keyed by resolved player OR pick number, tests
+tick 10, after the seed's missing pick number doubled it once more at
+pick 6 and was hot-patched in the room). The final-round harvest ran with
+the busy flag and graded at 100% Yahoo coverage; the report was written
+in the room and regenerated after the last pick with all 180.
+
+Graded on Yahoo's projections: **7 of 12**, 1686.5 to Jared Anable's
+1739.6 in a 204-point spread. The mechanism was perfect; the valuation
+landed mid-pack in this room, which is the honest measurement of a
+board that disagrees with Yahoo's in the same places every time (see the
+user's question about Kelce and Judkins in the session notes).
+
+Roster: `QB Allen, Purdy · RB Taylor, J. Williams, Judkins, Gainwell · WR
+Evans, Sutton, Worthy, Samuel, Boston · TE LaPorta, Kelce · K Myers · DEF
+Broncos`. Report: `data/mocks/reports/10515116.md`; bundle:
+`data/mocks/harvests/10515116.json`.
