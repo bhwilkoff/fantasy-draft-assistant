@@ -604,6 +604,18 @@
       var surv = {};
       res.alternatives.forEach(function (a) { surv[a.name] = a.survival_next; });
       if (rec) surv[rec.name] = rec.survival_next;
+      if (AP.lastBoardPick) {
+        var lb = AP.lastBoardPick, pc = AP.planChange;
+        h.push('<div class="clk" style="margin-top:6px">Off the board: <b>' + esc(lb.name)
+          + '</b> ' + esc(lb.pos) + ' (pick ' + lb.pick + ', ' + esc(lb.drafter || '?')
+          + (lb.dt != null ? ', ' + lb.dt + 's' : '') + ')'
+          + (pc && pc.at >= (AP.last ? AP.last.pick - 1 : 0) && (pc.gone.length || pc.came.length)
+              ? '<br>Plan adjusted at pick ' + pc.at
+                + (pc.gone.length ? ': &minus;' + esc(pc.gone.join(', ')) : '')
+                + (pc.came.length ? ' +' + esc(pc.came.join(', ')) : '')
+              : '<br>Plan unchanged by that pick')
+          + '</div>');
+      }
       h.push('<h4>Queue (in order; entry k if 1..k-1 are gone)</h4>');
       plan.forEach(function (a, i) {
         h.push('<div class="alt"><span class="l">' + (i + 1) + '. ' + esc(a.name)

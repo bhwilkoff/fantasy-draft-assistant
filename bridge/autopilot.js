@@ -196,6 +196,9 @@
     A.draftedKeys[String(entry.name).toLowerCase().replace(/[^a-z]/g, '') + '|' + entry.pos] = 1;
     var prev = A.picks[pickNo];
     if (prev && prev.name === entry.name) return;
+    // a pick we drafted by click is known exactly; a differing "Last:" here
+    // is the stale header of the pick before it, not a correction
+    if (prev && prev.byClick) return;
     /* When did it land? Yahoo's autodraft picks within a second or two of
      * the turn opening; a human burns clock. The gap since the previous
      * pick is therefore a fingerprint for who is autodrafting. */
@@ -373,6 +376,16 @@
     A.draftClickedPick = cur; A.draftMiss = null;
     A.draftClicks = (A.draftClicks || 0) + 1;
     A.draftLog = (A.draftLog || []).concat([cur + ' ' + via]);
+    /* We know exactly what we drafted; the "Last:" header does not update
+     * in step with the counter and, in a back-to-back turn, attributed our
+     * first pick's player to our second pick as well (mock 10511947,
+     * picks 36/37). Record the click as the authoritative entry. */
+    if (via === rec.name) {
+      A.picks[cur] = { pick: cur, name: rec.name, pos: rec.pos, team: rec.team || '',
+                       drafter: 'You', t: Date.now(), byClick: true };
+      A.draftedKeys = A.draftedKeys || {};
+      A.draftedKeys[String(rec.name).toLowerCase().replace(/[^a-z]/g, '') + '|' + rec.pos] = 1;
+    }
   }
 
   function enableAutodraft() {
@@ -798,7 +811,19 @@
     A.yahooQueue = real.map(function (yid) { return wantName[yid] || yid; });
     A.queueTop = want.length ? want[0].name : null;
     // the exact list the queue holds, in order, for the overlay to show
+    var prevPlan = (A.plan || []).map(function (w) { return w.name; });
     A.plan = want.map(function (w) { return { name: w.name, pos: w.pos, vor: w.vor }; });
+    /* Show the adjustment, not just its result: which plan entries were
+     * taken off the board since the last pass, and what replaced them. */
+    var nowPlan = A.plan.map(function (w) { return w.name; });
+    var gone = prevPlan.filter(function (n) { return nowPlan.indexOf(n) < 0; });
+    var came = nowPlan.filter(function (n) { return prevPlan.indexOf(n) < 0; });
+    if (gone.length || came.length) {
+      A.planChange = { at: cur, gone: gone, came: came, ts: Date.now() };
+    }
+    var lastPk = Object.keys(A.picks).map(Number).filter(function (k) { return k < cur; })
+      .sort(function (a, b) { return b - a; })[0];
+    if (lastPk) { var lp = A.picks[lastPk]; A.lastBoardPick = { pick: lastPk, name: lp.name, pos: lp.pos, drafter: lp.drafter, dt: lp.dt }; }
 
     enableAutodraft();
     draftClick(st, res, yidOf, slotM ? +slotM[1] : null, cur);
