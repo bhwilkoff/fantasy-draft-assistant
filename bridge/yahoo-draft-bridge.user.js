@@ -242,32 +242,29 @@
     // replacement level the 210th-best quarterback (~0 points) and handed
     // every QB an enormous VOR -- the advisor then recommended quarterbacks
     // from round 4 on. Dedupe to the first cycle of unique names.
-    /* A strip cell holds the team name and, once the pick is made, the
-     * drafted player too. textContent joins them without a separator, so
-     * key each cell on its FIRST TEXT LEAF (the team name) or the cells of
-     * one team differ from round to round and no period can be found. */
-    function firstLeaf(c) {
-      var e = c;
-      while (e && e.children && e.children.length) e = e.children[0];
-      return textOf(e);
-    }
-    var names = [].slice.call(parent.children)
-      .map(function (c) { return firstLeaf(c) || textOf(c).split('\n')[0]; })
-      .filter(Boolean);
-    /* Find the PERIOD of the strip, not the first repeated name. Two
-     * managers can share a display name (mock 10430908 had two "Chris"
-     * and two "Calvin"); stopping at the first repeat then reported 11
-     * teams in a 12-team room, which shifted every snake pick number and
-     * the picks-remaining count. The strip repeats the whole order once
-     * per round, so the team count is the smallest period that fits. */
+    /* The strip renders the pick ORDER, which is a snake: the second round
+     * is the first reversed. (In some rooms each cell also carries the
+     * drafted player; the team name is the cell's text once any player
+     * element is removed.) The team count n is therefore the smallest n for
+     * which round two mirrors round one -- names[n + i] === names[n - 1 - i]
+     * -- or, for a strip that repeats plainly, the smallest period. Never
+     * dedupe by name: two managers can share one (two "anthony" in mock
+     * 10430908), and 11 teams in a 12-team room shifts every pick number. */
+    var names = [].slice.call(parent.children).map(function (c) {
+      var clone = c.cloneNode(true);
+      [].slice.call(clone.querySelectorAll('.ys-player')).forEach(function (e) { e.remove(); });
+      return textOf(clone).split('\n')[0];
+    }).filter(Boolean);
     var n = names.length;
     if (n === 0) return [];
-    for (var p = 4; p <= 20 && p <= n; p++) {
-      var ok = true;
-      for (var i = 0; i + p < n; i++) {
-        if (names[i] !== names[i + p]) { ok = false; break; }
+    for (var k = 4; k <= 20 && 2 * k <= n; k++) {
+      var mirror = true, plain = true;
+      for (var i = 0; i < k && k + i < n; i++) {
+        if (names[k + i] !== names[k - 1 - i]) mirror = false;
+        if (names[k + i] !== names[i]) plain = false;
+        if (!mirror && !plain) break;
       }
-      if (ok && (n >= 2 * p || n === p)) return names.slice(0, p);
+      if (mirror || plain) return names.slice(0, k);
     }
     // only one round rendered and no period visible: take what is there
     return names.slice(0, Math.min(n, 20));

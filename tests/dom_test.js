@@ -125,6 +125,11 @@ eq('order', R.readDraftOrder(), ['Chuck', 'Eric Hollinger', 'Ben Wilkoff']);
     `<div class="ys-draftorder-team${i === 7 ? ' ys-draftorder-current' : ''}"><div><span>${n}</span></div>`
     + (i < 9 ? `<div class="ys-player" data-id="${100 + i}"><span>P. Layer${i}</span></div>` : '') + '</div>').join('');
   eq('cells carrying drafted players still yield the period', R.readDraftOrder(), order);
+  // the real strip is a SNAKE: round two is round one reversed
+  const snake = [...order, ...order.slice().reverse(), ...order];
+  strip.innerHTML = snake.map((n, i) =>
+    `<div class="ys-draftorder-team${i === 7 ? ' ys-draftorder-current' : ''}">${n}</div>`).join('');
+  eq('snake strip (round two mirrored) yields the team count', R.readDraftOrder(), order);
   strip.innerHTML = saved;
 }
 
