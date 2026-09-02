@@ -22,6 +22,7 @@ degrades.
 | 11 | 10504003 | 12 | 4 | before pick 1 | **12 / 12** | 1566.7 | 1728.7 | 162.0 |
 | 12 | 10504882 | 12 | 7 | before pick 1 | **3 / 12** | 1715.0 | 1719.6 | 73.0 |
 | 13 | 10510897 | 12 | 10 | Tampermonkey, before pick 1 | **3 / 12** | 1736.3 | 1743.1 | 96.6 |
+| 14 | 10511947 | 12 | 12 | Tampermonkey, before pick 1 | **1 / 12** | 1709.1 | 1642.8 (2nd) | 236.4 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -520,3 +521,43 @@ validates those fixes end to end.
 Also new: `bridge/loader.user.js` 2.1.0 never arms the autopilot in the
 Harvey Cup room (league 539156) whatever the mock flag says, and carries
 an update URL so Tampermonkey pulls new versions itself.
+
+
+## Draft 14 — room 10511947 (12-team, slot 12, Tampermonkey-armed), 2026-09-02
+
+The validation run for everything that shipped during draft 13, on the
+code Tampermonkey pulled at pick one. Yahoo carried the tab from the
+waiting room into the client by itself; the overlay and the autopilot
+armed with no injection; the panel's list and Yahoo's queue read
+identically, eight for eight in the same order, all draft; "Off the
+board / Plan adjusted" showed each opponent's pick and its effect.
+
+**Every one of our fifteen picks was drafted by our own click**, including
+the back-to-back snake turns at 12/13, 36/37, 60/61, 84/85, 108/109,
+132/133 and 156/157, the defense at 156 and the kicker at 157. Autodraft
+never came on. **14 of 15** were the exact recommendation. Graded on
+Yahoo's projections at 100% coverage -- from the autopilot's own final
+harvest, so the busy flag from DECISIONS 019 did its job -- **1 of 12**,
+1709.1 points, 66 clear of second in a 236-point spread. (The two-
+quarterback, two-tight-end shape is Yahoo's half-PPR mock rules and a
+room that let Allen fall to 36; Harvey Cup is scored differently.)
+
+Roster: `QB Allen, Purdy · RB Henry, Achane, Etienne, Monangai · WR Adams,
+Sutton, Worthy, Meyers, Boutte · TE LaPorta, Kittle · K Aubrey · DEF Broncos`.
+
+The one miss, pick 133: the instant after our own click at 132 the table
+re-rendered, the next recommendation's row was not there for one pass,
+and the fallback ladder took plan entry 3 (Meyers for the Broncos) with
+seventy seconds on the clock. Also found: the status reader's clock is
+null on our own turn, so a clock gate would have waited forever. Both
+fixed (commit 40a9915): the clock is read from the room header, the
+click waits while there is time, walks the plan under twenty seconds,
+takes any button under ten, and treats an unknown clock as low. A
+second locator walks up from the player's cell, and a miss now records
+what it saw. The Broncos were then drafted by the click at 156, so
+defense rows are not special.
+
+The pick-log attribution artifact from the "Last:" header (a back-to-back
+turn filed our first pick's player under the second as well) showed up
+in this room's audit as 7/12; the click record is now authoritative for
+our picks (commit ff6009e), also not in this room's code.
