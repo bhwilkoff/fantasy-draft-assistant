@@ -16,7 +16,7 @@ Recorded here because every one of these cost real time to diagnose.
 | `MessageChannel` postMessage | **not throttled** | **Yes** — this is the yield to use |
 | `MutationObserver` | **not throttled**; fires on real DOM change | **Yes** — this is the driver to use |
 | `document.hidden` | `true` for any non-selected tab, even in a visible window | — |
-| `innerWidth` / `innerHeight` | **`0 × 0`** if the window is *minimised* (not merely background) | see below |
+| `innerWidth` / `innerHeight` | **`0 × 0`** in the tab Yahoo creates when it tears down and recreates the draft client -- see "The zero-width tab" | see below |
 
 ## The three bugs this caused
 
@@ -79,3 +79,27 @@ result per check.
 The autopilot mirrors its log to `localStorage` after every pick, so if a
 teardown does happen, re-arming restores the draft so far instead of starting
 blind.
+
+## The zero-width tab (verified 2026-09-01)
+
+Screenshots of the draft tab failing with `Cannot take screenshot with 0
+width` was previously attributed to the Chrome window being minimised. It
+is not. Measured from inside the pages:
+
+| tab | `innerWidth×innerHeight` | `outerWidth×outerHeight` | screenshot |
+|---|---|---|---|
+| the tab Yahoo recreated mid-draft (new tab ID) | `0×0` | `0×0` | fails |
+| a fresh tab created in the same session group | `986×770` | `616×481` | works (1232×962) |
+
+The recreated tab reports a zero-sized *window*, keeps reporting it after
+being navigated to any other URL, is not `document.wasDiscarded`, is not
+prerendering, and `resize_window` on it "succeeds" without changing anything
+-- and without changing the fresh tab's window either, so the two tabs are
+in different windows. Whatever Yahoo's teardown does, the tab it leaves
+behind lives in a window Chrome treats as having no viewport. JavaScript
+still runs in it (the DOM readers and the autopilot keep working, which is
+why this was survivable), but nothing that needs layout will.
+
+**Recovery:** create a new tab in the session group, navigate it to the
+same `/draftclient/f1/{mlid}/{slot}` URL, close the zombie, re-arm, re-seed.
+Do not try to rescue the zombie tab; nothing brings its viewport back.

@@ -80,7 +80,9 @@ are the same event. The room keeps drafting the whole time -- a mock room
 moves a full round every 2-4 minutes, so one stuck evaluation costs picks.
 
 ```js
-// 1. navigate the (new) tab to the SAME draftclient URL; nothing else works
+// 1. do NOT reuse the recreated tab: it lives in a zero-size window and can
+//    never be screenshotted again (docs/HIDDEN-TAB-CONSTRAINTS.md). Create a
+//    fresh tab, navigate it to the SAME draftclient URL, close the zombie.
 // 2. arm with the one-liner (the multi-line var s=... form is rejected by
 //    the browser tool as "query string data")
 document.head.appendChild(Object.assign(document.createElement('script'),
