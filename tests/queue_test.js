@@ -270,5 +270,20 @@ A.tick(); A.tick();
 check('tick9 under twenty seconds it falls through the plan', clicks.filter(c => c[0] === 'D'), ['D3']);
 check('tick9 the log says so', /plan 2/.test(A.draftLog[A.draftLog.length - 1]), true);
 
+// --- tick 10: the roster merge. The Results-tab seed abbreviates ("A. One"
+// is already abbreviated here, so use a pick-less seed vs a click record
+// with a pick, and a seed with a pick vs a click with the same pick).
+W.document.title = '5 picks until your turn | Live NFL Draft';
+W.__hcReaders.readStatus = () => ({ round: 3, pick: 30, upIn: 3, onClock: 'B', clock: '00:30' });
+A.numTeams = 12;
+A.seedRoster = [{ name: 'A. One', pos: 'RB', team: 'DET', seeded: true },
+                { name: 'B. Two', pos: 'WR', team: 'LAR', pick: 22, seeded: true }];
+A.picks[3] = { pick: 3, name: 'A. One', pos: 'RB', team: 'DET', drafter: 'You', byClick: true };
+A.picks[22] = { pick: 22, name: 'B. Two', pos: 'WR', team: 'LAR', drafter: 'You', byClick: true };
+ranking = [mk(PLAYERS[2]), mk(PLAYERS[3])];
+A.tick();
+check('tick10 seed and click records merge to one player each',
+      (A.lastRoster || []).map(p => p.name).sort(), ['A. One', 'B. Two']);
+
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL QUEUE ACTUATOR CHECKS PASS'));
 process.exit(fails ? 1 : 0);

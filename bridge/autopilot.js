@@ -238,7 +238,7 @@
       if (h && h.numTeams >= 4 && h.numTeams <= 20) A.numTeamsFromResults = h.numTeams;
       if (h && h.teams && h.me && h.teams[h.me]) {
         A.seedRoster = h.teams[h.me].map(function (p) {
-          return { name: p.name, pos: p.pos, team: p.team, seeded: true };
+          return { name: p.name, pos: p.pos, team: p.team, pick: p.pick || null, seeded: true };
         });
         // The Results tab also carries each player's pick number, so our
         // own picks can be backfilled into the log even when the header
@@ -295,19 +295,25 @@
        * every click-drafted player (mock 10513354: three picks, roster of
        * five). Key by pick number when both sides have one, else by the
        * matched player's canonical name, else by the normalised text. */
-      var keyOf = function (p) {
-        if (p.pick) return 'pk' + p.pick;
+      /* Two independent keys, and an entry is a duplicate if EITHER
+       * matches: the projection-set player it resolves to (so "J. Taylor"
+       * and "Jonathan Taylor" are one), or its pick number when both
+       * sides carry one. Mock 10515116: the seed had no pick number, the
+       * click had one, and a pick-only key doubled the roster again. */
+      var idOf = function (p) {
         try {
           var mm = window.HarveyCup.lookup(window.__hcIndex, p.name, p.pos, p.team);
           if (mm && mm.player) return 'id|' + mm.player.name + '|' + mm.player.pos;
         } catch (e) {}
         return norm(p.name) + '|' + (p.pos || '');
       };
-      var seen = {}, merged = [];
+      var seenId = {}, seenPick = {}, merged = [];
       A.seedRoster.concat(out).forEach(function (p) {
-        var k = keyOf(p);
-        if (seen[k]) return;
-        seen[k] = 1; merged.push(p);
+        var k = idOf(p);
+        if (seenId[k]) return;
+        if (p.pick && seenPick[p.pick]) return;
+        seenId[k] = 1; if (p.pick) seenPick[p.pick] = 1;
+        merged.push(p);
       });
       return merged;
     }
