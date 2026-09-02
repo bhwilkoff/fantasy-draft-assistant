@@ -21,6 +21,7 @@ degrades.
 | 10 | 10501714 | 12 | 2 | pick ~75 | **4 / 12** (our proj.) | 1745.2 | 1798.2 | 313.9 |
 | 11 | 10504003 | 12 | 4 | before pick 1 | **12 / 12** | 1566.7 | 1728.7 | 162.0 |
 | 12 | 10504882 | 12 | 7 | before pick 1 | **3 / 12** | 1715.0 | 1719.6 | 73.0 |
+| 13 | 10510897 | 12 | 10 | Tampermonkey, before pick 1 | **3 / 12** | 1736.3 | 1743.1 | 96.6 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -463,3 +464,59 @@ Harvesters now raise `__hcHarvestBusy` and the autopilot skips its pass
 while it is up (90 s ceiling); tests/queue_test.js tick 6 covers it. The
 grade above is from a manual re-scrape after the room closed, which worked
 because this room, unlike draft 7's, still rendered the table.
+
+
+## Draft 13 — room 10510897 (12-team, slot 10, Tampermonkey-armed), 2026-09-02
+
+The first room armed by the userscript alone: Tampermonkey ran
+`bridge/loader.user.js` when the draft client rendered, the overlay and
+the autopilot were up with a four-deep queue forty seconds before pick
+one, and nothing was injected by hand. **14 of 15** picks were the
+recommendation (the audit prints 13/15 because a post-draft pass
+overwrote round one's advice; fixed). Graded on Yahoo's own projections
+at 100% coverage: **3 of 12**, 1736.3 points, 6.8 behind the winner in a
+96.6-point spread.
+
+Roster: `QB Hurts, Dart · RB McCaffrey, Henry, Williams, Monangai · WR
+Adams, Wilson, Golden, Shakir, Boston · TE Kittle, Kelce · K Mevis · DEF
+Broncos`.
+
+**The room changed how a mock drafts.** Picks 10 and 15 were taken by
+Yahoo's clock from queue[0] -- and after the first one Yahoo moved the
+seat into auto-pick mode. The user's requirement is that the exact
+recommendation is drafted every time, so from pick 34 the autopilot
+clicked the room's own **Draft** button (DECISIONS 020): picks 34, 58,
+63, 82, 87, 106, 111, 130, 154, 159 and 178 were drafted that way,
+including the back-to-back snake turn at 82/87 and the kicker at 154.
+Two lessons from the first version of that click, both now in the code
+and in `tests/queue_test.js`:
+
+* **Wait for the header.** The title flips to "YOUR TURN" a beat before
+  the header's pick number advances; a click at that instant drafted the
+  previous pass's advice (Garrett Wilson at pick 39, when the advice for
+  pick 39 was Lamar Jackson). The click now waits until the header's
+  pick is one of ours.
+* **Never let the clock expire.** The in-room patch matched by
+  abbreviated name and could not find "Broncos D/ST" at pick 135; the
+  clock ran out, Yahoo drafted the (correct) queue top and put the seat
+  back into auto-pick. The committed click matches by Yahoo's player id,
+  falls through the plan to any entry with a button, and under twenty
+  seconds takes any Draft button on screen. Autodraft is switched back
+  off whenever Yahoo turns it on.
+
+**Panel and queue disagreed, and the user saw it three ways.** The
+"Then" list was a flat ranking while the queue is sequential; a new
+recommendation landed at the *end* of Yahoo's queue (Yahoo appends) and
+the two-click budget took several passes to evict the entries ahead of
+him; and the panel read the roster itself, got nothing, and recommended
+a tight end for an empty roster while the autopilot, with 14 of 15
+rostered, queued a receiver for the last bench slot. All three are
+fixed: the panel now renders the autopilot's own roster, advice and
+queue plan and re-renders on every pass, and the actuator evicts
+everything ahead of a missing recommendation in one pass. This room ran
+the code it loaded at pick one, so the next mock is the one that
+validates those fixes end to end.
+
+Also new: `bridge/loader.user.js` 2.1.0 never arms the autopilot in the
+Harvey Cup room (league 539156) whatever the mock flag says, and carries
+an update URL so Tampermonkey pulls new versions itself.

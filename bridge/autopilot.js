@@ -483,6 +483,10 @@
     var tPre = Date.now();
     var st = R.readStatus();
     recordLastPick(st);      // the header is present in every view; read it first
+    /* After the draft the header has no pick number; a pass then runs at
+     * "pick 1" and its advice overwrote round one's in the audit (mock
+     * 10510897: r1 read "rec Justice Hill" after the fact). Do nothing. */
+    if (!st.pick && A.log.length) return;
     /* A reseed that never resolves (a re-arm replaced the harvester under
      * it, mid-await) must not freeze the autopilot for the rest of the
      * draft. Live: reseeding stayed true for two minutes and the queue went

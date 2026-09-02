@@ -1,7 +1,9 @@
 // ==UserScript==
 // @name         Harvey Cup Draft Advisor (loader)
 // @namespace    https://github.com/bhwilkoff/fantasy-draft-assistant
-// @version      2.0.0
+// @version      2.1.0
+// @updateURL    https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/loader.user.js
+// @downloadURL  https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/loader.user.js
 // @description  Loads the live draft advisor from GitHub Pages every time, so fixes deploy without reinstalling
 // @match        https://football.fantasysports.yahoo.com/draftclient/*
 // @run-at       document-idle
@@ -31,6 +33,10 @@
    * footer shows "autopilot" when it is on. */
   var mock = false;
   try { mock = localStorage.getItem('hcMockAutopilot') === '1'; } catch (e) {}
+  /* The flag lives on the same origin as the real draft. Whatever it says,
+   * the autopilot never arms in the Harvey Cup room (league 539156). */
+  var REAL_LEAGUE = /\/draftclient\/f1\/539156\//;
+  if (REAL_LEAGUE.test(location.pathname)) mock = false;
   window.__hcNoAutopilot = !mock;
   function arm() {
     if (window.__hcArmed) return;

@@ -61,8 +61,9 @@ pre-draft study tool and the fallback if Yahoo redeploys.
 
 **3. Mock-draft autopilot** (mock rooms only). `bridge/autopilot.js` keeps
 Yahoo's queue equal to the advisor's current ranking and turns Autodraft on,
-so a mock room drafts the board by itself; it audits every pick the room
-takes against the advice, harvests all rosters, and grades the draft. Twelve
+so a mock room drafts the board by itself (it clicks Draft on the
+recommendation; the queue is the fallback); it audits every pick the room
+takes against the advice, harvests all rosters, and grades the draft. Thirteen
 mocks so far; see `data/mocks/RESULTS.md`.
 
 ## How it is built
@@ -137,7 +138,7 @@ docs/                      method, strategy, playbook, architecture, adapting,
 
 ## Status (2026-09-02)
 
-The harness has run twelve live mock drafts. It survives Yahoo's tab
+The harness has run thirteen live mock drafts. It survives Yahoo's tab
 teardowns, detects the room's rules and team count, matches names at
 `unmatched <= 1/100`, keeps the queue equal to the live advice, re-reads its
 roster from the Results tab after every pick, and grades the result. The
@@ -145,7 +146,8 @@ first mechanism-clean draft on a single projection source finished last;
 the consensus board finished 7th, then 3rd, and in the first fully clean
 end-to-end run (draft 12: armed before pick one, ten of fifteen picks from
 the queue, kicker and defense included) 3rd of 12 on Yahoo's projections,
-five points off the winner. Every defect found on the way is in
+five points off the winner; draft 13, armed by Tampermonkey alone with the
+autopilot clicking Draft itself, fourteen of fifteen and 3rd again. Every defect found on the way is in
 `DECISIONS.md` (twenty decisions), and every one of them produced a
 confident wrong answer rather than an error, which is why the thing is run
 live at all.
