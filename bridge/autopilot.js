@@ -126,7 +126,9 @@
       name: m[1].trim(),
       pos: m[2].toUpperCase().replace('D/ST', 'DEF'),
       team: m[3].toUpperCase(),
-      drafter: m[4].trim()
+      // textContent has no line breaks, so the trailing group would run on
+      // into the rest of the page; keep only a short prefix
+      drafter: m[4].trim().slice(0, 40)
     };
   }
 

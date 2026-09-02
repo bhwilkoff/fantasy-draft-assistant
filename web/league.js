@@ -69,10 +69,15 @@
       if (t === 'IR' || t === 'IR+') return;
       if (t === 'D/ST' || t === 'DST' || t === 'DEF') { base.DEF++; return; }
       if (base[t] !== undefined) { base[t]++; return; }
-      // anything with a slash is a flex; its letters name the eligible spots
-      if (t.indexOf('/') >= 0) {
+      // anything with a slash is a flex; its letters name the eligible spots.
+      // The draft room's Results tab renders the slashes as decoration, so
+      // the slot's text is "WRT" (or "WT", "QWRT") -- accept a bare run of
+      // flex letters too, or the flex silently disappears from the lineup
+      // (observed live: rosterSize 14, no flex, in a 15-slot room).
+      var bare = /^[QWRT]{2,4}$/.test(t) && base[t] === undefined;
+      if (t.indexOf('/') >= 0 || bare) {
         var elig = [];
-        t.split('/').forEach(function (part) {
+        (bare ? t.split('') : t.split('/')).forEach(function (part) {
           if (part === 'W') elig.push('WR');
           else if (part === 'R') elig.push('RB');
           else if (part === 'T') elig.push('TE');

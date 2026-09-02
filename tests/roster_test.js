@@ -71,6 +71,15 @@ function lineupIsLegal(mine, roster) {
   return missing;
 }
 
+/* The Results tab renders "W/R/T" as "WRT" (slashes are decoration) */
+const bare = HarveyLeague.parseRoster('QB,WR,WR,RB,RB,TE,WRT,K,DEF,BN,BN,BN,BN,BN,BN');
+const bareOk = bare.flex.length === 1 && bare.flex[0].eligible.join('/') === 'WR/RB/TE'
+  && HarveyCup.rosterSizeFrom(bare) === 15;
+console.log(`${bareOk ? 'ok  ' : 'FAIL'}  bare flex token "WRT" parses as W/R/T (size ${HarveyCup.rosterSizeFrom(bare)})`);
+const bare2 = HarveyLeague.parseRoster('QB,WR,WR,WR,RB,RB,TE,WT,WR,K,DEF');
+const bare2Ok = bare2.flex.length === 1 && bare2.base.WR === 4;
+console.log(`${bare2Ok ? 'ok  ' : 'FAIL'}  "WT" is a flex but "WR" stays a base position`);
+
 const CASES = [
   ['Yahoo mock 14-team', 'QB,WR,WR,RB,RB,TE,W/R/T,K,DEF,BN,BN,BN,BN,BN,BN', 14, 7, 15],
   ['Yahoo mock 12-team', 'QB,WR,WR,RB,RB,TE,W/R/T,K,DEF,BN,BN,BN,BN,BN,BN', 12, 1, 15],
@@ -105,5 +114,6 @@ CASES.forEach(([label, text, teams, slot, wantSize]) => {
   if (over.length) console.log(`        OVER CAP: ${over.join(', ')}`);
 });
 
+if (!bareOk || !bare2Ok) fails++;
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL ROSTER CHECKS PASS'));
 process.exit(fails ? 1 : 0);
