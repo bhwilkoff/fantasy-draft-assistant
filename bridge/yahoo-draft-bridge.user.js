@@ -487,7 +487,8 @@
 
     var st = readStatus();
     var av = readAvailable();
-    var sig = [st.pick, st.upIn, av.rows.length, state.myTeam].join('|');
+    var sig = [st.pick, st.upIn, av.rows.length, state.myTeam,
+               (window.__hcAuto && window.__hcAuto.passSeq) || 0].join('|');
     if (!force && sig === state.lastSig) return;
     state.lastSig = sig;
 
@@ -520,6 +521,16 @@
     var next = cur + (st.upIn != null ? Math.max(1, st.upIn) : 12);
     var res = window.HarveyCup.advise(pool, roster, cur, next, []);
     var rec = res.recommendation;
+    /* When the autopilot is running, show ITS result -- the roster it
+     * reconstructed from the pick log and reseeds, the advice it queued and
+     * will click -- not a second opinion from a second roster read. Only
+     * when fresh; a stalled autopilot must not pin the panel. */
+    var AP = window.__hcAuto, fromAutopilot = false;
+    if (AP && AP.lastRes && AP.last && AP.last.ts && Date.now() - AP.last.ts < 15000) {
+      res = AP.lastRes; rec = res.recommendation;
+      if (AP.lastRoster) roster = AP.lastRoster;
+      fromAutopilot = true;
+    }
 
     var h = [];
     h.push('<div class="clk">'
@@ -528,7 +539,8 @@
       + (st.clock ? ' · ' + esc(st.clock) : '')
       + '<br>Round ' + esc(st.round) + ', pick ' + esc(st.pick)
       + ' · next at ~' + next
-      + ' · re-ranked ' + new Date().toTimeString().slice(0, 8) + '</div>');
+      + ' · re-ranked ' + new Date().toTimeString().slice(0, 8)
+      + (fromAutopilot ? ' · autopilot pass ' + AP.passSeq : '') + '</div>');
 
     if (!state.myTeam) {
       h.push('<div class="warn" style="margin-bottom:8px">Team not set — roster needs '

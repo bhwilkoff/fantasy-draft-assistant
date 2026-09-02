@@ -589,6 +589,11 @@
     if (remaining != null) advOpts.picksRemaining = remaining;
     if (availability) advOpts.availability = availability;
     var res = (window.__hcProf || function (n, f) { return f(); })('advise', function () { return HC.advise(pool, roster, cur, next, [], 6, advOpts); });
+    /* ONE BRAIN. The overlay used to read the roster and run advise() on
+     * its own, so panel and queue could disagree (the user saw the panel
+     * lag the room's picks while the queue had moved on). Publish what this
+     * pass actually acted on; the overlay renders it when fresh. */
+    A.lastRes = res; A.lastRoster = roster; A.passSeq = (A.passSeq || 0) + 1;
 
     /* The queue is built SEQUENTIALLY, not from the flat ranking.
      *
