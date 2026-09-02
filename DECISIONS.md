@@ -358,3 +358,27 @@ cheapest way to make them aware of each other.
 **How to apply:** anything that changes the room's view (tab, filter,
 select) must announce it, and anything that reads the view must check.
 `tests/queue_test.js` tick 6 pins the contract.
+
+## 020 — In a mock, the autopilot drafts the pick itself; the queue is only the fallback
+
+**Rule:** on the clock, once the header's pick number is one of ours, the
+autopilot clicks the room's "Draft" button on the row that carries the
+recommendation's Yahoo id -- one click per pick. Autodraft is switched
+back off whenever Yahoo flips it on. The queue stays reconciled as the
+fallback for a click that never lands or a clock that expires.
+
+**Why:** Yahoo moves a seat to auto-pick mode after one missed clock and
+from then on drafts queue[0] the instant the turn opens. In a fast round
+the queue has not settled by then, and in a snake the second pick comes
+from queue[1], which was built for a different board. The user's
+requirement is that the exact recommendation is drafted every time. Live
+in mock 10510897, picks 34, 58 and 63 were drafted by the click; pick 39
+was drafted by the first version of the click, which fired the instant
+the title changed while the header still read pick 38 and the advice on
+screen was for the old pool -- so the header guard is not optional.
+
+**How to apply:** `A.DRAFT_CLICK` (default on) and `draftclick=N[last]`
+in `__hcStatus()`. The overlay's list under the recommendation is the
+queue plan itself, so panel and queue always read the same. The real
+draft never loads the autopilot; the human clicks. `tests/queue_test.js`
+tick 7 pins the header guard and the single click.

@@ -146,7 +146,7 @@ the consensus board finished 7th, then 3rd, and in the first fully clean
 end-to-end run (draft 12: armed before pick one, ten of fifteen picks from
 the queue, kicker and defense included) 3rd of 12 on Yahoo's projections,
 five points off the winner. Every defect found on the way is in
-`DECISIONS.md` (nineteen decisions), and every one of them produced a
+`DECISIONS.md` (twenty decisions), and every one of them produced a
 confident wrong answer rather than an error, which is why the thing is run
 live at all.
 

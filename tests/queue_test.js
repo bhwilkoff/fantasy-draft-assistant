@@ -212,5 +212,32 @@ window.__hcHarvestBusy = false;
 A.tick(); A.tick(); A.tick(); A.tick();
 check('tick6 queue catches up once the harvest is done', yahooQueue()[0], '2');
 
+// --- tick 7: on the clock, the autopilot drafts the recommendation itself.
+// Yahoo shows a "Draft" button on every row while we are on the clock. The
+// click must wait for the header's pick number to be OURS (the title flips
+// a beat before the header advances; mock 10510897 pick 39 drafted the
+// previous pass's advice), then click exactly once.
+W.document.querySelectorAll('tr').forEach(tr => {
+  const pe = tr.querySelector('.ys-player[data-id]');
+  if (!pe) return;
+  const td = W.document.createElement('td');
+  const b = W.document.createElement('button');
+  b.textContent = 'Draft';
+  b.addEventListener('click', () => clicks.push('D' + pe.getAttribute('data-id')));
+  td.appendChild(b); tr.appendChild(td);
+});
+A.numTeams = 12;                       // slot 3 (from the URL): picks 3, 22, 27 ...
+W.document.title = 'YOUR TURN, DRAFT NOW | Live NFL Draft';
+ranking = [mk(PLAYERS[1]), mk(PLAYERS[2]), mk(PLAYERS[0])];
+W.__hcReaders.readStatus = () => ({ round: 1, pick: 2, upIn: 0, onClock: 'You', clock: '01:00' });
+clicks.length = 0;
+A.tick(); A.tick();
+check('tick7 no Draft click while the header still shows the previous pick',
+      clicks.filter(c => c[0] === 'D'), []);
+W.__hcReaders.readStatus = () => ({ round: 1, pick: 3, upIn: 0, onClock: 'You', clock: '00:55' });
+A.tick(); A.tick(); A.tick();
+check('tick7 exactly one Draft click, on the recommendation', clicks.filter(c => c[0] === 'D'), ['D2']);
+check('tick7 draft log', A.draftLog, ['3 B. Two']);
+
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL QUEUE ACTUATOR CHECKS PASS'));
 process.exit(fails ? 1 : 0);

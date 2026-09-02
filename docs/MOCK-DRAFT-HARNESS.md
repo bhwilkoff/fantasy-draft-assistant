@@ -1,5 +1,16 @@
 # Running Yahoo mock drafts against the advisor
 
+## The autopilot drafts the pick itself (2026-09-02, DECISIONS 020)
+
+With Tampermonkey's loader installed and `localStorage.hcMockAutopilot`
+set to `1`, a mock room arms by itself before pick one. On the clock the
+autopilot waits for the header to reach our pick number, then clicks the
+"Draft" button on the recommendation's row; Yahoo's queue is kept equal to
+the plan only as the fallback. Autodraft is switched back off whenever
+Yahoo turns it on (it does so after one missed clock). Watch it with
+`__hcStatus()`: `draftclick=3[63 Davante Adams]` means three picks were
+drafted by the click and the last was pick 63.
+
 ## What mocks are and are not good for
 
 Worth being precise, because it changes how many you need.
