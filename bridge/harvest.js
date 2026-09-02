@@ -127,11 +127,14 @@
   function readRoster() {
     var t = rosterTable();
     if (!t) return [];
+    var head = [].slice.call((t.rows[0] || {}).cells || []).map(function (c) { return T(c); });
+    var pickCol = head.indexOf('Pick');
     var out = [];
     [].slice.call(t.rows).slice(1).forEach(function (tr) {
       var pe = tr.querySelector('.ys-player[data-id]');
       var cells = [].slice.call(tr.cells).map(function (c) { return T(c); });
       var slot = cells[0] || null;
+      var pick = (pickCol >= 0 && cells[pickCol]) ? parseInt(cells[pickCol], 10) : null;
       if (!pe) return;
       var parts = cellParts(pe);
       var name = parts[0], pos = null, team = null;
@@ -148,6 +151,7 @@
          * late they drafted. Yahoo's projections come from the Players table
          * instead; see harvestYahooProjections(). */
         out.push({ name: name, pos: pos, team: team, slot: slot,
+                   pick: (pick && !isNaN(pick)) ? pick : null,
                    yid: pe.getAttribute('data-id') });
       }
     });

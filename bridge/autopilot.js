@@ -206,6 +206,15 @@
         A.seedRoster = h.teams[h.me].map(function (p) {
           return { name: p.name, pos: p.pos, team: p.team, seeded: true };
         });
+        // The Results tab also carries each player's pick number, so our
+        // own picks can be backfilled into the log even when the header
+        // race (or a reseed in progress) lost them -- the audit needs them.
+        h.teams[h.me].forEach(function (p) {
+          if (p.pick && !A.picks[p.pick]) {
+            A.picks[p.pick] = { pick: p.pick, name: p.name, pos: p.pos,
+                                team: p.team, drafter: 'You', fromResults: true };
+          }
+        });
       }
       var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
         .filter(function (x) { return x.children.length === 0; })
@@ -337,6 +346,8 @@
      * Puka Nacua in round eleven and purged the real queue to make room for
      * him; the queue was still being rebuilt when a burst of instant
      * autodraft picks reached our turn (mock 10427900, pick 137). */
+    var st = R.readStatus();
+    recordLastPick(st);      // the header is present in every view; read it first
     if (A.reseeding) return;
     var rows = readRows();
     if (!rows.length) {
@@ -348,8 +359,6 @@
       return;
     }
     A.blind = null;
-    var st = R.readStatus();
-    recordLastPick(st);
 
     var pool = [], yidOf = {}, unmatched = 0;
     rows.forEach(function (r) {

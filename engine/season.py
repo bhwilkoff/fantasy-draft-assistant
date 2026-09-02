@@ -32,11 +32,27 @@ def weekly_mu(player):
     return player["points"] / max(1.0, games)
 
 
-def draw_week(player, rng, season_mult=1.0):
+# Teammates are correlated week to week: a quarterback's big game is his
+# receivers' big game. TEAM_CV is the weekly spread of a shared per-NFL-team
+# offensive factor that multiplies every QB/WR/TE (and, more weakly, RB) on
+# that team. It is what makes a QB/WR stack mean anything in this model, and
+# it is set coarsely: published week-to-week correlations between a QB and
+# his WR1 sit around 0.3-0.4, which this reproduces with TEAM_CV ~ 0.25.
+TEAM_CV = 0.25
+TEAM_SHARE = {"QB": 1.0, "WR": 1.0, "TE": 1.0, "RB": 0.5, "K": 0.5, "DEF": 0.0}
+
+
+def draw_team_factors(rng, teams):
+    sigma = math.sqrt(math.log(1 + TEAM_CV * TEAM_CV))
+    return {t: rng.lognormvariate(-0.5 * sigma * sigma, sigma) for t in teams}
+
+
+def draw_week(player, rng, season_mult=1.0, team_factor=1.0):
     """One weekly score. Lognormal so it is non-negative and right-skewed,
     which is how fantasy scoring actually behaves -- the upside tail is
     longer than the downside, and that tail is what wins playoff games."""
-    mu = weekly_mu(player) * season_mult
+    share = TEAM_SHARE.get(player["pos"], 0.5)
+    mu = weekly_mu(player) * season_mult * (1.0 + share * (team_factor - 1.0))
     if mu <= 0:
         return 0.0
     cv = WEEKLY_CV.get(player["pos"], 0.6)
@@ -99,8 +115,11 @@ def simulate_season(rosters, lineup, rng, season_mults=None, learning=0.5):
     wins = {t: 0 for t in rosters}
     points_for = {t: 0.0 for t in rosters}
 
+    all_teams = set(p.get("team") for r in rosters.values() for p in r if p.get("team"))
+
     def week_scores(week=None):
         out = {}
+        team_factor = draw_team_factors(rng, all_teams)
         for t, roster in rosters.items():
             scores, expected = {}, {}
             for p in roster:
@@ -111,7 +130,8 @@ def simulate_season(rosters, lineup, rng, season_mults=None, learning=0.5):
                     scores[id(p)] = 0.0
                     expected[id(p)] = -1.0
                     continue
-                scores[id(p)] = draw_week(p, rng, mult)
+                scores[id(p)] = draw_week(p, rng, mult,
+                                          team_factor.get(p.get("team"), 1.0))
                 # What the manager knows on Sunday morning. `learning` is
                 # how much of the player's true season-long quality has become
                 # apparent by now: 0 = start/sit purely off preseason
