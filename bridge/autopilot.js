@@ -777,7 +777,18 @@
     lastRun = now;
     Promise.resolve().then(function () {
       pending = false;
+      var t0 = Date.now();
       try { tick(); persist(); } catch (e) { A.lastError = String(e); }
+      /* Measure every pass and back off when the page cannot afford it.
+       * The draft client shares this thread; a pass that takes 300 ms every
+       * second is a third of the CPU, and that is what "the page keeps
+       * going unresponsive" looks like from the outside. */
+      var ms = Date.now() - t0;
+      A.passMs = ms;
+      A.passMax = Math.max(A.passMax || 0, ms);
+      A.passTotal = (A.passTotal || 0) + ms; A.passCount = (A.passCount || 0) + 1;
+      if (ms > 300 && A.RATE_MS < 8000) A.RATE_MS = Math.min(8000, A.RATE_MS * 2);
+      else if (ms < 100 && A.RATE_MS > 1000) A.RATE_MS = Math.max(1000, A.RATE_MS / 2);
     });
   }
 
@@ -810,6 +821,8 @@
       'alive=' + (A.observer ? 'yes' : 'no'),
       // staleness is the failure that looks like success: report it loudly
       'lastTick=' + (A.last ? Math.round((Date.now() - A.last.ts) / 1000) + 's' : 'NEVER'),
+      'pass=' + (A.passMs == null ? '?' : A.passMs + 'ms') + '/max' + (A.passMax || 0)
+        + '/avg' + (A.passCount ? Math.round(A.passTotal / A.passCount) : 0) + '/every' + A.RATE_MS,
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
       A.filterFixes ? 'filterfix=' + A.filterFixes : '',
