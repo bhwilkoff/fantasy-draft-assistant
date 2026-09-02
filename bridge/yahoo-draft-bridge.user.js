@@ -463,11 +463,18 @@
     if (!force && sig === state.lastSig) return;
     state.lastSig = sig;
 
+    // While the autopilot is re-reading rosters from the Results tab, the
+    // players table is not on screen -- say so instead of telling the
+    // human to fix a filter the harness itself is about to restore.
+    var harvesting = !!(window.__hcAuto && window.__hcAuto.reseeding);
     if (!av.rows.length) {
-      el.body.innerHTML = '<div class="err">No player table found. '
-        + 'Open the “Players” view in the draft room.</div>';
+      el.body.innerHTML = harvesting
+        ? '<div class="clk">Reading rosters from the Results tab…</div>'
+        : '<div class="err">No player table found. '
+          + 'Open the “Players” view in the draft room.</div>';
       return;
     }
+    if (harvesting && av.rows.length < 25) return;   // keep the last good panel
 
     var pool = [], unmatched = 0;
     state.ambiguous = [];
