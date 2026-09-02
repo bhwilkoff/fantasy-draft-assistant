@@ -179,7 +179,21 @@
    * "Proj Pts" column). Keyed by the room's player id so it joins to rosters
    * exactly, with no name matching. Toggling the "Drafted" filter is what
    * exposes already-drafted players. */
+  /* The autopilot's filter self-heal (Drafted off, All Positions) must not
+   * run while a scrape is paging through those very filters: in mock
+   * 10504882 it did, and the projection map covered 0% of drafted players.
+   * Both harvesters raise this flag; the autopilot skips its pass while it
+   * is up (with its own timeout, in case a harvest never resolves). */
+  function busy(on) {
+    window.__hcHarvestBusy = !!on;
+    window.__hcHarvestBusyAt = on ? Date.now() : 0;
+  }
+
   window.__hcYahooProj = async function () {
+    busy(true);
+    try { return await yahooProjInner(); } finally { busy(false); }
+  };
+  async function yahooProjInner() {
     /* Yahoo's own projected points, from the Players table's "Proj Pts"
      * column, keyed by the room's player id so it joins to rosters with no
      * name matching at all.
@@ -267,9 +281,13 @@
     await setDrafted(false);         // back to the live board
     window.__hcYahooProjMap = map;
     return map;
-  };
+  }
 
   window.__hcHarvest = async function (opts) {
+    busy(true);
+    try { return await harvestInner(opts); } finally { busy(false); }
+  };
+  async function harvestInner(opts) {
     opts = opts || {};
     var tHarvest = Date.now();
     clickByText('Results');
@@ -355,5 +373,5 @@
     payload.ms = Date.now() - tHarvest;
     window.__hcHarvestMs = (window.__hcHarvestMs || 0) + payload.ms;
     return payload;
-  };
+  }
 })();

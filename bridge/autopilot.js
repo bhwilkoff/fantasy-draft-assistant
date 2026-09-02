@@ -415,6 +415,18 @@
         return;
       }
     }
+    /* A harvester is paging the Players table through Drafted and the
+     * position filter. Touching either now (the self-heal below) empties
+     * its projection map -- mock 12 graded at 0% Yahoo coverage for exactly
+     * that reason. Ninety seconds covers a full twelve-team harvest. */
+    if (window.__hcHarvestBusy) {
+      if (window.__hcHarvestBusyAt && Date.now() - window.__hcHarvestBusyAt > 90000) {
+        window.__hcHarvestBusy = false; A.harvestBusyTimeouts = (A.harvestBusyTimeouts || 0) + 1;
+      } else {
+        A.harvestBusySkips = (A.harvestBusySkips || 0) + 1;
+        return;
+      }
+    }
     var rows = window.__hcProf ? window.__hcProf('readRows', readRows) : readRows();
     if (!rows.length) {
       A.blind = 'no player table (wrong view?)';
@@ -802,6 +814,19 @@
     var tries = 0;
     function attempt() {
       if (window.__hcHarvest && document.querySelector('.ys-player[data-id]')) {
+        /* Nothing of ours exists before our first pick, and the harvest
+         * holds the Results tab open for seconds -- in draft 12 it was
+         * still reading when pick 7 (ours) came up, no pass ran, and Yahoo
+         * took its own top player. Pre-draft or first round before our
+         * slot: the roster is empty by definition, skip the read. */
+        var st0 = null;
+        try { st0 = window.__hcReaders.readStatus(); } catch (e) { st0 = { pick: 1e9 }; }  // unreadable: seed anyway
+        var m0 = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
+        var slot0 = m0 ? +m0[2] : 0;
+        if (!st0 || !st0.pick || (slot0 && st0.pick <= slot0)) {
+          A.seededAtLoad = 'skipped:before-first-pick';
+          return;
+        }
         Promise.resolve(A.seedRosterFromResults()).then(function () { A.seededAtLoad = true; });
         return;
       }

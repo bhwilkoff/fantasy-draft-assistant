@@ -20,6 +20,7 @@ degrades.
 | 9 | 10430908 | 12 | 10 | pick 30 | **3 / 11** (our proj.) | 1774.1 | 1819.0 | 157.1 |
 | 10 | 10501714 | 12 | 2 | pick ~75 | **4 / 12** (our proj.) | 1745.2 | 1798.2 | 313.9 |
 | 11 | 10504003 | 12 | 4 | before pick 1 | **12 / 12** | 1566.7 | 1728.7 | 162.0 |
+| 12 | 10504882 | 12 | 7 | before pick 1 | **3 / 12** | 1715.0 | 1719.6 | 73.0 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -415,3 +416,50 @@ What only a human can fix, seen again in this room: a tab replaced by
 Chrome (a fresh page, injections gone) and a page blocked by a native
 dialog. `bridge/loader.user.js` in Tampermonkey re-arms on every page
 load; excluding the site from Memory Saver stops the replacement.
+
+
+## Draft 12 — room 10504882 (12-team, slot 7, human drafters), 2026-09-02
+
+The first end-to-end run of the whole chain: armed before pick one, no
+mid-draft re-arm, the queue held the live advice through all fifteen
+rounds, and the room drafted **10 of 15** picks straight from it --
+including the defense (Broncos, pick 138) and the kicker (Aubrey, pick 151)
+at the four-picks-left gate, then a receiver at 162. Passes averaged 0.46 s
+(worst 2.0 s), no native dialogs, no starvation.
+
+Graded on Yahoo's own projections at 100% coverage: **3 of 12**, 1715.0
+points, 4.6 behind the winner in a 73-point spread. On our projections the
+same roster grades first (1842.8 vs 1767.1); the two scales disagree mostly
+on Allen (334 vs 372) and Aubrey (133 vs 176).
+
+Roster: `QB Allen, Dart · RB McCaffrey, Hall, Judkins, Gainwell · WR Watson,
+Sutton, Worthy, Boston, Tucker · TE Warren, Kelce · K Aubrey · DEF Broncos`.
+
+The five misses, honestly:
+
+* **Pick 7 (McCaffrey) had no advice on record.** The seed-at-load harvest
+  was still reading the Results tab when our first turn came, so the pass
+  that would have queued was skipped and Yahoo took its own top player.
+  Not a bad pick, but not ours. The seed harvest must finish before the
+  first pick or yield to it; see below.
+* **Pick 18: Henry advised, Allen taken.** Henry was queue[0]; Yahoo drafted
+  the QB. The queue read `Henry > Allen` on the pass before the pick, so
+  either Henry went one pick earlier than the log shows or Yahoo drafted
+  from the second entry. Unresolved; the audit only logs the advice, not
+  the queue as Yahoo saw it at the instant of the pick.
+* **Picks 42 and 79** (Rice/Judkins, Kittle/Sutton): the same shape, the
+  advised player was gone or the queue had not caught up in a round that
+  moved a pick every four seconds. One click per pass is the price of not
+  starving the tab; near our pick the pass rate is already 1 s.
+* **Pick 175 had no advice** because the final-round harvest occupied the
+  Results view (by design) and the last pick fell before it restored.
+
+**Defect found by the grade, fixed the same hour.** The autopilot's own
+final harvest produced a projection map covering 0% of drafted players.
+The scrape pages the Players table through the Drafted toggle and the
+position filter -- and the autopilot's filter self-heal, added after draft
+10, saw exactly that and put the filters back mid-scrape (`filterfix=2`).
+Harvesters now raise `__hcHarvestBusy` and the autopilot skips its pass
+while it is up (90 s ceiling); tests/queue_test.js tick 6 covers it. The
+grade above is from a manual re-scrape after the room closed, which worked
+because this room, unlike draft 7's, still rendered the table.

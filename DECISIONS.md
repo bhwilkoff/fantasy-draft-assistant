@@ -338,3 +338,23 @@ Autodraft click, so the retry loop was pure cost.
 actions across passes; the passes come every second and the queue settles
 within a few. When the room misbehaves, read `pass=` and `prof=[...]` in
 `__hcStatus()` before guessing.
+
+## 019 — A harvest owns the Players table's filters until it is done
+
+**Rule:** both harvesters (`__hcYahooProj`, `__hcHarvest`) raise
+`window.__hcHarvestBusy` while they run, and the autopilot makes no pass at
+all while it is up (ninety-second ceiling, so a harvest that never resolves
+cannot freeze the draft).
+
+**Why:** the projection scrape reaches every drafted player by turning the
+Drafted toggle on and paging through the position filter. The filter
+self-heal added after draft 10 exists to undo exactly that state when a
+harvest is interrupted. In draft 12 it could not tell the difference: it
+put the filters back mid-scrape, the map covered 0% of drafted players,
+and the grader (correctly) refused Yahoo's scale. Two correct mechanisms,
+each blind to the other, produced a confident wrong answer; a flag is the
+cheapest way to make them aware of each other.
+
+**How to apply:** anything that changes the room's view (tab, filter,
+select) must announce it, and anything that reads the view must check.
+`tests/queue_test.js` tick 6 pins the contract.

@@ -200,5 +200,17 @@ ranking = [mk(PLAYERS[3]), mk(qb2), mk(PLAYERS[0])];   // QB, QB, RB
 A.tick(); A.tick(); A.tick(); A.tick();
 check('tick5 sequential queue skips the second QB', yahooQueue(), ['4', '1']);
 
+// --- tick 6: a harvester is paging the filters. The pass must not touch the
+// room at all (mock 12: the filter self-heal emptied the projection scrape).
+ranking = [mk(PLAYERS[1]), mk(PLAYERS[2]), mk(PLAYERS[0])];
+window.__hcHarvestBusy = true; window.__hcHarvestBusyAt = Date.now();
+clicks.length = 0;
+A.tick(); A.tick();
+check('tick6 no clicks while a harvest is busy', clicks.length, 0);
+check('tick6 queue untouched while a harvest is busy', yahooQueue(), ['4', '1']);
+window.__hcHarvestBusy = false;
+A.tick(); A.tick(); A.tick(); A.tick();
+check('tick6 queue catches up once the harvest is done', yahooQueue()[0], '2');
+
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL QUEUE ACTUATOR CHECKS PASS'));
 process.exit(fails ? 1 : 0);
