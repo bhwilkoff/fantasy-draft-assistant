@@ -237,3 +237,26 @@ Forcing receivers early loses. Hero RB is within noise of best-available,
 which makes sense: with 47 startable receivers the engine's replacement
 math already leans it toward receivers after the first back, so the
 constraint rarely changes a pick. Nothing here justifies overriding value.
+
+
+## 13. Stacking a QB with his receivers, measured (added 2026-09-01)
+
+The season model now correlates teammates week to week: every QB, WR and TE
+on an NFL team (and, half as strongly, its RB and K) shares a weekly
+offensive factor with a 25% spread, which reproduces the published 0.3-0.4
+QB-to-WR1 weekly correlation. With that in place, same valuation, 36 drafts
+x 150 seasons:
+
+| rule among near-equals (6 VOR) | title odds | playoff odds |
+|---|---|---|
+| ignore stacks (the advisor as is) | 14.4% | 69.3% |
+| prefer a receiver on my QB's team, or a QB feeding my receivers | **10.9%** | 67.3% |
+| prefer the opposite (spread across teams) | 15.2% | 69.4% |
+
+Stacking loses three and a half points of title odds. The playoff argument
+for correlation (variance wins a three-week bracket) is real but small; the
+regular-season cost (a correlated lineup loses more of its fourteen
+head-to-head games when its team has an off week) is larger, and you have to
+survive the regular season to reach the bracket. Anti-stacking is within
+noise of doing nothing, so the advisor does nothing. Stack for fun, not for
+points.
