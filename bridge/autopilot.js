@@ -689,6 +689,20 @@
     // the instant our turn opens, so the top entry must be right at all
     // times; spend two clicks (evict + add) to fix it in one pass
     var clickBudget = (!real.length || real[0] !== wantIds[0]) ? 2 : 1;
+    /* Yahoo APPENDS a newly starred player. So when the recommendation is
+     * not queued (his predecessor just went), adding him puts him LAST, and
+     * a two-click budget then evicts the entries ahead of him two per pass
+     * -- for several passes the queue holds entries 2..n and not the one
+     * that matters (seen by the user in mock 10510897: "the next players
+     * match, the highlighted one is missing"). Spend what it takes, once:
+     * evict everything ahead of the recommendation and add him in the same
+     * pass. The rest refills one per pass. */
+    if (wantIds.length) {
+      var topAt = real.indexOf(wantIds[0]);
+      if (topAt < 0) clickBudget = Math.max(clickBudget, real.length + 1);
+      else if (topAt > 0) clickBudget = Math.max(clickBudget, topAt + 1);
+      clickBudget = Math.min(clickBudget, A.QUEUE_DEPTH + 1);
+    }
     function spend() { if (clickBudget <= 0) return false; clickBudget--; return true; }
     /* 1. drop anything Yahoo has that we no longer want -- but be slow to
      *    evict. A player who slipped from 4th to 6th in our ranking is

@@ -239,5 +239,19 @@ A.tick(); A.tick(); A.tick();
 check('tick7 exactly one Draft click, on the recommendation', clicks.filter(c => c[0] === 'D'), ['D2']);
 check('tick7 draft log', A.draftLog, ['3 B. Two']);
 
+// --- tick 8: the recommendation changes and is not queued. Yahoo appends,
+// so he must be added AFTER everything ahead of him is evicted -- in ONE
+// pass, or the queue spends seconds holding entries 2..n without the top.
+W.document.title = '5 picks until your turn | Live NFL Draft';
+W.__hcReaders.readStatus = () => ({ round: 1, pick: 5, upIn: 3, onClock: 'B', clock: '00:30' });
+ranking = [mk(PLAYERS[0]), mk(PLAYERS[1]), mk(PLAYERS[2])];
+for (let i = 0; i < 8; i++) A.tick();
+check('tick8 baseline queue', yahooQueue(), ['1', '2', '3']);
+ranking = [mk(PLAYERS[3]), mk(PLAYERS[0]), mk(PLAYERS[1]), mk(PLAYERS[2])];   // new top: 4
+A.tick();
+check('tick8 one pass: the new recommendation is queue[0]', yahooQueue()[0], '4');
+A.tick(); A.tick(); A.tick();
+check('tick8 the rest refills behind him', yahooQueue(), ['4', '1', '2', '3']);
+
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL QUEUE ACTUATOR CHECKS PASS'));
 process.exit(fails ? 1 : 0);
