@@ -332,6 +332,13 @@
   }
   A.readYahooQueue = readYahooQueue;
 
+  function draftedToggle() {
+    var dr = [].slice.call(document.querySelectorAll('button,div,span'))
+      .filter(function (x) { return x.children.length === 0 && T(x) === 'Drafted'; })[0];
+    return dr ? (dr.closest('button') || dr) : null;
+  }
+  A.draftedToggle = draftedToggle;
+
   function starButton(cls, yid) {
     var e = document.querySelector('.' + cls + '[data-id="' + yid + '"]');
     return e ? (e.querySelector('button') || e) : null;
@@ -384,17 +391,14 @@
      * recommended Jahmyr Gibbs in round nine; or the position select is
      * left on one position, so the pool is a fraction of the board. Detect
      * both from the rows themselves and put the filters back. */
-    var drafted = 0;
-    rows.forEach(function (r) {
-      var key = String(r.name || '').toLowerCase().replace(/[^a-z]/g, '') + '|' + r.pos;
-      if (A.draftedKeys && A.draftedKeys[key]) drafted++;
-    });
     var now0 = Date.now();
-    if (drafted >= 3 && (!A.filterFixAt || now0 - A.filterFixAt > 5000)) {
-      var dr = [].slice.call(document.querySelectorAll('button,div,span'))
-        .filter(function (x) { return x.children.length === 0 && T(x) === 'Drafted'; })[0];
-      var host = dr ? (dr.closest('button') || dr) : null;
-      if (host) { host.click(); A.filterFixAt = now0; A.filterFixes = (A.filterFixes || 0) + 1; }
+    // Yahoo renders a check icon inside the Drafted toggle when it is on
+    // (the same convention as the Autodraft button): read the state, never
+    // toggle blind -- a lost click would turn it ON.
+    var draftedBtn = draftedToggle();
+    var draftedOn = draftedBtn && draftedBtn.querySelectorAll('svg').length > 0;
+    if (draftedOn && !A.reseeding && (!A.filterFixAt || now0 - A.filterFixAt > 5000)) {
+      draftedBtn.click(); A.filterFixAt = now0; A.filterFixes = (A.filterFixes || 0) + 1;
       return;   // re-read on the next pass
     }
     var posCounts = {};

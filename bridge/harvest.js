@@ -218,8 +218,21 @@
 
     clickByText('Players');
     await yieldTimes(30);
-    clickByText('Drafted');          // include already-drafted players
-    await yieldTimes(40);
+    // The toggle shows a check icon when on. Set it by STATE, not by a
+    // blind click: a click that lands twice, or once on a stale button,
+    // leaves the table showing drafted players as available.
+    function draftedBtn() {
+      var e = [].slice.call(document.querySelectorAll('button,div,span'))
+        .filter(function (x) { return x.children.length === 0 && T(x) === 'Drafted'; })[0];
+      return e ? (e.closest('button') || e) : null;
+    }
+    function draftedOn() { var b = draftedBtn(); return !!(b && b.querySelectorAll('svg').length); }
+    async function setDrafted(on) {
+      for (var k = 0; k < 3 && draftedOn() !== on; k++) {
+        var b = draftedBtn(); if (!b) return; b.click(); await yieldTimes(40);
+      }
+    }
+    await setDrafted(true);          // include already-drafted players
 
     var sel = positionSelect();
     if (!sel) {
@@ -239,8 +252,7 @@
       if (all) { setSel(sel, all.value); await yieldTimes(40); }
     }
 
-    clickByText('Drafted');          // toggle back off
-    await yieldTimes(20);
+    await setDrafted(false);         // back to the live board
     window.__hcYahooProjMap = map;
     return map;
   };
