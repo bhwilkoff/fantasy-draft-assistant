@@ -97,6 +97,15 @@
     var best = null, bestN = 0;
     [].slice.call(document.querySelectorAll('select')).forEach(function (s) {
       var opts = [].slice.call(s.options).map(function (o) { return T(o); });
+      // The Players view's position filter ("All Positions", "Quarterbacks",
+      // "Kickers", ...) has six non-code options and was once mistaken for
+      // the team list when the Results tab had not rendered yet -- the
+      // final harvest of mock 10430207 came back as one team called
+      // "Kickers". Exclude anything that looks like a position or a
+      // stat-view filter outright.
+      if (opts.some(function (o) {
+        return /All Positions|Quarterbacks|Running Backs|Wide Receivers|Tight Ends|Kickers|Team Defenses|Season|Projected|Actual|Yahoo/i.test(o);
+      })) return;
       var teamish = opts.filter(function (o) {
         return o && !/^(QB|RB|WR|TE|K|DEF|D\/ST|ALL|Round \d+|\d+)$/i.test(o);
       });
@@ -264,9 +273,13 @@
     clickByText('Results');
     await yieldTimes(30);
     clickByText('Teams');
-    await yieldTimes(30);
-
-    var sel = teamSelect();
+    // wait for the team list to actually render, not a fixed number of
+    // yields -- a busy client takes longer than thirty of them
+    var sel = null;
+    for (var w = 0; w < 400 && !sel; w++) {
+      sel = teamSelect();
+      if (!sel) { await yieldTimes(10); if (w % 40 === 39) clickByText('Teams'); }
+    }
     if (!sel) return { error: 'team <select> not found on Results tab' };
 
     var options = [].slice.call(sel.options)
