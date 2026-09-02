@@ -10,24 +10,27 @@ pick. This is the runbook.
 
 ```bash
 cd ~/Documents/GitHub/fantasy-draft-assistant
-git pull
-./run_tests.sh                 # must print ALL TESTS PASS
-python3 engine/build.py        # refresh projections, ADP, injuries
-git commit -am "refresh" && git push      # publishes the data plane
+tools/draftday.sh              # pull, rebuild, test, publish, wait for Pages
 ```
+
+That one script does everything the old four-line ritual did and then
+confirms GitHub Pages is serving the new build before it says "ready".
 
 Open `https://bhwilkoff.github.io/fantasy-draft-assistant/web/` and confirm the
 header reads `12 teams · 1 PPR · 6pt pass TD` and the footer shows today's
 build date. If it doesn't, the overlay will be wrong too.
 
 **Install the userscript** (once): Tampermonkey → new script → paste
-`bridge/yahoo-draft-bridge.user.js`. It matches `/draftclient/*` and arms
-itself. If you'd rather not install anything, see "manual arm" below.
+`bridge/loader.user.js`. It is ten lines that pull the current bridge from
+GitHub Pages every time a draft room opens, so nothing needs reinstalling
+when something is fixed. It arms the advisory overlay only; the autopilot
+never loads from it. If you'd rather not install anything, see "Arming by
+hand" below.
 
 ## T-minus 2 hours — the last data refresh that matters
 
 ```bash
-python3 engine/build.py && git commit -am "draft-morning refresh" && git push
+tools/draftday.sh
 ```
 
 ADP moves hard in the final 48 hours and injury news moves harder. The build

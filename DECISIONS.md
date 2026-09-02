@@ -295,3 +295,23 @@ about. The "edge" it thought it saw was one forecaster's noise.
 player, that is a reason to trust the *consensus*, not a reason to draft
 him. Show the disagreement in the overlay as information; do not let one
 source's optimism be the valuation.
+
+---
+
+## 017 — The league is a file, and the browser reads the same file
+
+**Rule:** `config/league.json` is the only place a league is described.
+`engine/league.py` loads it; `engine/build.py` writes the lineup string and
+the scoring preset into `data/meta.json`; the overlay and the standalone
+board apply those rather than any built-in preset.
+
+**Why:** the rules were spread across `league.py` constants, a preset in
+`web/league.js`, a fallback string in the bridge, and `NUM_TEAMS`/`ROUNDS`
+in the standalone board. Four copies of one fact drift, and the earlier
+mocks showed what a wrong roster size or team count does downstream
+(DECISIONS 008, 010). One file, read by both languages through the data
+plane, means changing leagues is an edit and a rebuild.
+
+**How to apply:** if a new rule is needed (a superflex slot, a bonus
+category), add it to the JSON, teach `league.py` and `web/league.js` to
+read it, and let `build.py` carry it. Never add a league number to code.

@@ -26,15 +26,23 @@ run in minutes instead of thirty minutes apiece.
 2. Click **12 Team** — this auto-joins the next 12-team room (matching Harvey
    Cup's size) rather than the 14-team default.
 3. When "Draft has Started" appears, click **Enter Draft**.
-4. In the draft room console, arm the stack:
+4. In the draft room console, arm in two steps (the overlay first; loading
+   the whole chain into a client that is still booting has starved the
+   renderer):
 
 ```js
-var s=document.createElement('script');
-s.src='https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/arm.js?v='+Date.now();
-document.head.appendChild(s);
+// step 1: overlay + data
+window.__hcNoAutopilot = true;
+document.head.appendChild(Object.assign(document.createElement('script'),
+  {src:'https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/arm.js?v='+Date.now()}));
+// step 2, ~10 s later: the autopilot
+document.head.appendChild(Object.assign(document.createElement('script'),
+  {src:'https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/autopilot.js?v='+Date.now()}));
 ```
 
-That loads `league.js` → `advisor.js` → the overlay → `autopilot.js`. The
+If `bridge/loader.user.js` is installed, step 1 has already happened by the
+time the player table renders; only step 2 is needed. Always use a
+cache-buster: GitHub Pages serves a ten-minute cache. The
 autopilot keeps Yahoo's **queue** synced to current advice and switches
 **Autodraft** on, so the room drafts your board for you. It deliberately does
 not click a "Draft Player" button: that button exists only during your own 60

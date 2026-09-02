@@ -28,6 +28,30 @@ echo "=== draft-room DOM readers (fixture) ==="
 ( cd tests && node dom_test.js ) || fail=1
 
 echo
+echo "=== league config round-trips into the data plane ==="
+python3 - <<'PY' || fail=1
+import json, sys
+sys.path.insert(0, 'engine')
+import league as L
+meta = json.load(open('data/meta.json'))['league']
+cfg = json.load(open('config/league.json'))
+ok = True
+def check(label, a, b):
+    global ok
+    good = a == b
+    ok = ok and good
+    print(f"  {'ok  ' if good else 'FAIL'}  {label} = {a!r}" + ('' if good else f"  (data plane has {b!r})"))
+check('teams', cfg['num_teams'], meta['teams'])
+check('rounds', cfg['rounds'], meta['rounds'])
+check('roster size', sum(cfg['starters'].values()) + cfg['bench'], meta['roster_size'])
+check('roster text', L.roster_text(), meta['roster_text'])
+check('ppr in browser preset', cfg['scoring']['offense']['rec'], meta['scoring']['rec'])
+check('pass td in browser preset', cfg['scoring']['offense']['pass_td'], meta['scoring']['pass_td'])
+print('  CONFIG OK' if ok else '  CONFIG MISMATCH -- run engine/build.py')
+sys.exit(0 if ok else 1)
+PY
+
+echo
 echo "=== syntax ==="
 node --check web/advisor.js && node --check web/app.js \
   && node --check bridge/yahoo-draft-bridge.user.js && node --check bridge/autopilot.js && node --check bridge/opponents.js \
