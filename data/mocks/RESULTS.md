@@ -15,6 +15,7 @@ degrades.
 | 4 | 10276029 | **12** | 6 | pick 126 | **12 / 12** | 1235.7 | 1451.8 | 216.1 |
 | 5 | 10426834 | 12 | 5 | pick 10 | **12 / 12** | 1257.5 | 1443.4 | 185.9 |
 | 6 | 10427900 | 12 | 8 | pick 4 | **12 / 12** | 1482.2 | 1744.7 | 262.5 |
+| 7 | 10429138 | 12 | 7 | pick 1 | **7 / 12** (our proj.) | 1749.2 | 1790.0 | 89.3 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -248,3 +249,35 @@ the board.
 Fix in progress: a consensus projection (ESPN + Sleeper offline, Yahoo's raw
 stat line from the room at runtime), blended at the stat level and then
 re-scored under the league's rules as before. See DECISIONS 016.
+
+
+## Draft 7 — room 10429138 (12-team), 2026-09-01
+
+First draft on the ESPN+Sleeper consensus board, armed at pick 1. Roster:
+`QB Allen · WR Evans, Sutton · RB Cook, J. Williams, Judkins · TE LaPorta ·
+K Fairbairn · DEF Cowboys · bench Kittle, Purdy, Pittman, Worthy, Marks,
+Shakir` -- the first mock roster with a legal lineup including K and DEF.
+
+Finished **7 of 12 under our projections** (1749 vs 1790; the whole room
+spans only 89 points, so this is a coin-flip room). Yahoo's projection
+scrape does not run once a draft has ended, so there is no Yahoo-scale grade
+for this one; the auto-harvest during the final round fired before the
+projection pass could.
+
+Audit: 7 of 8 picks through round 10 took the live recommendation (Cook,
+Allen, J. Williams, Judkins, Evans at 55, Kittle at 79, Sutton at 90,
+Pittman at 114); pick 103 took Purdy over Monangai in an end-game where
+every remaining value was near zero. Picks 127-175 were made with the
+autopilot FROZEN: a re-arm at pick 115 replaced the harvester under an
+in-flight reseed, the "pause while reseeding" flag never cleared, and the
+room -- all autodrafters by then, a pick every two seconds -- finished the
+draft from a stale queue. Yahoo still took K and DEF from the queue because
+they had been queued at three picks left.
+
+Fixed: the reseed flag times out after 20 s; arm.js waits for the data
+plane by time (90 s) rather than 400 yields, which had silently skipped the
+autopilot when a freshly pushed players.json was not yet cached.
+
+Also this draft: Autodraft was OFF after arming (the click landed before
+React attached its handler) and would have let Yahoo pick from its own
+rankings; the autopilot now reads the button's state every pass.

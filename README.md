@@ -102,9 +102,10 @@ the URL patterns and the exact table schema, are in
 
 ## Status
 
-**The harness is validated; the strategy is not validated against live mocks.**
+**The harness is validated end to end; the valuation has had one clean
+live test (draft 6) and one clean-until-round-10 test (draft 7).**
 
-Six mock drafts were run against Yahoo. They were valuable as a bug-finding
+Seven mock drafts were run against Yahoo. They were valuable as a bug-finding
 instrument and are worthless as a strategy test, because Yahoo mock rooms run
 DEFAULT settings (half PPR, 4-point passing TDs, 2WR + one flex) -- a
 different game from Harvey Cup. All five results and their causes are in
