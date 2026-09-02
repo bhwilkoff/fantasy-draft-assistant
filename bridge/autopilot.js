@@ -496,7 +496,7 @@
           slotM ? +slotM[1] : null);
         availability = (window.__hcProf || function (n, f) { return f(); })('opponents', function () {
           return window.__hcOpp.simulateAvailability(pool, cur, next, oppRosters, {
-            numTeams: A.numTeams, totalRounds: rounds, trials: 150, seed: cur * 7919 + pool.length,
+            numTeams: A.numTeams, totalRounds: rounds, trials: 60, seed: cur * 7919 + pool.length,
             autodraftSlots: A.autodraftSlots
           });
         });
@@ -519,6 +519,7 @@
      * drafted onto the roster and off the board. */
     var seqPool = pool.slice(), seqRoster = roster.slice(), seq = [];
     var seqOpts = { availability: availability };
+    var tSeq = Date.now();
     for (var qi = 0; qi < A.QUEUE_DEPTH; qi++) {
       var r = qi === 0 ? res
         : HC.advise(seqPool, seqRoster, cur, next, [], 3,
@@ -531,6 +532,7 @@
       seqRoster = seqRoster.concat([{ name: pickd.name, pos: pickd.pos, team: pickd.team,
                                       vor: pickd.vor, points: pickd.points }]);
     }
+    A.seqMs = Date.now() - tSeq;
 
     /* Re-read our roster from the Results tab right after each of our picks.
      *
@@ -858,7 +860,7 @@
       'lastTick=' + (A.last ? Math.round((Date.now() - A.last.ts) / 1000) + 's' : 'NEVER'),
       'pass=' + (A.passMs == null ? '?' : A.passMs + 'ms') + '/max' + (A.passMax || 0)
         + '/avg' + (A.passCount ? Math.round(A.passTotal / A.passCount) : 0) + '/every' + A.RATE_MS,
-      'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ' reconcile:' + (A.reconcileMs == null ? '?' : A.reconcileMs + 'ms') + ']',
+      'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ' reconcile:' + (A.reconcileMs == null ? '?' : A.reconcileMs + 'ms') + ' seq:' + (A.seqMs == null ? '?' : A.seqMs + 'ms') + ']',
       'dialogs=' + ((window.__hcDialogs || []).length),
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',

@@ -237,6 +237,15 @@
     if (!cur) return [];
     var parent = cur.parentElement;
     if (!parent) return [];
+    /* The order never changes during a draft, and reading it is the most
+     * expensive thing the bridge does late in one: the strip holds a cell
+     * per PICK (180 in a 12x15 room), and the first version cloned every
+     * cell on every pass -- 6.9 s in one pass of mock 10504003. Read it
+     * once per strip size and keep it. */
+    var n0 = parent.children.length;
+    if (state.orderCache && state.orderCache.n === n0 && state.orderCache.order.length >= 4) {
+      return state.orderCache.order;
+    }
     // The strip repeats the whole order once per ROUND, so its raw length is
     // teams x rounds. Taking it at face value set numTeams to 210, which made
     // replacement level the 210th-best quarterback (~0 points) and handed
@@ -250,22 +259,41 @@
      * -- or, for a strip that repeats plainly, the smallest period. Never
      * dedupe by name: two managers can share one (two "anthony" in mock
      * 10430908), and 11 teams in a 12-team room shifts every pick number. */
-    var names = [].slice.call(parent.children).map(function (c) {
-      var clone = c.cloneNode(true);
-      [].slice.call(clone.querySelectorAll('.ys-player')).forEach(function (e) { e.remove(); });
-      return textOf(clone).split('\n')[0];
-    }).filter(Boolean);
+    // the team name is the cell's text with any drafted player's card
+    // excluded -- walk the text nodes, skipping .ys-player subtrees; no
+    // cloning, no layout
+    function cellName(c) {
+      var out = '';
+      // numeric constants: SHOW_TEXT = 4, FILTER_ACCEPT = 1, FILTER_REJECT = 2
+      // (NodeFilter is not a global in every environment the tests run in)
+      var walker = document.createTreeWalker(c, 4, {
+        acceptNode: function (node) {
+          var p = node.parentElement;
+          while (p && p !== c) {
+            if (p.classList && p.classList.contains('ys-player')) return 2;
+            p = p.parentElement;
+          }
+          return 1;
+        }
+      });
+      var t;
+      while ((t = walker.nextNode())) { out += t.nodeValue; if (out.length > 80) break; }
+      return out.trim().split('\n')[0];
+    }
+    var names = [].slice.call(parent.children).map(cellName).filter(Boolean);
     var n = names.length;
     if (n === 0) return [];
-    for (var k = 4; k <= 20 && 2 * k <= n; k++) {
+    var found = null;
+    for (var k = 4; k <= 20 && 2 * k <= n && !found; k++) {
       var mirror = true, plain = true;
       for (var i = 0; i < k && k + i < n; i++) {
         if (names[k + i] !== names[k - 1 - i]) mirror = false;
         if (names[k + i] !== names[i]) plain = false;
         if (!mirror && !plain) break;
       }
-      if (mirror || plain) return names.slice(0, k);
+      if (mirror || plain) found = names.slice(0, k);
     }
+    if (found) { state.orderCache = { n: n0, order: found }; return found; }
     // only one round rendered and no period visible: take what is there
     return names.slice(0, Math.min(n, 20));
   }
