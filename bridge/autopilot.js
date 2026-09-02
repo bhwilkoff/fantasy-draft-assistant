@@ -819,8 +819,11 @@
       A.passMs = ms;
       A.passMax = Math.max(A.passMax || 0, ms);
       A.passTotal = (A.passTotal || 0) + ms; A.passCount = (A.passCount || 0) + 1;
-      if (ms > 300 && A.RATE_MS < 8000) A.RATE_MS = Math.min(8000, A.RATE_MS * 2);
-      else if (ms < 100 && A.RATE_MS > 1000) A.RATE_MS = Math.max(1000, A.RATE_MS / 2);
+      // a pass that clicks costs ~200-400 ms of Yahoo's re-render by design;
+      // back off only when it is worse than that, and never past 4 s, or the
+      // queue refills too slowly after our own pick
+      if (ms > 600 && A.RATE_MS < 4000) A.RATE_MS = Math.min(4000, A.RATE_MS * 2);
+      else if (ms < 250 && A.RATE_MS > 1000) A.RATE_MS = Math.max(1000, A.RATE_MS / 2);
     });
   }
 
