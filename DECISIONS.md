@@ -315,3 +315,26 @@ plane, means changing leagues is an edit and a rebuild.
 **How to apply:** if a new rule is needed (a superflex slot, a bonus
 category), add it to the JSON, teach `league.py` and `web/league.js` to
 read it, and let `build.py` carry it. Never add a league number to code.
+
+---
+
+## 018 — Every click into the room is a full React re-render; budget clicks, not computation
+
+**Rule:** the autopilot makes at most one star click per pass (two when the
+queue is empty) and never toggles Autodraft before the draft has started
+or more than once per thirty seconds.
+
+**Why:** rooms kept going unresponsive and it was natural to blame the
+opponent simulation or the readers. A profiler in the browser stack
+(`__hcProfile()`) showed a pass costing 500-4,400 ms while every profiled
+computation summed to under 100 ms. The remainder was the clicks: a queue
+star or the Autodraft button is a synchronous React state change that
+re-renders the whole room (~180 ms each), and a pass that reconciled four
+entries plus retried Autodraft every three seconds spent most of the
+main thread on Yahoo's rendering. Before the draft starts Yahoo ignores the
+Autodraft click, so the retry loop was pure cost.
+
+**How to apply:** treat a click as expensive I/O, not a free call. Spread
+actions across passes; the passes come every second and the queue settles
+within a few. When the room misbehaves, read `pass=` and `prof=[...]` in
+`__hcStatus()` before guessing.
