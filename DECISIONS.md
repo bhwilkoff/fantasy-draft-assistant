@@ -232,3 +232,44 @@ never opened.
 the moment you read them, and derive the fact from the one that cannot
 drift. Then re-read the authoritative view (the Results tab) at a natural
 checkpoint anyway -- that read costs two seconds a round.
+
+---
+
+## 014 — Availability is a question about the drafters in front of you, and the room knows who they are
+
+**Rule:** the live advisor's "will he last to my next pick" comes from
+simulating the specific opponents who pick between now and then, using the
+rosters they have actually built (`bridge/opponents.js`, a port of
+`engine/opponents.py`). The closed-form Normal(ADP) model is the fallback
+only.
+
+**Why:** the user's brief is a tool that beats *these* opponents, not a
+generic board. The autopilot already records every pick with its drafter, so
+each opponent's roster is known for free; a team holding three running backs
+in round six is not a threat to the running back we want, whatever ADP says.
+
+**How to apply:** feed the model everything the room reveals about a
+drafter. Never let it move a pick by itself (DECISIONS 004 still stands --
+availability informs the expectation of what is left later, it does not
+outrank value), and keep the ADP fallback so an empty pick log degrades
+gracefully.
+
+---
+
+## 015 — An autodrafting opponent is deterministic; detect it and model it that way
+
+**Rule:** a slot whose picks all land within a few seconds of its turn
+opening is Yahoo's autodraft. It is simulated as "best XRank at a usable
+position, no noise"; people keep the noisy-ADP model.
+
+**Why:** Harvey Cup is a new family league in which most managers had not
+touched the site between creation and draft week. Several draft-day
+opponents will be autodraft, and autodraft follows Yahoo's public rank (the
+room's XRank column) exactly. That is the most predictable drafter there is,
+and predicting it converts directly into knowing what will still be on the
+board at our pick.
+
+**How to apply:** the fingerprint is timing, which the autopilot now records
+per pick. Watch `autodrafters=` in `__hcStatus()`; if a human is misfiled
+because they happened to pick fast twice, the cost is a slightly wrong
+availability estimate, never a wrong valuation.
