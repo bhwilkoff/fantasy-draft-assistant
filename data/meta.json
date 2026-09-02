@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30T19:17:00+00:00",
+  "generated_at": "2026-09-02T01:08:03+00:00",
   "league": {
     "id": 539156,
     "name": "Harvey Cup",
@@ -21,12 +21,12 @@
     "pass_td": 6.0
   },
   "replacement_points": {
-    "QB": 345.71,
-    "RB": 159.18,
-    "WR": 157.37,
-    "TE": 158.21,
-    "K": 146.58,
-    "DEF": 92.8
+    "QB": 345.66,
+    "RB": 159.1,
+    "WR": 157.31,
+    "TE": 158.9,
+    "K": 146.48,
+    "DEF": 92.97
   },
   "starters_consumed": {
     "QB": 12,
@@ -38,8 +38,8 @@
   },
   "sources": {
     "projections": "ESPN kona_player_info (raw stats, re-scored)",
-    "injuries": "Sleeper (255 statuses)",
-    "adp": "FantasyFootballCalculator PPR 12-team, 8234 drafts 2026-08-23..2026-08-30"
+    "injuries": "Sleeper (282 statuses)",
+    "adp": "FantasyFootballCalculator PPR 12-team, 8101 drafts 2026-08-25..2026-09-01"
   },
-  "player_count": 534
+  "player_count": 531
 }
