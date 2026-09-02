@@ -333,7 +333,12 @@
   A.readYahooQueue = readYahooQueue;
 
   function draftedToggle() {
-    var dr = [].slice.call(document.querySelectorAll('button,div,span'))
+    // the toggle is a <button> whose text is exactly "Drafted" (plus a check
+    // icon when on); leaf-text matching missed it once the icon was present
+    var btn = [].slice.call(document.querySelectorAll('button'))
+      .find(function (b) { return T(b) === 'Drafted'; });
+    if (btn) return btn;
+    var dr = [].slice.call(document.querySelectorAll('div,span'))
       .filter(function (x) { return x.children.length === 0 && T(x) === 'Drafted'; })[0];
     return dr ? (dr.closest('button') || dr) : null;
   }

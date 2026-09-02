@@ -222,7 +222,10 @@
     // blind click: a click that lands twice, or once on a stale button,
     // leaves the table showing drafted players as available.
     function draftedBtn() {
-      var e = [].slice.call(document.querySelectorAll('button,div,span'))
+      var btn = [].slice.call(document.querySelectorAll('button'))
+        .find(function (b) { return T(b) === 'Drafted'; });
+      if (btn) return btn;
+      var e = [].slice.call(document.querySelectorAll('div,span'))
         .filter(function (x) { return x.children.length === 0 && T(x) === 'Drafted'; })[0];
       return e ? (e.closest('button') || e) : null;
     }
