@@ -499,6 +499,15 @@
         why.push('range ' + Math.round(full.floor) + '-' + Math.round(full.ceiling)
           + (full.sigma_frac > 0.55 ? ' <span class="warn">(high variance)</span>' : ''));
       }
+      // per-source disagreement: one forecaster's optimism is information,
+      // not valuation (DECISIONS 016)
+      if (full && full.points_sleeper != null && full.points_espn != null) {
+        var gap = full.points_espn - full.points_sleeper;
+        why.push('ESPN ' + Math.round(full.points_espn) + ' / Sleeper '
+          + Math.round(full.points_sleeper)
+          + (Math.abs(gap) >= 25 ? ' <span class="warn">(sources split by '
+             + Math.round(Math.abs(gap)) + ')</span>' : ''));
+      }
       if (full && full.injury && String(full.injury).toLowerCase() !== 'active') {
         // the body part is the part a multiplier cannot interpret
         why.push('<span class="warn">' + esc(full.injury)
