@@ -258,11 +258,26 @@
   }
   A.myRosterFromPicks = myRosterFromPicks;
 
+  /* Autodraft must be ON or the queue is decoration. Read the button's
+   * actual state every pass -- when it is on, Yahoo renders a check icon
+   * (an <svg>) inside it and fills the background; when off, plain text on
+   * the dark panel. The first version clicked once and remembered "on",
+   * which was false in mock 10429138: the click landed before React had
+   * attached its handler, and the room would have autodrafted from
+   * Yahoo's rankings instead of our queue. */
   function enableAutodraft() {
-    if (A.autodraftOn) return;
     var b = [].slice.call(document.querySelectorAll('button'))
-      .find(function (x) { return /^autodraft$/i.test(T(x)); });
-    if (b) { b.click(); A.autodraftOn = true; }
+      .find(function (x) { return /^\s*autodraft\s*$/i.test(T(x)); });
+    if (!b) { A.autodraftOn = false; return; }
+    var on = b.querySelectorAll('svg').length > 0;
+    if (!on) {
+      // do not hammer it: one click, then let the next pass verify
+      var now = Date.now();
+      if (!A.autodraftClickedAt || now - A.autodraftClickedAt > 3000) {
+        b.click(); A.autodraftClickedAt = now; A.autodraftClicks = (A.autodraftClicks || 0) + 1;
+      }
+    }
+    A.autodraftOn = on;
   }
 
   function post(path, obj) {
@@ -650,7 +665,7 @@
       'queued=' + Object.keys(A.queued).length,
       'qtop=' + (A.queueTop || '-'),
       'yq=' + ((A.yahooQueue || []).slice(0, 2).join('>') || '-'),
-      'autodraft=' + (A.autodraftOn ? 'on' : 'off'),
+      'autodraft=' + (A.autodraftOn ? 'on' : 'OFF') + (A.autodraftClicks ? '(clicked' + A.autodraftClicks + ')' : ''),
       'observed=' + A.log.length,
       'picklog=' + Object.keys(A.picks).length,
       'restored=' + (A.restored || 0),
