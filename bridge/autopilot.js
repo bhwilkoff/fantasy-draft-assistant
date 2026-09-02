@@ -200,6 +200,10 @@
    * arrived, so read it once and merge. */
   A.seedRoster = null;
   A.seedRosterFromResults = async function () {
+    // Passes must not read the players table while the harvester has the
+    // Drafted filter on (drafted players would look available); guard
+    // manual calls the same way the automatic reseed is guarded.
+    A.reseeding = true; A.reseedStartedAt = Date.now();
     try {
       var h = await window.__hcHarvest();
       if (h && h.teams && h.me && h.teams[h.me]) {
@@ -221,6 +225,7 @@
         .find(function (x) { return (x.innerText || '').trim() === 'Players'; });
       if (pl) pl.click();
     } catch (e) { A.seedError = String(e); }
+    A.reseeding = false;
     return A.seedRoster ? A.seedRoster.length : 0;
   };
 
