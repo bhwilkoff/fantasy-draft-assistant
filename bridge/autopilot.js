@@ -312,9 +312,13 @@
     if (!b) { A.autodraftOn = false; return; }
     var on = b.querySelectorAll('svg').length > 0;
     if (!on) {
-      // do not hammer it: one click, then let the next pass verify
+      /* One click, then wait: each click is a React re-render of the whole
+       * room (~200 ms) and before the draft has started Yahoo ignores it,
+       * so a 3-second retry loop was burning a fifth of the CPU for
+       * nothing (mock 10504003, "clicked3" before pick one). */
       var now = Date.now();
-      if (!A.autodraftClickedAt || now - A.autodraftClickedAt > 3000) {
+      var started = !!(A.last && A.last.pick != null) || !!document.querySelector('.ys-draftorder-current');
+      if (started && (!A.autodraftClickedAt || now - A.autodraftClickedAt > 30000)) {
         b.click(); A.autodraftClickedAt = now; A.autodraftClicks = (A.autodraftClicks || 0) + 1;
       }
     }
@@ -579,8 +583,15 @@
       if (yid) { wantIds.push(yid); wantName[yid] = w.name; }
     });
 
+    A._reconcileT0 = Date.now();
     var real = readYahooQueue();
     var added = 0, removed = 0;
+    /* Every star click is a synchronous React re-render of the room. Budget
+     * ONE click per pass (two only when the queue is empty), and let the
+     * passes -- one a second -- do the rest. A pass that clicked four stars
+     * cost a full second of main thread. */
+    var clickBudget = real.length ? 1 : 2;
+    function spend() { if (clickBudget <= 0) return false; clickBudget--; return true; }
     /* 1. drop anything Yahoo has that we no longer want -- but be slow to
      *    evict. A player who slipped from 4th to 6th in our ranking is
      *    harmless further down the queue; removing him and re-adding one
@@ -598,7 +609,7 @@
       if (wantIds.indexOf(yid) >= 0) return;
       if (tolerated[yid] && onBoard[yid]) return;
       var b = starButton('ys-removequeue', yid);
-      if (b) { b.click(); removed++; }
+      if (b && spend()) { b.click(); removed++; }
     });
     // 2. drop anything that is out of order relative to our ranking, so the
     //    re-add below restores queue[0] = the live recommendation
@@ -610,7 +621,7 @@
       if (wantIds.indexOf(yid) >= 0) return;
       if (firstWantedAt >= 0 && i < firstWantedAt) {
         var bb = starButton('ys-removequeue', yid);
-        if (bb) { bb.click(); removed++; }
+        if (bb && spend()) { bb.click(); removed++; }
       }
     });
     var lastRank = -1, keep = [];
@@ -618,7 +629,7 @@
       var rank = wantIds.indexOf(yid);
       if (rank > lastRank) { lastRank = rank; keep.push(yid); return; }
       var b = starButton('ys-removequeue', yid);
-      if (b) { b.click(); removed++; }
+      if (b && spend()) { b.click(); removed++; } else { keep.push(yid); }
     });
     // a kept entry ahead of a missing higher-ranked one is also out of order
     // (queue[0] would not be the recommendation); drop from that point on
@@ -629,19 +640,19 @@
     keep = keep.filter(function (yid) {
       if (wantIds.indexOf(yid) < firstMissing) return true;
       var b = starButton('ys-removequeue', yid);
-      if (b) { b.click(); removed++; }
-      return false;
+      if (b && spend()) { b.click(); removed++; return false; }
+      return true;
     });
     // 3. add the missing wanted players in order: one per pass while the
     //    queue is healthy (order safety), two when it has run thin -- an
     //    end-game of autodrafters moves a pick every two seconds, and a
     //    queue with one name in it is one pick from empty
-    var maxAdds = keep.length < 3 ? 2 : 1;
-    for (var ai = 0; ai < wantIds.length && added < maxAdds; ai++) {
+    for (var ai = 0; ai < wantIds.length && clickBudget > 0; ai++) {
       if (keep.indexOf(wantIds[ai]) >= 0) continue;
       var sb = starButton('ys-addqueue', wantIds[ai]);
-      if (sb) { sb.click(); added++; }
+      if (sb && spend()) { sb.click(); added++; }
     }
+    A.reconcileMs = Date.now() - (A._reconcileT0 || Date.now());
     A.queued = {};
     keep.forEach(function (yid) { A.queued[yid] = wantName[yid]; });
     A.yahooQueue = real.map(function (yid) { return wantName[yid] || yid; });
@@ -844,7 +855,7 @@
       'lastTick=' + (A.last ? Math.round((Date.now() - A.last.ts) / 1000) + 's' : 'NEVER'),
       'pass=' + (A.passMs == null ? '?' : A.passMs + 'ms') + '/max' + (A.passMax || 0)
         + '/avg' + (A.passCount ? Math.round(A.passTotal / A.passCount) : 0) + '/every' + A.RATE_MS,
-      'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ']',
+      'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ' reconcile:' + (A.reconcileMs == null ? '?' : A.reconcileMs + 'ms') + ']',
       'dialogs=' + ((window.__hcDialogs || []).length),
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',

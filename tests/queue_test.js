@@ -154,14 +154,15 @@ check('tick1 a further pass changes nothing', yahooQueue(), ['1', '2', '3']);
 // --- tick 2: ranking changes completely to 5,6 (a kicker and a defense)
 ranking = [mk(PLAYERS[4]), mk(PLAYERS[5])];
 clicks.length = 0;
-A.tick(); A.tick(); A.tick();
+// one click per pass: three removals, then two additions
+A.tick(); A.tick(); A.tick(); A.tick(); A.tick(); A.tick();
 console.log('  (tick2 clicks: ' + JSON.stringify(clicks) + ')');
 check('tick2 Yahoo queue is exactly the new set, in order', yahooQueue(), ['5', '6']);
 check('tick2 queueTop is the live recommendation', A.queueTop, 'E. Five');
 
 // --- tick 3: same players, REVERSED. queue[0] must follow the ranking.
 ranking = [mk(PLAYERS[5]), mk(PLAYERS[4])];
-A.tick(); A.tick(); A.tick();
+A.tick(); A.tick(); A.tick(); A.tick(); A.tick();
 check('tick3 reversed ranking reorders the queue', yahooQueue(), ['6', '5']);
 
 // --- tick 4: Yahoo holds a stale player we never asked for (queued by hand,
@@ -196,7 +197,7 @@ W.HarveyCup.advise = function (available, roster) {
            target_position: 'QB', picks_remaining: 10, recent_runs: {} };
 };
 ranking = [mk(PLAYERS[3]), mk(qb2), mk(PLAYERS[0])];   // QB, QB, RB
-A.tick(); A.tick(); A.tick();
+A.tick(); A.tick(); A.tick(); A.tick();
 check('tick5 sequential queue skips the second QB', yahooQueue(), ['4', '1']);
 
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL QUEUE ACTUATOR CHECKS PASS'));
