@@ -187,6 +187,20 @@ def build():
     print(f"  matched ADP for {matched}/{len(players)} "
           f"({ambiguous} surname collisions refused)")
 
+    # Bye weeks: FFC supplies one only for players it matched. A bye is a
+    # property of the TEAM, so fill the rest from teammates -- the season
+    # simulator zeroes a player in his bye week, and the advisor checks for
+    # starters sharing one.
+    team_bye = {}
+    for p in players:
+        if p.get("bye") and p.get("team"):
+            team_bye.setdefault(p["team"], p["bye"])
+    for p in players:
+        if not p.get("bye") and p.get("team") in team_bye:
+            p["bye"] = team_bye[p["team"]]
+    print(f"  byes known for {sum(1 for p in players if p.get('bye'))}/{len(players)} "
+          f"({len(team_bye)} teams)")
+
     levels, counts = vor.apply_vor(players)
     vor.assign_tiers(players)
     # per-player season spread -> ceiling/floor. Not a breakout predictor;

@@ -99,12 +99,18 @@ def simulate_season(rosters, lineup, rng, season_mults=None, learning=0.5):
     wins = {t: 0 for t in rosters}
     points_for = {t: 0.0 for t in rosters}
 
-    def week_scores():
+    def week_scores(week=None):
         out = {}
         for t, roster in rosters.items():
             scores, expected = {}, {}
             for p in roster:
                 mult = (season_mults or {}).get(p["name"], 1.0)
+                # A player on bye scores nothing and the manager knows it.
+                # Byes fall in the regular season only.
+                if week is not None and p.get("bye") and int(p["bye"]) == week:
+                    scores[id(p)] = 0.0
+                    expected[id(p)] = -1.0
+                    continue
                 scores[id(p)] = draw_week(p, rng, mult)
                 # What the manager knows on Sunday morning. `learning` is
                 # how much of the player's true season-long quality has become
@@ -117,8 +123,8 @@ def simulate_season(rosters, lineup, rng, season_mults=None, learning=0.5):
             out[t] = best_lineup_score(scores, roster, lineup, rank_by=expected)
         return out
 
-    for pairs in schedule:
-        sc = week_scores()
+    for week, pairs in enumerate(schedule, 1):
+        sc = week_scores(week)
         for t in rosters:
             points_for[t] += sc[t]
         for a, b in pairs:
