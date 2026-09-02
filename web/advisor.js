@@ -161,9 +161,14 @@
     var usable = POSITIONS.filter(function (p) { return need.totalGap[p] > 0; });
     // K and DEF are worth ~a point a week over the waiver alternative, and
     // there are exactly 12 of each for 12 teams. Never before the end.
+    /* Open the gate one pick early (3 left, not 2). The queue is fed one
+     * entry per pass, and an end-game of autodrafters moves a pick every
+     * two seconds; opened at 2 the defense was still not in the queue when
+     * pick 161 arrived (mock 10427900) and the last bench receiver went in
+     * its place. One bench pick's difference, measurably nothing. */
     ['K', 'DEF'].forEach(function (p) {
       var i = usable.indexOf(p);
-      if (i >= 0 && picksRemaining > (need.starterGap[p] ? 2 : 1)) usable.splice(i, 1);
+      if (i >= 0 && picksRemaining > (need.starterGap[p] ? 3 : 1)) usable.splice(i, 1);
     });
     if (!usable.length) {
       usable = ['RB', 'WR', 'TE', 'QB'].filter(function (p) { return need.totalGap[p] > 0; });
