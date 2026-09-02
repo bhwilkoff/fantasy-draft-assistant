@@ -74,6 +74,30 @@ The panel sits top-right of the Yahoo draft room and shows:
 read a beat writer. When Claude's note and the engine disagree, that
 disagreement is the most valuable thing on the screen — read both, then pick.
 
+### Arming by hand (what nine mocks taught, 2026-09-01)
+
+If the userscript is not installed, or Yahoo tears the tab down, arm from
+the console in two steps rather than one. Loading the whole chain into a
+draft client that is still booting starved the renderer twice; the overlay
+first, then the autopilot (mock rooms only), never froze:
+
+```js
+// step 1: overlay + data (always with a cache-buster; Pages caches 10 min)
+window.__hcNoAutopilot = true;
+document.head.appendChild(Object.assign(document.createElement('script'),
+  {src:'https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/arm.js?v='+Date.now()}));
+// step 2 (MOCKS ONLY -- never in Harvey Cup): the autopilot, ~10 s later
+document.head.appendChild(Object.assign(document.createElement('script'),
+  {src:'https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/autopilot.js?v='+Date.now()}));
+```
+
+Yahoo recreates the draft tab a few minutes into most rooms. The recreated
+tab has no viewport (screenshots fail, scripts hang): open a NEW tab, go to
+the same `/draftclient/f1/{league}/{slot}` URL, close the old one, re-arm.
+Harvey Cup's team names are all distinct, so the strip reader will count
+12; if the footer ever says otherwise, the Results tab's team list is
+authoritative and a harvest fixes it.
+
 ### If the overlay breaks
 
 Yahoo periodically tears down and recreates the draft tab, which kills the
@@ -88,6 +112,30 @@ document.head.appendChild(s);
 Set `window.__hcNoAutopilot = true` first — **autopilot is for mock rooms
 only**, it queues picks automatically and you do not want that in a real
 draft.
+
+### Arming by hand (what nine mocks taught, 2026-09-01)
+
+If the userscript is not installed, or Yahoo tears the tab down, arm from
+the console in two steps rather than one. Loading the whole chain into a
+draft client that is still booting starved the renderer twice; the overlay
+first, then the autopilot (mock rooms only), never froze:
+
+```js
+// step 1: overlay + data (always with a cache-buster; Pages caches 10 min)
+window.__hcNoAutopilot = true;
+document.head.appendChild(Object.assign(document.createElement('script'),
+  {src:'https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/arm.js?v='+Date.now()}));
+// step 2 (MOCKS ONLY -- never in Harvey Cup): the autopilot, ~10 s later
+document.head.appendChild(Object.assign(document.createElement('script'),
+  {src:'https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/autopilot.js?v='+Date.now()}));
+```
+
+Yahoo recreates the draft tab a few minutes into most rooms. The recreated
+tab has no viewport (screenshots fail, scripts hang): open a NEW tab, go to
+the same `/draftclient/f1/{league}/{slot}` URL, close the old one, re-arm.
+Harvey Cup's team names are all distinct, so the strip reader will count
+12; if the footer ever says otherwise, the Results tab's team list is
+authoritative and a harvest fixes it.
 
 ### If the overlay breaks and you can't fix it
 
