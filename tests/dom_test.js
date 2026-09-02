@@ -120,6 +120,11 @@ eq('order', R.readDraftOrder(), ['Chuck', 'Eric Hollinger', 'Ben Wilkoff']);
   strip.innerHTML = order.map((n, i) =>
     `<div class="ys-draftorder-team${i === 0 ? ' ys-draftorder-current' : ''}">${n}</div>`).join('');
   eq('single round rendered: take it whole', R.readDraftOrder(), order);
+  // once picks are made, each cell also carries the drafted player
+  strip.innerHTML = [...order, ...order].map((n, i) =>
+    `<div class="ys-draftorder-team${i === 7 ? ' ys-draftorder-current' : ''}"><div><span>${n}</span></div>`
+    + (i < 9 ? `<div class="ys-player" data-id="${100 + i}"><span>P. Layer${i}</span></div>` : '') + '</div>').join('');
+  eq('cells carrying drafted players still yield the period', R.readDraftOrder(), order);
   strip.innerHTML = saved;
 }
 

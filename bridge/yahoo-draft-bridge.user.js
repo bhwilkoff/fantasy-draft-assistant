@@ -242,8 +242,17 @@
     // replacement level the 210th-best quarterback (~0 points) and handed
     // every QB an enormous VOR -- the advisor then recommended quarterbacks
     // from round 4 on. Dedupe to the first cycle of unique names.
+    /* A strip cell holds the team name and, once the pick is made, the
+     * drafted player too. textContent joins them without a separator, so
+     * key each cell on its FIRST TEXT LEAF (the team name) or the cells of
+     * one team differ from round to round and no period can be found. */
+    function firstLeaf(c) {
+      var e = c;
+      while (e && e.children && e.children.length) e = e.children[0];
+      return textOf(e);
+    }
     var names = [].slice.call(parent.children)
-      .map(function (c) { return textOf(c).split('\n')[0]; })
+      .map(function (c) { return firstLeaf(c) || textOf(c).split('\n')[0]; })
       .filter(Boolean);
     /* Find the PERIOD of the strip, not the first repeated name. Two
      * managers can share a display name (mock 10430908 had two "Chris"
