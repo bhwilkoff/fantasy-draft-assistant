@@ -14,6 +14,7 @@ degrades.
 | 3 | 10191115 | 14 | 14 | **pick 7** | incomplete | — | — | — |
 | 4 | 10276029 | **12** | 6 | pick 126 | **12 / 12** | 1235.7 | 1451.8 | 216.1 |
 | 5 | 10426834 | 12 | 5 | pick 10 | **12 / 12** | 1257.5 | 1443.4 | 185.9 |
+| 6 | 10427900 | 12 | 8 | pick 4 | **12 / 12** | 1482.2 | 1744.7 | 262.5 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -210,3 +211,40 @@ against zero in drafts 1-4. League detection (12 teams, 15 slots once the
 flex was restored, mock lineup shape), name matching at `unmatched=0`,
 continuous tracking through a Yahoo tab teardown, and grading at 100%
 Yahoo-projection coverage.
+
+
+## Draft 6 — room 10427900 (12-team), 2026-09-01
+
+Armed at pick 4, before our first pick. **The mechanism worked**: 12 of 14
+audited picks took exactly the live recommendation (Henry, Allen, Etienne,
+Judkins, Adams, Kittle, Sutton, Pollard, Stafford, Worthy, Shakir, Ravens
+D/ST), the roster was re-read from the Results tab after every one of our
+picks, the opponent-aware availability model ran from pick 74 on, and the
+draft survived one Yahoo tab teardown without losing a pick. The two misses
+were mechanical and are fixed: pick 137 (a reseed toggled the Drafted filter
+mid-pass, the pass purged the queue, and a burst of autodraft picks arrived
+before it was rebuilt) and pick 161 (the K/DEF gate opened at two picks left,
+one pass too late for an end-game moving a pick every two seconds).
+
+Finished **12 of 12** anyway, at 1482 against 1745 -- and this time that is
+a verdict on the valuation, not the hands.
+
+**It is not projection disagreement.** Graded with our own projections
+instead of Yahoo's, the same rosters put us 11th of 12 (1722 vs 1921). The
+missing kicker is worth ~130 points on either scale and would lift us to
+about 4th under our numbers and 11th under Yahoo's.
+
+**It is single-source selection bias.** Player by player, every starter we
+drafted is one ESPN projects well above Yahoo (Allen +48, Stafford +41,
+Henry +35, Adams +34, Sutton +33, Judkins +31, Etienne +30, Pollard +24),
+while the winner's starters are ones Yahoo rates at least as highly as ESPN
+(Collins 214 vs 205, Burden 171 vs 164, Gibbs 311 vs 331). An engine that
+values off one source will, by construction, keep choosing the players that
+source is most bullish on relative to everyone else -- which is exactly
+where that source is most likely to be wrong. This is the winner's curse,
+and drafts 1-5 could not have shown it because their picks never came from
+the board.
+
+Fix in progress: a consensus projection (ESPN + Sleeper offline, Yahoo's raw
+stat line from the room at runtime), blended at the stat level and then
+re-scored under the league's rules as before. See DECISIONS 016.

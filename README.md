@@ -125,11 +125,13 @@ reason to run the thing live at all.
 
 ## Honest limits
 
-The engine is only as good as ESPN's projections, which are its single
-forecast source. The simulator shows the *method* beats ADP drafting by a wide
+The engine is only as good as its projection sources. It now blends ESPN
+and Sleeper; the first mechanism-clean mock showed why a single source
+loses (DECISIONS 016). The simulator shows the *method* beats ADP drafting by a wide
 margin even when projections are badly wrong (finish 3.17/12 vs 5.62/12 at 35%
 error), but it cannot tell you ESPN is right about any particular player.
 Full list of known gaps: [docs/METHOD.md](docs/METHOD.md) §6.
 
-Data: ESPN (projections), FantasyFootballCalculator (ADP, 8,234 drafts).
-Neither is affiliated with this project.
+Data: ESPN and Sleeper (projections, blended per stat into a consensus --
+see DECISIONS 016), Sleeper (injuries), FantasyFootballCalculator (ADP).
+None is affiliated with this project.

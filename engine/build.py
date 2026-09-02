@@ -23,6 +23,7 @@ import scoring, vor, names, upside
 import espn as espn_src
 import ffc as ffc_src
 import sleeper as sleeper_src
+import sleeper_proj as sleeper_proj_src
 
 OUT_DIR = os.path.join(os.path.dirname(HERE), "data")
 
@@ -52,6 +53,18 @@ def build():
         sleep_by_sur.setdefault(names.surname_key(r["name"], r["pos"]), []).append(r)
     n_inj = sum(1 for r in sleeper_rows if r.get("injury_status"))
     print(f"  {len(sleeper_rows)} players, {n_inj} carrying an injury status")
+
+    print("fetching Sleeper projections ...")
+    try:
+        sproj_rows = sleeper_proj_src.normalize(sleeper_proj_src.fetch())
+    except Exception as exc:   # a second source is an improvement, never a dependency
+        print(f"  UNAVAILABLE ({exc}); building from ESPN alone")
+        sproj_rows = []
+    sproj_by_key, sproj_by_sur = {}, {}
+    for r in sproj_rows:
+        sproj_by_key[names.key(r["name"], r["pos"], r["team"])] = r
+        sproj_by_sur.setdefault(names.surname_key(r["name"], r["pos"]), []).append(r)
+    print(f"  {len(sproj_rows)} players")
 
     print("fetching FFC ADP ...")
     ffc_rows, ffc_meta = ffc_src.normalize(ffc_src.fetch(fmt="ppr", teams=12))
@@ -92,6 +105,35 @@ def build():
                 ambiguous += 1
         if m:
             matched += 1
+
+        # Consensus projection: blend Sleeper's stat line with ESPN's, stat by
+        # stat, before scoring (DECISIONS 016). Each source keeps its own
+        # scored total so the overlay can show the disagreement.
+        sp = sproj_by_key.get(k)
+        if sp is None:
+            bucket = sproj_by_sur.get(names.surname_key(e["name"], e["pos"]), [])
+            same = [r for r in bucket
+                    if names.clean_team(r["team"]) == names.clean_team(e["team"])
+                    and names.first_names_compatible(
+                        names.parse_name(r["name"])[0],
+                        names.parse_name(e["name"])[0])]
+            if len(same) == 1:
+                sp = same[0]
+        points_espn = scoring.score_player(e)
+        points_sleeper = None
+        if sp and e["pos"] in ("QB", "RB", "WR", "TE"):
+            blended = dict(e["stats"])
+            keys = set(k2 for k2 in e["stats"]) | set(sp["stats"])
+            for k2 in keys:
+                if k2 in ("games",):
+                    continue
+                a = e["stats"].get(k2, 0.0)
+                b = sp["stats"].get(k2, 0.0)
+                blended[k2] = (a + b) / 2.0
+            points_sleeper = scoring.score_player({"pos": e["pos"], "stats": sp["stats"]})
+            e = dict(e)
+            e["stats_espn"] = dict(e["stats"])
+            e["stats"] = blended
         raw_pts = scoring.score_player(e)
 
         # Sleeper's status is timestamped and tracks to within the hour;
@@ -138,6 +180,9 @@ def build():
             "bye": (m or {}).get("bye"),
             "stats": {k2: round(v, 2) for k2, v in e["stats"].items()},
             "breakdown": scoring.explain(e),
+            "points_espn": round(points_espn, 2),
+            "points_sleeper": None if points_sleeper is None else round(points_sleeper, 2),
+            "sources": 2 if points_sleeper is not None else 1,
         })
     print(f"  matched ADP for {matched}/{len(players)} "
           f"({ambiguous} surname collisions refused)")
@@ -172,7 +217,10 @@ def build():
         "replacement_points": {k: round(v, 2) for k, v in levels.items()},
         "starters_consumed": counts,
         "sources": {
-            "projections": "ESPN kona_player_info (raw stats, re-scored)",
+            "projections": ("consensus of ESPN kona_player_info + Sleeper "
+                            "(raw stats blended per stat, re-scored); "
+                            f"{sum(1 for p in players if p.get('sources') == 2)} "
+                            "players with both, K/DEF ESPN-only"),
             "injuries": f"Sleeper ({n_inj} statuses)",
             "adp": f"FantasyFootballCalculator PPR 12-team, "
                    f"{ffc_meta.get('total_drafts')} drafts "

@@ -273,3 +273,25 @@ board at our pick.
 per pick. Watch `autodrafters=` in `__hcStatus()`; if a human is misfiled
 because they happened to pick fast twice, the cost is a slightly wrong
 availability estimate, never a wrong valuation.
+
+---
+
+## 016 — Value from a consensus of projection sources, never from one
+
+**Rule:** the projection of record is a blend of independent sources (ESPN,
+Sleeper, and Yahoo's own stat line read from the room), combined at the
+raw-stat level and then scored under the league's rules as always
+(DECISIONS 001).
+
+**Why:** the first mock in which the room took our advice pick for pick
+finished last under Yahoo's projections *and* 11th under our own. Every
+starter we drafted was a player ESPN rates well above Yahoo; the winner's
+were players Yahoo rates at least as highly. A single-source engine
+systematically selects the players its source is most bullish on relative
+to everyone else -- precisely the players that source is most likely wrong
+about. The "edge" it thought it saw was one forecaster's noise.
+
+**How to apply:** when a source disagrees sharply with the consensus on a
+player, that is a reason to trust the *consensus*, not a reason to draft
+him. Show the disagreement in the overlay as information; do not let one
+source's optimism be the valuation.
