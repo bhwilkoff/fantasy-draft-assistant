@@ -640,20 +640,27 @@
   function boot() {
     buildPanel();
     var base = DATA_URL.replace(/data\/players\.json$/, '');
-    var s = document.createElement('script');
-    s.src = base + 'web/league.js';
-    s.onload = function () {
-      var s2 = document.createElement('script');
-      s2.src = base + 'web/advisor.js';
-      s2.onload = loadData;
-      s2.onerror = s.onerror;
-      document.head.appendChild(s2);
-    };
-    s.onerror = function () {
-      el.body.innerHTML = '<div class="err">Could not load advisor.js from '
-        + esc(DATA_URL) + '</div>';
-    };
-    document.head.appendChild(s);
+    /* If arm.js already loaded league.js and advisor.js (fresh, with a
+     * cache-buster), do NOT load them again. GitHub Pages serves with a
+     * ten-minute max-age, so a bare URL here fetched a STALE cached copy
+     * that silently overwrote the fresh one -- a fix pushed and re-armed
+     * mid-draft was in the page for about a second. Load only what is
+     * missing, and always with a cache-buster. */
+    var v = '?v=' + Date.now();
+    function need(rel, present, next) {
+      if (present) { next(); return; }
+      var s = document.createElement('script');
+      s.src = base + rel + v;
+      s.onload = next;
+      s.onerror = function () {
+        el.body.innerHTML = '<div class="err">Could not load ' + esc(rel)
+          + ' from ' + esc(base) + '</div>';
+      };
+      document.head.appendChild(s);
+    }
+    need('web/league.js', !!window.HarveyLeague, function () {
+      need('web/advisor.js', !!window.HarveyCup, loadData);
+    });
   }
   function loadData() {
     fetch(DATA_URL, { cache: 'no-store' })
