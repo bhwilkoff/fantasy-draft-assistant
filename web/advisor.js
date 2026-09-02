@@ -137,12 +137,19 @@
     return { expected: exp, likely: likely };
   }
 
-  function advise(available, roster, currentPick, nextPick, recentPositions, topN) {
+  function advise(available, roster, currentPick, nextPick, recentPositions, topN, opts) {
     topN = topN || 6;
+    opts = opts || {};
     var pool = available.filter(function (p) { return p.vor !== null && p.vor !== undefined; })
                         .slice().sort(function (a, b) { return b.vor - a.vor; });
     var need = rosterNeeds(roster);
-    var picksRemaining = Math.max(0, ROSTER_SIZE - roster.length);
+    /* Picks remaining drives the gate that finally permits a kicker and a
+     * defense. Deriving it from the roster count has failed twice (a count
+     * that ran low kept the gate shut, and two drafts ended with neither).
+     * A caller that knows its snake slot can pass the exact number instead,
+     * which depends only on the current pick number. */
+    var picksRemaining = (opts.picksRemaining != null)
+      ? opts.picksRemaining : Math.max(0, ROSTER_SIZE - roster.length);
 
     var usable = POSITIONS.filter(function (p) { return need.totalGap[p] > 0; });
     // K and DEF are worth ~a point a week over the waiver alternative, and

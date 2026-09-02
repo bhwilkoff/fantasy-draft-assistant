@@ -178,14 +178,18 @@ def positional_run(recent_picks, window=8):
 
 
 def advise(available, roster, current_pick, next_pick, recent_pick_positions=None,
-           top_n=6, availability=None, mode="value"):
-    """Return a ranked recommendation list plus the reasoning behind it."""
+           top_n=6, availability=None, mode="value", picks_remaining=None):
+    """Return a ranked recommendation list plus the reasoning behind it.
+
+    `picks_remaining` may be supplied by a caller that knows its snake slot;
+    it is exact (a function of the current pick alone) where the roster
+    count has twice run low and kept the K/DEF gate shut."""
     pool = sorted([p for p in available if p.get("vor") is not None],
                   key=lambda p: -p["vor"])
     starter_gap, total_gap, counts, flex_open = roster_needs(roster)
 
-    picks_left = 0
-    my_picks_remaining = max(0, L.ROSTER_SIZE - len(roster))
+    my_picks_remaining = (picks_remaining if picks_remaining is not None
+                          else max(0, L.ROSTER_SIZE - len(roster)))
 
     # Positions we can still use at all.
     usable = [p for p in ("QB", "RB", "WR", "TE", "K", "DEF") if total_gap[p] > 0]

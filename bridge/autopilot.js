@@ -333,7 +333,18 @@
 
     var cur = st.pick || 1;
     var next = cur + (st.upIn != null ? Math.max(1, st.upIn) : 12);
-    var res = HC.advise(pool, roster, cur, next, []);
+    /* Exact picks remaining from the snake: how many of OUR pick numbers
+     * are still >= the current pick. Independent of the roster count,
+     * which has been wrong in every mock so far. */
+    var slotM = location.pathname.match(/\/draftclient\/f1\/\d+\/(\d+)/);
+    var rounds = HC.getRosterSize ? HC.getRosterSize() : 15;
+    var remaining = null;
+    if (slotM && A.numTeams) {
+      remaining = mySnakePicks(A.numTeams, +slotM[1], rounds)
+        .filter(function (pk) { return pk >= cur; }).length;
+    }
+    var res = HC.advise(pool, roster, cur, next, [], 6,
+                        remaining != null ? { picksRemaining: remaining } : {});
 
     /* Re-read our roster from the Results tab right after each of our picks.
      *
@@ -425,7 +436,8 @@
       onClock: st.onClock, rec: res.recommendation && res.recommendation.name,
       recPos: res.recommendation && res.recommendation.pos,
       target: res.target_position,
-      rosterCount: roster.length, poolSize: pool.length, unmatched: unmatched,
+      rosterCount: roster.length, picksRemaining: remaining,
+      poolSize: pool.length, unmatched: unmatched,
       queuedAdded: added, queuedRemoved: removed, queueTop: A.queueTop,
       ts: Date.now()
     };
@@ -559,7 +571,8 @@
       'rd=' + (l.round == null ? '?' : l.round),
       'upIn=' + (l.upIn == null ? '?' : l.upIn),
       'rec=' + (l.rec || '-'),
-      'roster=' + (l.rosterCount == null ? '?' : l.rosterCount),
+      'roster=' + (l.rosterCount == null ? '?' : l.rosterCount)
+        + (l.picksRemaining != null ? '/left' + l.picksRemaining : ''),
       'pool=' + (l.poolSize == null ? '?' : l.poolSize),
       'unmatched=' + (l.unmatched == null ? '?' : l.unmatched),
       'queued=' + Object.keys(A.queued).length,
