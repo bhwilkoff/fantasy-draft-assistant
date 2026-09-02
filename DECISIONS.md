@@ -382,3 +382,24 @@ in `__hcStatus()`. The overlay's list under the recommendation is the
 queue plan itself, so panel and queue always read the same. The real
 draft never loads the autopilot; the human clicks. `tests/queue_test.js`
 tick 7 pins the header guard and the single click.
+
+## 021 — The autopilot drafts the real draft too, behind an override window
+
+**Rule:** in the Harvey Cup room the autopilot arms when
+`localStorage.hcRealAutopilot` is `'1'`, and on each of our turns it waits
+`hcDraftDelay` seconds (default 20) before clicking Draft on the
+recommendation. A human click inside that window wins. Opponent seats
+that have not yet burned clock are modelled as Yahoo's autodraft there
+(`hcAssumeAutodraft`), because most of the league is expected not to
+show up.
+
+**Why:** the user's design is that the system drafts and the human
+supervises -- "I've set up the system (you) and you are making the
+picks." Draft 14 and 15 showed the click drafting fifteen and thirteen
+picks exactly; leaving the real draft to the human would throw away the
+mechanism that was built and tested for it. The window keeps the human
+in control of any pick they disagree with, and the loader's league guard
+became an opt-in flag rather than a refusal.
+
+**How to apply:** set the flag once before Saturday; watch `window=20s`
+in the footer. Mocks keep a zero window so they measure the mechanism.

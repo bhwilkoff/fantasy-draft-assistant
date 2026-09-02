@@ -43,14 +43,15 @@ public, unauthenticated endpoints (ESPN, Sleeper x2, FantasyFootballCalculator).
 
 ## The three ways to use it
 
-**1. Overlay in the Yahoo draft room (the real draft).** Install
+**1. Overlay plus autopilot in the Yahoo draft room (the real draft).** Install
 `bridge/loader.user.js` in Tampermonkey once. It pulls the current bridge
 from GitHub Pages every time a draft room opens, so a fix pushed to `main`
 is live in the next room without reinstalling. The overlay reads the room's
 DOM, matches the ~100 rendered players to the projection set, and shows the
-recommendation, alternatives with survival odds, cost of waiting by
-position, roster needs, and each source's projection for the pick. You make
-the pick. Without the userscript, arm it from the console with the line
+recommendation, the queue plan with survival odds, cost of waiting by
+position, roster needs, and each source's projection for the pick. With
+`localStorage.hcRealAutopilot` set, the autopilot makes the pick after a
+20-second override window in which you can click a different player. Without the userscript, arm it from the console with the line
 `tools/draftday.sh` prints.
 
 **2. The standalone board** (`web/`, also at

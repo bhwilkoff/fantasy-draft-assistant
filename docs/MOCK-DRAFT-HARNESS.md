@@ -1,5 +1,16 @@
 # Running Yahoo mock drafts against the advisor
 
+## Never miss the start (loader 2.2.0, 2026-09-02)
+
+Mock 15 started before its own countdown said it would and Yahoo drafted
+our pick 2. The loader now runs on the mock waiting room too: with the
+mock flag set it enters the draft client three minutes before the
+countdown ends (at once if the countdown is gone), and on the client's
+"Error connecting to draft server" page it reloads every ten seconds
+until the room opens. The stack arms the moment the table renders. Join
+a room with at least three minutes on its clock; Tampermonkey must have
+the 2.2.0 loader (dashboard: check for updates, or reopen the loader URL).
+
 ## The league-wide report (2026-09-02)
 
 At the final-round harvest the autopilot also runs `bridge/report.js`:

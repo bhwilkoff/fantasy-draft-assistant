@@ -1,8 +1,8 @@
 # Live draft playbook — Harvey Cup, Sat Sep 5 2026, 2:00pm MDT
 
 The whole point of this setup is that you do **not** walk in with a frozen
-plan. The engine handles valuation; Claude handles judgement; you make the
-pick. This is the runbook.
+plan. The engine handles valuation, the autopilot makes the pick, and you
+watch the panel with an override window on every turn. This is the runbook.
 
 ---
 
@@ -51,8 +51,24 @@ python3 tools/injury_report.py        # who moved, and how recently
 
 Enter the Harvey Cup draft room as soon as Yahoo lets you (the "Enter
 Draft" link on the league page opens well before the clock starts). The
-overlay arms itself when the player table renders, before pick one. Leave
-**Autodraft off** -- the queue is for you to read, and you make every pick.
+stack arms itself when the player table renders, before pick one: the
+panel top-right, and the autopilot behind it.
+
+**The autopilot drafts.** Once, in the room's console (F12), set the flag
+that lets it arm in the Harvey Cup room:
+
+```js
+localStorage.setItem('hcRealAutopilot','1')
+```
+
+From then on, on each of our turns the autopilot waits **20 seconds** (the
+override window: `localStorage.setItem('hcDraftDelay','20')` to change it)
+and then clicks Draft on the recommendation. If you want a different
+player, click Draft on him yourself inside the window; the autopilot sees
+the pick number move and stands down. Yahoo's own Autodraft toggle stays
+**off** (the autopilot turns it back off if Yahoo flips it); the queue is
+kept equal to the plan as the fallback if a click ever fails. The footer
+shows `window=20s` while the autopilot is armed.
 
 ## T-minus 15 minutes — start the relay
 
@@ -85,7 +101,8 @@ The panel sits top-right of the Yahoo draft room and shows:
 
 **The one rule:** the engine is a valuation machine, not an oracle. It cannot
 read a beat writer. When Claude's note and the engine disagree, that
-disagreement is the most valuable thing on the screen — read both, then pick.
+disagreement is the most valuable thing on the screen -- and the override
+window is when you act on it.
 
 ### Arming by hand (what nine mocks taught, 2026-09-01)
 

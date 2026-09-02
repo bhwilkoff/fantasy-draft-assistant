@@ -338,6 +338,20 @@
    *    recomputed, was Lamar Jackson.
    *  - one click per pick number. */
   A.DRAFT_CLICK = true;
+  var IN_REAL_ROOM = /\/draftclient\/f1\/539156\//.test(location.pathname);
+  /* THE OVERRIDE WINDOW. In the real draft the autopilot makes the pick,
+   * but the human watching the panel gets DRAFT_DELAY seconds on each of
+   * our turns to click a different player first; the autopilot clicks only
+   * if the pick is still open when the window closes. Mocks: 0. */
+  A.DRAFT_DELAY = IN_REAL_ROOM ? 20 : 0;
+  try { var dd = localStorage.getItem('hcDraftDelay'); if (dd != null && dd !== '' && !isNaN(+dd)) A.DRAFT_DELAY = +dd; } catch (e) {}
+  /* ASSUME AUTODRAFT UNTIL PROVEN HUMAN. Harvey Cup is a new family league
+   * where most managers are expected not to show up; a seat that has not
+   * yet burned clock on any pick is modelled as Yahoo's autodraft (its
+   * ranking, no noise) when this is on. Off in mocks, on in the real room;
+   * localStorage.hcAssumeAutodraft overrides ('1'/'0'). */
+  A.ASSUME_AUTODRAFT = IN_REAL_ROOM;
+  try { var aa = localStorage.getItem('hcAssumeAutodraft'); if (aa === '1') A.ASSUME_AUTODRAFT = true; if (aa === '0') A.ASSUME_AUTODRAFT = false; } catch (e) {}
   function ourPick(pick, slot) {
     if (!A.numTeams || !slot || !pick) return false;
     var n = A.numTeams, r = Math.ceil(pick / n), i = pick - (r - 1) * n;
@@ -378,6 +392,15 @@
     if (st.upIn !== 0) return;                       // not on the clock
     if (!ourPick(cur, slot)) { A.draftWait = cur; return; }   // header has not reached our pick yet
     if (A.draftClickedPick === cur) return;
+    // the override window: give the human DRAFT_DELAY seconds first
+    A.onClockSince = A.onClockSince || {};
+    if (!A.onClockSince[cur]) A.onClockSince[cur] = Date.now();
+    var waited = (Date.now() - A.onClockSince[cur]) / 1000;
+    if (A.DRAFT_DELAY > 0 && waited < A.DRAFT_DELAY) {
+      A.draftWindowLeft = Math.ceil(A.DRAFT_DELAY - waited);
+      return;
+    }
+    A.draftWindowLeft = 0;
     var rec = res.recommendation;
     if (!rec) return;
     var yid = yidOf[rec.name];
@@ -666,6 +689,24 @@
         var oppRosters = window.__hcOpp.inferOpponentRosters(A.picks, A.numTeams, cur, next);
         A.autodraftSlots = window.__hcOpp.inferAutodraftSlots(A.picks, A.numTeams,
           slotM ? +slotM[1] : null);
+        A.assumedSlots = [];
+        if (A.ASSUME_AUTODRAFT) {
+          // a seat is proven human by one pick that burned eight seconds
+          var provenHuman = {};
+          Object.keys(A.picks).forEach(function (k) {
+            var e = A.picks[k];
+            if (e && e.dt != null && e.dt >= 8) {
+              var n = A.numTeams, r = Math.ceil(+k / n), i = +k - (r - 1) * n;
+              provenHuman[(r % 2 === 1) ? i : n + 1 - i] = 1;
+            }
+          });
+          for (var seat = 1; seat <= A.numTeams; seat++) {
+            if (slotM && seat === +slotM[1]) continue;
+            if (provenHuman[seat] || A.autodraftSlots.indexOf(seat) >= 0) continue;
+            A.autodraftSlots.push(seat); A.assumedSlots.push(seat);
+          }
+          A.autodraftSlots.sort(function (a, b) { return a - b; });
+        }
         availability = (window.__hcProf || function (n, f) { return f(); })('opponents', function () {
           return window.__hcOpp.simulateAvailability(pool, cur, next, oppRosters, {
             numTeams: A.numTeams, totalRounds: rounds, trials: 60, seed: cur * 7919 + pool.length,
@@ -1109,7 +1150,9 @@
         + (A.draftLog && A.draftLog.length ? '[' + A.draftLog[A.draftLog.length - 1] + ']' : ''),
       'harvested=' + (A.finalHarvest ? A.finalHarvest.teams + 'teams' : 'no'),
       'avail=' + (A.availabilityAt != null ? 'opp@' + A.availabilityAt : 'adp'),
-      'autodrafters=' + ((A.autodraftSlots || []).join(',') || '-'),
+      'autodrafters=' + ((A.autodraftSlots || []).map(function (x) {
+        return (A.assumedSlots || []).indexOf(x) >= 0 ? x + '?' : x; }).join(',') || '-'),
+      A.DRAFT_DELAY ? 'window=' + A.DRAFT_DELAY + 's' + (A.draftWindowLeft ? '(' + A.draftWindowLeft + ' left)' : '') : '',
       'seed=' + (A.seedRoster ? A.seedRoster.length : 0) + (A.reseeds ? '(x' + A.reseeds + ')' : ''),
       A.lastError ? 'ERR=' + A.lastError.slice(0, 60) : ''
     ].filter(Boolean).join(' ');
