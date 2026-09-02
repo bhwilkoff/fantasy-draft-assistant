@@ -354,13 +354,21 @@
      * because the gate that finally permits a kicker and a defense is
      * "picks remaining <= 2". Two mocks ended with neither. The Results tab
      * is authoritative and a read costs about two seconds, once a round. */
-    if (A.lastUpIn === 0 && st.upIn > 0 && !A.reseeding) {
-      A.reseeding = true;
-      Promise.resolve(A.seedRosterFromResults())
-        .then(function () { A.reseeding = false; A.reseeds = (A.reseeds || 0) + 1; },
-              function () { A.reseeding = false; });
+    /* Trigger: the pick counter has moved past one of OUR pick numbers.
+     * Not "up-in went 0 -> N": Yahoo autodrafts the instant our turn opens,
+     * so a pass rarely ever observes up-in at zero. */
+    if (slotM && A.numTeams && A.lastCur != null && cur > A.lastCur && !A.reseeding) {
+      var crossed = mySnakePicks(A.numTeams, +slotM[1], rounds).some(function (pk) {
+        return pk >= A.lastCur && pk < cur;
+      });
+      if (crossed) {
+        A.reseeding = true;
+        Promise.resolve(A.seedRosterFromResults())
+          .then(function () { A.reseeding = false; A.reseeds = (A.reseeds || 0) + 1; },
+                function () { A.reseeding = false; });
+      }
     }
-    A.lastUpIn = st.upIn;
+    A.lastCur = cur;
 
     /* Keep the queue EXACTLY the current top N, in order -- and read the
      * queue from YAHOO, not from our own memory of what we clicked.
