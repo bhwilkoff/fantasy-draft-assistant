@@ -19,6 +19,7 @@ degrades.
 | 8 | 10430207 | 12 | 2 | pick 70 | **12 / 12** (our proj.) | 1637.3 | 1813.0 | 175.7 |
 | 9 | 10430908 | 12 | 10 | pick 30 | **3 / 11** (our proj.) | 1774.1 | 1819.0 | 157.1 |
 | 10 | 10501714 | 12 | 2 | pick ~75 | **4 / 12** (our proj.) | 1745.2 | 1798.2 | 313.9 |
+| 11 | 10504003 | 12 | 4 | before pick 1 | **12 / 12** | 1566.7 | 1728.7 | 162.0 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -384,3 +385,33 @@ run mocks with Autodraft OFF and have the autopilot click Draft itself once
 the clock is under fifteen seconds, giving the queue the full clock to
 settle. The sequential queue removes the failure that prompted it; the
 click path needs the Draft button's DOM, to be captured in the next room.
+
+
+## Draft 11 — room 10504003 (12-team, slot 4, human drafters), 2026-09-02
+
+Armed before pick one for the first time (entered through the waiting
+room's link, the loader injected on arrival). Picks 4 and 21 took the
+recommendation (Taylor, Allen). Then the tab was replaced twice and, in
+between, the page was starved for minutes at a time while the room -- most
+of it on auto-pick by then -- moved a pick every four seconds. Yahoo made
+picks 28-100 from queue leftovers and its own list, and the final picks
+came from a stale queue again (no kicker). **12 of 12** on Yahoo's
+projections at 100% coverage.
+
+**The starvation was ours, and the profiler proved it**: one pass took
+52 seconds, 6.9 of them in `readDraftOrder`. The snake-period reader added
+this morning cloned every strip cell on every pass, and the strip holds
+one cell per PICK -- 180 late in a room. The order never changes, so it is
+now read once (a text-node walker, no cloning) and cached by strip size.
+Opponent simulation trials were cut from 150 to 60, and the sequential
+queue is timed separately.
+
+The profiler also showed what every click costs: a queue star or the
+Autodraft button is a synchronous re-render of the room (~180-400 ms), so
+the actuator now spends one click per pass and never toggles Autodraft
+before the draft has started (DECISIONS 018).
+
+What only a human can fix, seen again in this room: a tab replaced by
+Chrome (a fresh page, injections gone) and a page blocked by a native
+dialog. `bridge/loader.user.js` in Tampermonkey re-arms on every page
+load; excluding the site from Memory Saver stops the replacement.
