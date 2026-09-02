@@ -348,12 +348,31 @@
     if (!rec) return;
     var yid = yidOf[rec.name];
     if (!yid) { A.draftMiss = 'no yid for ' + rec.name; return; }
-    var b = draftButtonFor(yid);
-    if (!b) { A.draftMiss = 'no button for ' + rec.name + ' at ' + cur; return; }
+    var b = draftButtonFor(yid), via = rec.name;
+    if (!b) {
+      /* THE CLOCK MUST NEVER EXPIRE: one missed clock puts the seat into
+       * Yahoo's auto-pick mode for the rest of the draft (mock 10510897,
+       * twice). If the recommendation's button cannot be found, walk the
+       * plan for any entry that has one; with the clock under twenty
+       * seconds take whatever row shows a Draft button at all. */
+      A.draftMiss = 'no button for ' + rec.name + ' at ' + cur;
+      var plan = A.plan || [];
+      for (var pi = 1; pi < plan.length && !b; pi++) {
+        var pyid = yidOf[plan[pi].name];
+        if (pyid) { b = draftButtonFor(pyid); if (b) via = plan[pi].name + ' (plan ' + (pi + 1) + ')'; }
+      }
+      var secs = st.clock ? (+st.clock.split(':')[0]) * 60 + (+st.clock.split(':')[1]) : null;
+      if (!b && secs != null && secs <= 20) {
+        var any = [].slice.call(document.querySelectorAll('button'))
+          .filter(function (x) { return /^\s*draft\s*$/i.test(T(x)); })[0];
+        if (any) { b = any; via = 'first Draft button (clock ' + st.clock + ')'; }
+      }
+      if (!b) return;
+    }
     b.click();
     A.draftClickedPick = cur; A.draftMiss = null;
     A.draftClicks = (A.draftClicks || 0) + 1;
-    A.draftLog = (A.draftLog || []).concat([cur + ' ' + rec.name]);
+    A.draftLog = (A.draftLog || []).concat([cur + ' ' + via]);
   }
 
   function enableAutodraft() {

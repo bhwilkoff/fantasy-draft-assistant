@@ -253,5 +253,20 @@ check('tick8 one pass: the new recommendation is queue[0]', yahooQueue()[0], '4'
 A.tick(); A.tick(); A.tick();
 check('tick8 the rest refills behind him', yahooQueue(), ['4', '1', '2', '3']);
 
+// --- tick 9: the recommendation's Draft button is missing (a filtered
+// table, a defense row Yahoo renders differently). The clock must not
+// expire: fall through the plan to the first entry that has a button.
+W.document.title = 'YOUR TURN, DRAFT NOW | Live NFL Draft';
+W.__hcReaders.readStatus = () => ({ round: 2, pick: 22, upIn: 0, onClock: 'You', clock: '00:40' });
+ranking = [mk(PLAYERS[1]), mk(PLAYERS[2]), mk(PLAYERS[0])];
+const row2btn = [...W.document.querySelectorAll('tr')]
+  .find(tr => tr.querySelector('.ys-player[data-id="2"]')).querySelector('td:last-child button');
+row2btn.remove();
+clicks.length = 0;
+A.tick(); A.tick();
+check('tick9 falls through the plan when the recommendation has no button',
+      clicks.filter(c => c[0] === 'D'), ['D3']);
+check('tick9 the log says so', /plan 2/.test(A.draftLog[A.draftLog.length - 1]), true);
+
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL QUEUE ACTUATOR CHECKS PASS'));
 process.exit(fails ? 1 : 0);
