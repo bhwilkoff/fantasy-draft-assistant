@@ -145,7 +145,11 @@
     var rawDrafter = m[4].trim();
     var order = (window.__hcReaders && window.__hcReaders.readDraftOrder)
       ? window.__hcReaders.readDraftOrder() : [];
-    var numTeams = order.length || A.numTeams || 12;
+    // the team count comes from the Results tab when known; the strip is a
+    // fallback (it once read 20 and filed our own defense under the wrong
+    // pick number, so the roster never showed one and a second was drafted)
+    var numTeams = A.numTeamsFromResults || A.numTeams
+      || ((order.length >= 4 && order.length <= 20) ? order.length : 12);
     var mySlot = (location.pathname.match(/\/draftclient\/f1\/\d+\/(\d+)/) || [])[1];
     var slot = null, best = 0;
     order.forEach(function (name, i) {
