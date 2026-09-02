@@ -607,9 +607,12 @@
     mySnakePicks(n, slot, 20).forEach(function (pk, i) {
       var got = A.picks[pk];
       if (!got) return;
+      // the advice standing when the pick was made: the latest entry at or
+      // before it, within the same round (Yahoo autodrafts the instant our
+      // turn opens, so an entry AT our pick number often never exists)
       var adv = null;
       for (var j = A.log.length - 1; j >= 0; j--) {
-        if (A.log[j].pick === pk) { adv = A.log[j]; break; }
+        if (A.log[j].pick <= pk && A.log[j].pick > pk - n) { adv = A.log[j]; break; }
       }
       var rec = adv ? adv.rec : null, qtop = adv ? adv.queueTop : null;
       var match = rec && (norm(rec).indexOf(last(got.name)) >= 0
