@@ -348,7 +348,17 @@
      * autodraft picks reached our turn (mock 10427900, pick 137). */
     var st = R.readStatus();
     recordLastPick(st);      // the header is present in every view; read it first
-    if (A.reseeding) return;
+    /* A reseed that never resolves (a re-arm replaced the harvester under
+     * it, mid-await) must not freeze the autopilot for the rest of the
+     * draft. Live: reseeding stayed true for two minutes and the queue went
+     * stale through our own pick. Give a reseed 20 s, then carry on. */
+    if (A.reseeding) {
+      if (A.reseedStartedAt && Date.now() - A.reseedStartedAt > 20000) {
+        A.reseeding = false; A.reseedTimeouts = (A.reseedTimeouts || 0) + 1;
+      } else {
+        return;
+      }
+    }
     var rows = readRows();
     if (!rows.length) {
       A.blind = 'no player table (wrong view?)';
@@ -427,6 +437,7 @@
       });
       if (crossed) {
         A.reseeding = true;
+        A.reseedStartedAt = Date.now();
         Promise.resolve(A.seedRosterFromResults())
           .then(function () { A.reseeding = false; A.reseeds = (A.reseeds || 0) + 1; },
                 function () { A.reseeding = false; });
