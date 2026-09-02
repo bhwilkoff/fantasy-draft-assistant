@@ -527,7 +527,8 @@
         : 'Up in <b>' + esc(st.upIn) + '</b> picks')
       + (st.clock ? ' · ' + esc(st.clock) : '')
       + '<br>Round ' + esc(st.round) + ', pick ' + esc(st.pick)
-      + ' · next at ~' + next + '</div>');
+      + ' · next at ~' + next
+      + ' · re-ranked ' + new Date().toTimeString().slice(0, 8) + '</div>');
 
     if (!state.myTeam) {
       h.push('<div class="warn" style="margin-bottom:8px">Team not set — roster needs '
@@ -582,7 +583,24 @@
         + esc(state.claudeNote.text) + '</div>');
     }
 
-    if (res.alternatives.length) {
+    /* When the autopilot is running, show THE LIST THE QUEUE HOLDS, in
+     * order, so the panel and Yahoo's queue read the same (the user asked
+     * why they differed: the queue is sequential -- entry k is the pick if
+     * entries 1..k-1 are gone -- while "Then" was a flat ranking). */
+    var plan = (window.__hcAuto && window.__hcAuto.plan) || null;
+    if (plan && plan.length) {
+      var surv = {};
+      res.alternatives.forEach(function (a) { surv[a.name] = a.survival_next; });
+      if (rec) surv[rec.name] = rec.survival_next;
+      h.push('<h4>Queue (in order; entry k if 1..k-1 are gone)</h4>');
+      plan.forEach(function (a, i) {
+        h.push('<div class="alt"><span class="l">' + (i + 1) + '. ' + esc(a.name)
+          + ' <span class="pill">' + esc(a.pos) + '</span></span>'
+          + '<span class="r">vor ' + (a.vor || 0).toFixed(0)
+          + (surv[a.name] != null ? ' · ' + Math.round(surv[a.name] * 100) + '% back' : '')
+          + '</span></div>');
+      });
+    } else if (res.alternatives.length) {
       h.push('<h4>Then</h4>');
       res.alternatives.forEach(function (a) {
         h.push('<div class="alt"><span class="l">' + esc(a.name)

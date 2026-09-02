@@ -306,6 +306,56 @@
    * which was false in mock 10429138: the click landed before React had
    * attached its handler, and the room would have autodrafted from
    * Yahoo's rankings instead of our queue. */
+  /* DRAFT THE PICK OURSELVES (mock rooms).
+   *
+   * Leaving the pick to Yahoo's clock meant Yahoo took queue[0] the instant
+   * our turn opened (auto-pick mode), and a queue that had not settled in
+   * a four-second round drafted the wrong player. The room shows a "Draft"
+   * button on every player row while we are on the clock; click the one
+   * whose single-player container carries the recommendation's Yahoo id.
+   *
+   * Two guards, both learned live in mock 10510897:
+   *  - wait until the header's pick number IS one of ours. When the title
+   *    flips to "YOUR TURN" the header still shows the previous pick for a
+   *    beat, and the advice on screen was computed for that pool; a click
+   *    at that instant drafted Garrett Wilson when the advice, once
+   *    recomputed, was Lamar Jackson.
+   *  - one click per pick number. */
+  A.DRAFT_CLICK = true;
+  function ourPick(pick, slot) {
+    if (!A.numTeams || !slot || !pick) return false;
+    var n = A.numTeams, r = Math.ceil(pick / n), i = pick - (r - 1) * n;
+    return (r % 2 === 1) ? i === slot : i === n + 1 - slot;
+  }
+  function draftButtonFor(yid) {
+    var btns = [].slice.call(document.querySelectorAll('button'))
+      .filter(function (b) { return /^\s*draft\s*$/i.test(T(b)); });
+    for (var i = 0; i < btns.length; i++) {
+      var row = btns[i];
+      while (row && row.querySelectorAll('.ys-player[data-id]').length < 1 && row.parentElement) row = row.parentElement;
+      if (!row) continue;
+      var pes = row.querySelectorAll('.ys-player[data-id]');
+      if (pes.length === 1 && pes[0].getAttribute('data-id') === String(yid)) return btns[i];
+    }
+    return null;
+  }
+  function draftClick(st, res, yidOf, slot, cur) {
+    if (A.DRAFT_CLICK === false) return;
+    if (st.upIn !== 0) return;                       // not on the clock
+    if (!ourPick(cur, slot)) { A.draftWait = cur; return; }   // header has not reached our pick yet
+    if (A.draftClickedPick === cur) return;
+    var rec = res.recommendation;
+    if (!rec) return;
+    var yid = yidOf[rec.name];
+    if (!yid) { A.draftMiss = 'no yid for ' + rec.name; return; }
+    var b = draftButtonFor(yid);
+    if (!b) { A.draftMiss = 'no button for ' + rec.name + ' at ' + cur; return; }
+    b.click();
+    A.draftClickedPick = cur; A.draftMiss = null;
+    A.draftClicks = (A.draftClicks || 0) + 1;
+    A.draftLog = (A.draftLog || []).concat([cur + ' ' + rec.name]);
+  }
+
   function enableAutodraft() {
     var b = [].slice.call(document.querySelectorAll('button'))
       .find(function (x) { return /^\s*autodraft\s*$/i.test(T(x)); });
@@ -318,6 +368,16 @@
      * have the autopilot switch it on anyway (fast, unattended mocks). */
     var wantOn = false;
     try { wantOn = localStorage.getItem('hcMockAutodraft') === '1'; } catch (e) {}
+    if (on && !wantOn && A.DRAFT_CLICK !== false) {
+      /* Yahoo switches a seat to auto-pick after one missed clock; from
+       * then on it drafts queue[0] the instant our turn opens and the
+       * Draft click never gets a chance. Switch it back off (spaced, as
+       * every click is a re-render). */
+      var nowOff = Date.now();
+      if (!A.autodraftClickedAt || nowOff - A.autodraftClickedAt > 30000) {
+        b.click(); A.autodraftClickedAt = nowOff; A.autodraftOffClicks = (A.autodraftOffClicks || 0) + 1;
+      }
+    }
     if (!on && wantOn) {
       /* One click, then wait: each click is a React re-render of the whole
        * room (~200 ms) and before the draft has started Yahoo ignores it,
@@ -695,8 +755,11 @@
     keep.forEach(function (yid) { A.queued[yid] = wantName[yid]; });
     A.yahooQueue = real.map(function (yid) { return wantName[yid] || yid; });
     A.queueTop = want.length ? want[0].name : null;
+    // the exact list the queue holds, in order, for the overlay to show
+    A.plan = want.map(function (w) { return { name: w.name, pos: w.pos, vor: w.vor }; });
 
     enableAutodraft();
+    draftClick(st, res, yidOf, slotM ? +slotM[1] : null, cur);
 
     A.last = {
       pick: cur, round: st.round, upIn: st.upIn, clock: st.clock,
@@ -916,6 +979,8 @@
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
       A.filterFixes ? 'filterfix=' + A.filterFixes : '',
+      'draftclick=' + (A.draftClicks || 0) + (A.draftMiss ? '(' + A.draftMiss + ')' : '')
+        + (A.draftLog && A.draftLog.length ? '[' + A.draftLog[A.draftLog.length - 1] + ']' : ''),
       'harvested=' + (A.finalHarvest ? A.finalHarvest.teams + 'teams' : 'no'),
       'avail=' + (A.availabilityAt != null ? 'opp@' + A.availabilityAt : 'adp'),
       'autodrafters=' + ((A.autodraftSlots || []).join(',') || '-'),
