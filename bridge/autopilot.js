@@ -751,7 +751,7 @@
         + (l.picksRemaining != null ? '/left' + l.picksRemaining : ''),
       'pool=' + (l.poolSize == null ? '?' : l.poolSize),
       'unmatched=' + (l.unmatched == null ? '?' : l.unmatched),
-      'queued=' + Object.keys(A.queued).length,
+      'queued=' + ((A.yahooQueue || []).length) + '/' + Object.keys(A.queued).length,
       'qtop=' + (A.queueTop || '-'),
       'yq=' + ((A.yahooQueue || []).slice(0, 2).join('>') || '-'),
       'autodraft=' + (A.autodraftOn ? 'on' : 'OFF') + (A.autodraftClicks ? '(clicked' + A.autodraftClicks + ')' : ''),
