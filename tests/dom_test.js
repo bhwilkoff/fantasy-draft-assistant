@@ -105,6 +105,24 @@ eq('two ATL Robinsons resolve apart', hits, ['Bijan Robinson', 'Brian Robinson J
 console.log('--- draft order');
 eq('order', R.readDraftOrder(), ['Chuck', 'Eric Hollinger', 'Ben Wilkoff']);
 
+/* The strip repeats once per round and two managers can share a name
+ * (mock 10430908 had two "Chris"): the reader must find the PERIOD, not
+ * stop at the first repeated name. */
+{
+  const strip = W.document.querySelector('.ys-draftorder-current').parentElement;
+  const saved = strip.innerHTML;
+  const order = ['Ann', 'Chris', 'Ben', 'Dana', 'Chris', 'Eve'];
+  strip.innerHTML = [...order, ...order, ...order].map((n, i) =>
+    `<div class="ys-draftorder-team${i === 7 ? ' ys-draftorder-current' : ''}">${n}</div>`).join('');
+  eq('duplicate names: period, not unique count', R.readDraftOrder(), order);
+  strip.innerHTML = order.map(n => `<div class="ys-draftorder-team">${n}</div>`).join('')
+    .replace('>Ann<', ' ys-draftorder-current">Ann<'.replace('" ys', ' ys'));
+  strip.innerHTML = order.map((n, i) =>
+    `<div class="ys-draftorder-team${i === 0 ? ' ys-draftorder-current' : ''}">${n}</div>`).join('');
+  eq('single round rendered: take it whole', R.readDraftOrder(), order);
+  strip.innerHTML = saved;
+}
+
 console.log('--- my roster from the pick feed');
 R.setState('myTeam', 'Ben Wilkoff');
 const mine = R.readMyRoster(av.rows);

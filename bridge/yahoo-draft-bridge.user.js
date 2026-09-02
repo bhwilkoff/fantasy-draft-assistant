@@ -242,15 +242,26 @@
     // replacement level the 210th-best quarterback (~0 points) and handed
     // every QB an enormous VOR -- the advisor then recommended quarterbacks
     // from round 4 on. Dedupe to the first cycle of unique names.
-    var seen = [], names = [].slice.call(parent.children)
+    var names = [].slice.call(parent.children)
       .map(function (c) { return textOf(c).split('\n')[0]; })
       .filter(Boolean);
-    for (var i = 0; i < names.length; i++) {
-      if (seen.indexOf(names[i]) >= 0) break;   // second cycle begins
-      seen.push(names[i]);
-      if (seen.length > 20) break;
+    /* Find the PERIOD of the strip, not the first repeated name. Two
+     * managers can share a display name (mock 10430908 had two "Chris"
+     * and two "Calvin"); stopping at the first repeat then reported 11
+     * teams in a 12-team room, which shifted every snake pick number and
+     * the picks-remaining count. The strip repeats the whole order once
+     * per round, so the team count is the smallest period that fits. */
+    var n = names.length;
+    if (n === 0) return [];
+    for (var p = 4; p <= 20 && p <= n; p++) {
+      var ok = true;
+      for (var i = 0; i + p < n; i++) {
+        if (names[i] !== names[i + p]) { ok = false; break; }
+      }
+      if (ok && (n >= 2 * p || n === p)) return names.slice(0, p);
     }
-    return seen;
+    // only one round rendered and no period visible: take what is there
+    return names.slice(0, Math.min(n, 20));
   }
 
   /* Roster: derive from the pick feed by team label. Yahoo labels our own

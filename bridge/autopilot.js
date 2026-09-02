@@ -209,6 +209,7 @@
     A.reseeding = true; A.reseedStartedAt = Date.now();
     try {
       var h = await window.__hcHarvest();
+      if (h && h.numTeams >= 4 && h.numTeams <= 20) A.numTeamsFromResults = h.numTeams;
       if (h && h.teams && h.me && h.teams[h.me]) {
         A.seedRoster = h.teams[h.me].map(function (p) {
           return { name: p.name, pos: p.pos, team: p.team, seeded: true };
@@ -236,17 +237,17 @@
     var m = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
     if (!m) return [];
     var slot = +m[2];
-    var order = (function () {
-      var cur = document.querySelector('.ys-draftorder-current');
-      if (!cur || !cur.parentElement) return [];
-      var seen = [];
-      [].slice.call(cur.parentElement.children).forEach(function (c) {
-        var n = (c.innerText || '').trim().split('\n')[0];
-        if (n && seen.indexOf(n) < 0 && seen.length < 20) seen.push(n);
-      });
-      return seen;
-    })();
-    var numTeams = order.length || A.numTeams || 12;
+    /* Team count: the Results tab's team list is authoritative (one option
+     * per team, whatever the labels say) and the harvester records it as
+     * h.numTeams; until a harvest has run, use the bridge's period-detecting
+     * strip reader. Never dedupe the strip by name -- two managers can share
+     * one (mock 10430908), and 11 teams in a 12-team room shifts every snake
+     * pick number. */
+    var numTeams = A.numTeamsFromResults
+      || ((window.__hcReaders && window.__hcReaders.readDraftOrder)
+          ? window.__hcReaders.readDraftOrder().length : 0)
+      || A.numTeams || 12;
+    if (numTeams < 4 || numTeams > 20) numTeams = A.numTeams || 12;
     A.numTeams = numTeams;
     var mine = mySnakePicks(numTeams, slot, 20);
     var out = [];
