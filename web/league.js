@@ -13,6 +13,29 @@
 (function (root) {
   'use strict';
 
+  /* Shared, near-zero-cost profiler for the browser side. Every heavy
+   * function wraps its body in root.__hcProf(name, fn); __hcProfile()
+   * returns "name: calls/total ms/max ms" so a frozen room can be diagnosed
+   * from one status call instead of guessed at. */
+  if (!root.__hcProf) {
+    var acc = {};
+    root.__hcProf = function (name, fn) {
+      var t0 = Date.now();
+      try { return fn(); }
+      finally {
+        var ms = Date.now() - t0;
+        var a = acc[name] || (acc[name] = { n: 0, ms: 0, max: 0 });
+        a.n++; a.ms += ms; if (ms > a.max) a.max = ms;
+      }
+    };
+    root.__hcProfile = function () {
+      return Object.keys(acc).sort(function (x, y) { return acc[y].ms - acc[x].ms; })
+        .map(function (k) { return k + ':' + acc[k].n + '/' + acc[k].ms + 'ms/max' + acc[k].max; })
+        .join(' ');
+    };
+    root.__hcProfileReset = function () { acc = {}; };
+  }
+
   var SCORING_PRESETS = {
     yahoo_default: {
       name: 'Yahoo default',

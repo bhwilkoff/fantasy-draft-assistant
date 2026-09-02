@@ -387,7 +387,7 @@
         return;
       }
     }
-    var rows = readRows();
+    var rows = window.__hcProf ? window.__hcProf('readRows', readRows) : readRows();
     if (!rows.length) {
       A.blind = 'no player table (wrong view?)';
       var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
@@ -474,9 +474,11 @@
         var oppRosters = window.__hcOpp.inferOpponentRosters(A.picks, A.numTeams, cur, next);
         A.autodraftSlots = window.__hcOpp.inferAutodraftSlots(A.picks, A.numTeams,
           slotM ? +slotM[1] : null);
-        availability = window.__hcOpp.simulateAvailability(pool, cur, next, oppRosters, {
-          numTeams: A.numTeams, totalRounds: rounds, trials: 150, seed: cur * 7919 + pool.length,
-          autodraftSlots: A.autodraftSlots
+        availability = window.__hcProf('opponents', function () {
+          return window.__hcOpp.simulateAvailability(pool, cur, next, oppRosters, {
+            numTeams: A.numTeams, totalRounds: rounds, trials: 150, seed: cur * 7919 + pool.length,
+            autodraftSlots: A.autodraftSlots
+          });
         });
         A.availabilityAt = cur;
         A.availCache = { pick: cur, n: pool.length, map: availability };
@@ -485,7 +487,7 @@
     var advOpts = {};
     if (remaining != null) advOpts.picksRemaining = remaining;
     if (availability) advOpts.availability = availability;
-    var res = HC.advise(pool, roster, cur, next, [], 6, advOpts);
+    var res = window.__hcProf('advise', function () { return HC.advise(pool, roster, cur, next, [], 6, advOpts); });
 
     /* The queue is built SEQUENTIALLY, not from the flat ranking.
      *
@@ -778,7 +780,10 @@
     Promise.resolve().then(function () {
       pending = false;
       var t0 = Date.now();
-      try { tick(); persist(); } catch (e) { A.lastError = String(e); }
+      try {
+        if (window.__hcProf) window.__hcProf('tick', tick); else tick();
+        if (window.__hcProf) window.__hcProf('persist', persist); else persist();
+      } catch (e) { A.lastError = String(e); }
       /* Measure every pass and back off when the page cannot afford it.
        * The draft client shares this thread; a pass that takes 300 ms every
        * second is a third of the CPU, and that is what "the page keeps
@@ -823,6 +828,7 @@
       'lastTick=' + (A.last ? Math.round((Date.now() - A.last.ts) / 1000) + 's' : 'NEVER'),
       'pass=' + (A.passMs == null ? '?' : A.passMs + 'ms') + '/max' + (A.passMax || 0)
         + '/avg' + (A.passCount ? Math.round(A.passTotal / A.passCount) : 0) + '/every' + A.RATE_MS,
+      'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ']',
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
       A.filterFixes ? 'filterfix=' + A.filterFixes : '',

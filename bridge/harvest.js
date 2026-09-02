@@ -271,6 +271,7 @@
 
   window.__hcHarvest = async function (opts) {
     opts = opts || {};
+    var tHarvest = Date.now();
     clickByText('Results');
     await yieldTimes(30);
     clickByText('Teams');
@@ -351,6 +352,8 @@
     } catch (e) {}
 
     window.__hcHarvested = payload;
+    payload.ms = Date.now() - tHarvest;
+    window.__hcHarvestMs = (window.__hcHarvestMs || 0) + payload.ms;
     return payload;
   };
 })();
