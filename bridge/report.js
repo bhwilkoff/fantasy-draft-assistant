@@ -85,8 +85,26 @@
         var m = HC.lookup(idx, pk.name, pk.pos, pk.team);
         all.push({ _id: ++uid, team: team, name: m.player ? m.player.name : pk.name,
                    pos: pk.pos, nfl: pk.team || (m.player && m.player.team) || '',
-                   pick: pk.pick, yahooProj: pk.yahooProj, player: m.player || null });
+                   pick: pk.pick, yahooProj: pk.yahooProj, player: m.player || null,
+                   candidates: m.ambiguous ? (m.candidates || []) : null });
       });
+    });
+    /* The Results tab carries no ADP, so "B. Robinson RB" resolves to the
+     * higher-VOR candidate every time -- Bijan at pick 2 and again at pick
+     * 142 for Brian Robinson Jr. One projection-set player is one pick:
+     * walk the draft in order and give a repeat the next unused candidate. */
+    var usedPlayer = {};
+    all.slice().sort(function (a, b) { return (a.pick || 9999) - (b.pick || 9999); }).forEach(function (p) {
+      if (!p.player) return;
+      if (usedPlayer[p.player.name] && p.candidates && p.candidates.length) {
+        var alt = p.candidates.filter(function (n) { return !usedPlayer[n]; })[0];
+        if (alt) {
+          var bucket = idx[HC.roomKey(p.player.name, p.pos, p.player.team)] || [];
+          var altP = bucket.filter(function (q) { return q.name === alt; })[0];
+          if (altP) { p.player = altP; p.name = altP.name; }
+        }
+      }
+      usedPlayer[p.player.name] = 1;
     });
     var source = (tot && cov / tot >= 0.95) ? 'yahoo' : 'ours';
     all.forEach(function (p) {
@@ -158,6 +176,8 @@
     for (var i = 1; i < order.length; i++) {
       var prev = order[i - 1], cur = order[i];
       if (prev.team === cur.team || prev.pos !== cur.pos) continue;
+      if (!(cur._pts > 0) || !(prev._pts > 0)) continue;          // no projection: no verdict
+      if (cur.pick > numTeams * Math.min(10, rounds)) continue;    // late rounds are bench noise
       var d = prev._pts - cur._pts;
       if (d >= 15) late.push({ pick: cur.pick, team: cur.team, got: cur, missed: prev, d: r1(d) });
     }
@@ -176,7 +196,9 @@
         Object.keys(wanted).forEach(function (name) {
           if (name === mp.name) return;
           var taker = order.filter(function (p) { return p.name === name && p.pick < mp.pick && p.pick >= mp.pick - 4; })[0];
-          if (taker) ours.push({ at: mp.pick, wanted: name, taker: taker, got: mp });
+          // a back-to-back turn: the advice before our second pick was our
+          // first pick, which we took -- not a miss
+          if (taker && taker.team !== harvest.me) ours.push({ at: mp.pick, wanted: name, taker: taker, got: mp });
         });
       });
     }

@@ -390,6 +390,13 @@
        * plan for any entry that has one; with the clock under twenty
        * seconds take whatever row shows a Draft button at all. */
       A.draftMiss = 'no button for ' + rec.name + ' at ' + cur;
+      /* A row far down the table renders without its Draft button (mock
+       * 10513354, pick 170: Denzel Boston's row was in the table, no
+       * button). Bring it into view; the next pass looks again. */
+      try {
+        var cell = document.querySelector('table .ys-player[data-id="' + yid + '"]');
+        if (cell && cell.scrollIntoView) { cell.scrollIntoView({ block: 'center' }); A.draftScrolls = (A.draftScrolls || 0) + 1; }
+      } catch (e) {}
       /* Right after our own click the table re-renders and the next
        * recommendation's row can be absent for a pass (mock 10511947,
        * pick 133: the fallback took plan entry 3 with 70 s on the clock).
