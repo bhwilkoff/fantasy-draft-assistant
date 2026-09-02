@@ -16,6 +16,10 @@ echo "=== queue actuator reflects the CURRENT ranking ==="
 ( cd tests && node queue_test.js ) || fail=1
 
 echo
+echo "=== opponent-aware availability ==="
+( cd tests && node opponents_test.js ) || fail=1
+
+echo
 echo "=== drafted roster can field a legal lineup ==="
 ( cd tests && node roster_test.js ) || fail=1
 
@@ -26,7 +30,7 @@ echo "=== draft-room DOM readers (fixture) ==="
 echo
 echo "=== syntax ==="
 node --check web/advisor.js && node --check web/app.js \
-  && node --check bridge/yahoo-draft-bridge.user.js \
+  && node --check bridge/yahoo-draft-bridge.user.js && node --check bridge/autopilot.js && node --check bridge/opponents.js \
   && echo "  js ok" || fail=1
 python3 -c "import ast,sys
 for f in ['engine/league.py','engine/scoring.py','engine/vor.py','engine/advisor.py','engine/build.py','engine/sim.py','engine/names.py','engine/sources/espn.py','engine/sources/ffc.py']:

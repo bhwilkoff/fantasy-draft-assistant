@@ -38,7 +38,8 @@
   try { delete window.__hcAuto; } catch (e) { window.__hcAuto = undefined; }
 
   var chain = ['web/league.js', 'web/advisor.js', 'bridge/yahoo-draft-bridge.user.js',
-               'bridge/harvest.js', 'bridge/grade.js', 'bridge/supervise.js'];
+               'bridge/harvest.js', 'bridge/grade.js', 'bridge/supervise.js',
+               'bridge/opponents.js'];
   load(chain, function () {
     if (window.__hcNoAutopilot) {
       window.__hcArmed = true;

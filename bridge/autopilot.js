@@ -343,8 +343,22 @@
       remaining = mySnakePicks(A.numTeams, +slotM[1], rounds)
         .filter(function (pk) { return pk >= cur; }).length;
     }
-    var res = HC.advise(pool, roster, cur, next, [], 6,
-                        remaining != null ? { picksRemaining: remaining } : {});
+    /* Opponent-aware availability: who picks between now and our next turn,
+     * and what do they already hold? (bridge/opponents.js) */
+    var availability = null;
+    if (window.__hcOpp && A.numTeams && next > cur) {
+      try {
+        var oppRosters = window.__hcOpp.inferOpponentRosters(A.picks, A.numTeams, cur, next);
+        availability = window.__hcOpp.simulateAvailability(pool, cur, next, oppRosters, {
+          numTeams: A.numTeams, totalRounds: rounds, trials: 150, seed: cur * 7919 + pool.length
+        });
+        A.availabilityAt = cur;
+      } catch (e) { A.availError = String(e); availability = null; }
+    }
+    var advOpts = {};
+    if (remaining != null) advOpts.picksRemaining = remaining;
+    if (availability) advOpts.availability = availability;
+    var res = HC.advise(pool, roster, cur, next, [], 6, advOpts);
 
     /* Re-read our roster from the Results tab right after each of our picks.
      *
@@ -596,6 +610,7 @@
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
       'harvested=' + (A.finalHarvest ? A.finalHarvest.teams + 'teams' : 'no'),
+      'avail=' + (A.availabilityAt != null ? 'opp@' + A.availabilityAt : 'adp'),
       'seed=' + (A.seedRoster ? A.seedRoster.length : 0) + (A.reseeds ? '(x' + A.reseeds + ')' : ''),
       A.lastError ? 'ERR=' + A.lastError.slice(0, 60) : ''
     ].filter(Boolean).join(' ');

@@ -122,13 +122,20 @@
 
   /* Exact E[max VOR] among players at `pos` still available at `nextPick`:
    * a player is the best available iff he survives AND everyone above him is gone. */
-  function expectedBestLater(pool, pos, nextPick, limit) {
+  function survivalOf(p, nextPick, availability) {
+    // an opponent-aware empirical probability (bridge/opponents.js, mirroring
+    // engine/opponents.py) wins over the closed-form Normal(ADP) model
+    if (availability && availability[p.name] != null) return availability[p.name];
+    return survival(p.adp, p.adp_stdev, nextPick);
+  }
+
+  function expectedBestLater(pool, pos, nextPick, limit, availability) {
     limit = limit || 40;
     var cands = pool.filter(function (p) { return p.pos === pos; }).slice(0, limit);
     if (!cands.length) return { expected: 0, likely: null };
     var exp = 0, noneSoFar = 1, likely = null;
     for (var i = 0; i < cands.length; i++) {
-      var s = survival(cands[i].adp, cands[i].adp_stdev, nextPick);
+      var s = survivalOf(cands[i], nextPick, availability);
       exp += cands[i].vor * s * noneSoFar;
       if (!likely && s >= 0.5) likely = cands[i];
       noneSoFar *= (1 - s);
@@ -167,7 +174,7 @@
     usable.forEach(function (p) {
       var c = pool.filter(function (x) { return x.pos === p; });
       now[p] = c.length ? { vor: c[0].vor, player: c[0] } : { vor: 0, player: null };
-      later[p] = expectedBestLater(pool, p, nextPick);
+      later[p] = expectedBestLater(pool, p, nextPick, 40, opts.availability);
     });
 
     var bestPair = null, bestVal = -1e9;
@@ -187,7 +194,7 @@
     pool.slice(0, 80).forEach(function (c) {
       if (!(need.totalGap[c.pos] > 0)) return;
       if ((c.pos === 'K' || c.pos === 'DEF') && usable.indexOf(c.pos) < 0) return;
-      var surv = survival(c.adp, c.adp_stdev, nextPick);
+      var surv = survivalOf(c, nextPick, opts.availability);
       var drop = now[c.pos] ? (now[c.pos].vor - later[c.pos].expected) : 0;
       var tierLeft = pool.filter(function (x) {
         return x.pos === c.pos && x.tier === c.tier;
@@ -224,7 +231,8 @@
       current_pick: currentPick, next_pick: nextPick, target_position: targetPos,
       recommendation: ranked[0] || null, alternatives: ranked.slice(1, topN),
       position_view: positionView, roster: need,
-      picks_remaining: picksRemaining, recent_runs: runs
+      picks_remaining: picksRemaining, recent_runs: runs,
+      availability_source: opts.availability ? 'opponents' : 'adp'
     };
   }
 
