@@ -340,6 +340,24 @@
       var pes = row.querySelectorAll('.ys-player[data-id]');
       if (pes.length === 1 && pes[0].getAttribute('data-id') === String(yid)) return btns[i];
     }
+    /* the other direction: from the player's cell up to its row (tr, li,
+     * or the nearest ancestor holding exactly one player) and look for a
+     * Draft button inside it */
+    var cells = [].slice.call(document.querySelectorAll('.ys-player[data-id="' + yid + '"]'));
+    for (var c = 0; c < cells.length; c++) {
+      var r = cells[c].closest('tr, li') || cells[c], up = 0;
+      while (r && r.querySelectorAll('.ys-player[data-id]').length <= 1 && up < 8
+             && !r.querySelector('button')) { r = r.parentElement; up++; }
+      if (!r) continue;
+      var bs = [].slice.call(r.querySelectorAll('button'))
+        .filter(function (b) { return /^\s*draft\s*$/i.test(T(b)); });
+      if (bs.length && r.querySelectorAll('.ys-player[data-id]').length === 1) return bs[0];
+    }
+    A.draftDiag = {
+      yid: yid, cells: cells.length,
+      inTable: cells.filter(function (e) { return !!e.closest('table'); }).length,
+      draftButtons: btns.length, at: Date.now()
+    };
     return null;
   }
   function draftClick(st, res, yidOf, slot, cur) {
@@ -359,13 +377,30 @@
        * plan for any entry that has one; with the clock under twenty
        * seconds take whatever row shows a Draft button at all. */
       A.draftMiss = 'no button for ' + rec.name + ' at ' + cur;
+      /* Right after our own click the table re-renders and the next
+       * recommendation's row can be absent for a pass (mock 10511947,
+       * pick 133: the fallback took plan entry 3 with 70 s on the clock).
+       * With time left, wait for the next pass; fall through the plan
+       * only under twenty seconds, and to any button under ten. */
+      var clock = st.clock;
+      if (!clock) {
+        /* the status reader's clock is null on our own turn (the timer is
+         * not inside the "Round R, Pick P" element it caches); read it
+         * from the room header directly -- textContent, no layout */
+        var host = document.querySelector('#root, #app, [data-reactroot]') || document.body;
+        var cm = ((host && host.textContent) || '').match(/\b(\d{1,2}):(\d{2})\b/);
+        if (cm) clock = cm[1] + ':' + cm[2];
+      }
+      var secs = clock ? (+clock.split(':')[0]) * 60 + (+clock.split(':')[1]) : null;
+      A.draftClock = clock || 'unknown';
+      // unknown clock: assume it is low -- a wrong pick beats a lost seat
+      if (secs != null && secs > 20) return;
       var plan = A.plan || [];
       for (var pi = 1; pi < plan.length && !b; pi++) {
         var pyid = yidOf[plan[pi].name];
         if (pyid) { b = draftButtonFor(pyid); if (b) via = plan[pi].name + ' (plan ' + (pi + 1) + ')'; }
       }
-      var secs = st.clock ? (+st.clock.split(':')[0]) * 60 + (+st.clock.split(':')[1]) : null;
-      if (!b && secs != null && secs <= 20) {
+      if (!b && (secs == null || secs <= 10)) {
         var any = [].slice.call(document.querySelectorAll('button'))
           .filter(function (x) { return /^\s*draft\s*$/i.test(T(x)); })[0];
         if (any) { b = any; via = 'first Draft button (clock ' + st.clock + ')'; }
@@ -1046,7 +1081,7 @@
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
       A.filterFixes ? 'filterfix=' + A.filterFixes : '',
-      'draftclick=' + (A.draftClicks || 0) + (A.draftMiss ? '(' + A.draftMiss + ')' : '')
+      'draftclick=' + (A.draftClicks || 0) + (A.draftMiss ? '(' + A.draftMiss + (A.draftDiag ? ' cells' + A.draftDiag.cells + '/table' + A.draftDiag.inTable + '/btns' + A.draftDiag.draftButtons : '') + ')' : '')
         + (A.draftLog && A.draftLog.length ? '[' + A.draftLog[A.draftLog.length - 1] + ']' : ''),
       'harvested=' + (A.finalHarvest ? A.finalHarvest.teams + 'teams' : 'no'),
       'avail=' + (A.availabilityAt != null ? 'opp@' + A.availabilityAt : 'adp'),

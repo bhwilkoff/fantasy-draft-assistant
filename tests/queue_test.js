@@ -264,8 +264,10 @@ const row2btn = [...W.document.querySelectorAll('tr')]
 row2btn.remove();
 clicks.length = 0;
 A.tick(); A.tick();
-check('tick9 falls through the plan when the recommendation has no button',
-      clicks.filter(c => c[0] === 'D'), ['D3']);
+check('tick9 with time on the clock it waits for the next pass', clicks.filter(c => c[0] === 'D'), []);
+W.__hcReaders.readStatus = () => ({ round: 2, pick: 22, upIn: 0, onClock: 'You', clock: '00:15' });
+A.tick(); A.tick();
+check('tick9 under twenty seconds it falls through the plan', clicks.filter(c => c[0] === 'D'), ['D3']);
 check('tick9 the log says so', /plan 2/.test(A.draftLog[A.draftLog.length - 1]), true);
 
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL QUEUE ACTUATOR CHECKS PASS'));
