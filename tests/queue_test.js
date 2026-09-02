@@ -112,10 +112,15 @@ PLAYERS.forEach(p => {
 // drive advise() to return a ranking we control
 let ranking = [];
 const realAdvise = W.HarveyCup.advise;
-W.HarveyCup.advise = function () {
+// pool-aware, like the real advisor: the queue is now built by drafting our
+// next picks one after another, so a stub that ignores the pool would put
+// the same player in every slot
+W.HarveyCup.advise = function (available) {
+  const names = new Set((available || []).map(p => p.name));
+  const r = ranking.filter(x => names.has(x.name));
   return {
-    recommendation: ranking[0] || null,
-    alternatives: ranking.slice(1),
+    recommendation: r[0] || null,
+    alternatives: r.slice(1),
     position_view: {}, roster: { counts: {}, starterGap: {}, totalGap: {}, flexOpen: 0 },
     target_position: 'RB', picks_remaining: 10, recent_runs: {}
   };
@@ -166,6 +171,33 @@ stale.click();
 check('tick4 setup: stale entry present', yahooQueue(), ['6', '5', '1']);
 A.tick();
 check('tick4 stale entry removed, wanted order intact', yahooQueue(), ['6', '5']);
+
+// --- tick 5: the queue is SEQUENTIAL. With a roster-aware advisor that
+//     never wants a second quarterback, a flat ranking of [QB, QB2, RB]
+//     must become a queue of [QB, RB]: entry two is computed as if entry
+//     one were already on the roster (mock 10501714 queued three QBs and
+//     the room took two of them on back-to-back snake picks).
+W.document.querySelectorAll('.ys-removequeue').forEach(e => e.querySelector('button').click());
+const qb2 = { yid: '7', name: 'G. Seven', pos: 'QB', team: 'KC' };
+const tr = W.document.createElement('tr');
+tr.innerHTML = `<td><div class="ys-addqueue" data-id="7"><button>star</button></div></td>
+  <td><div class="ys-player" data-id="7"><span>${qb2.name}</span><span>QB</span><span>KC</span><span>Bye 6</span></div></td>
+  <td>10</td><td>12.5</td><td>6</td><td>200</td>`;
+W.document.querySelector('table').appendChild(tr);
+wireStar(tr.querySelector('.ys-addqueue'));
+W.__hcIndex[W.HarveyCup.roomKey(qb2.name, qb2.pos, qb2.team)] =
+  [{ name: qb2.name, pos: qb2.pos, team: qb2.team, vor: 90, points: 300, adp: 40, tier: 1 }];
+W.HarveyCup.advise = function (available, roster) {
+  const names = new Set((available || []).map(p => p.name));
+  const hasQB = (roster || []).some(p => p.pos === 'QB');
+  const r = ranking.filter(x => names.has(x.name) && !(hasQB && x.pos === 'QB'));
+  return { recommendation: r[0] || null, alternatives: r.slice(1), position_view: {},
+           roster: { counts: {}, starterGap: {}, totalGap: {}, flexOpen: 0 },
+           target_position: 'QB', picks_remaining: 10, recent_runs: {} };
+};
+ranking = [mk(PLAYERS[3]), mk(qb2), mk(PLAYERS[0])];   // QB, QB, RB
+A.tick(); A.tick(); A.tick();
+check('tick5 sequential queue skips the second QB', yahooQueue(), ['4', '1']);
 
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL QUEUE ACTUATOR CHECKS PASS'));
 process.exit(fails ? 1 : 0);

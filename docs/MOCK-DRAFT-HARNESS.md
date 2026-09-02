@@ -25,7 +25,15 @@ run in minutes instead of thirty minutes apiece.
 1. Open the mock lobby: `football.fantasysports.yahoo.com/f1/mock_lobby`
 2. Click **12 Team** — this auto-joins the next 12-team room (matching Harvey
    Cup's size) rather than the 14-team default.
-3. When "Draft has Started" appears, click **Enter Draft**.
+3. **Do not wait for "Draft has Started".** The waiting-room countdown
+   freezes in a background tab, and a mock room starts drafting the second
+   it opens, so entering on the button costs the first pick (or, if the
+   tab was frozen for a while, the first several rounds: mock 10501714).
+   About a minute before the countdown ends, go straight to
+   `/draftclient/f1/{mlid}/{slot}` (both numbers are on the waiting-room
+   URL and page) and arm there; the client shows "Downloading player data"
+   until the room opens, and an armed overlay is ready for pick one. With
+   `bridge/loader.user.js` installed this arming is automatic.
 4. In the draft room console, arm in two steps (the overlay first; loading
    the whole chain into a client that is still booting has starved the
    renderer):

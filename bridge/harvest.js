@@ -269,7 +269,8 @@
     return map;
   };
 
-  window.__hcHarvest = async function () {
+  window.__hcHarvest = async function (opts) {
+    opts = opts || {};
     clickByText('Results');
     await yieldTimes(30);
     clickByText('Teams');
@@ -286,8 +287,12 @@
       .map(function (o) { return { value: o.value, label: T(o) }; })
       .filter(function (o) { return o.label; });
 
+    var m0 = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
+    var mySlot0 = m0 ? +m0[2] : null;
     var teams = {}, slots = null, prevSig = null;
     for (var i = 0; i < options.length; i++) {
+      // the list is in draft order, so our team is the option at our slot
+      if (opts.onlyMe && mySlot0 && i !== mySlot0 - 1) continue;
       setSelect(sel, options[i].value);
       // wait for the table to actually become a DIFFERENT roster, rather
       // than reading the previous team's rows again

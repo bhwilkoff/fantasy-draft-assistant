@@ -20,8 +20,11 @@ Open `https://bhwilkoff.github.io/fantasy-draft-assistant/web/` and confirm the
 header reads `12 teams · 1 PPR · 6pt pass TD` and the footer shows today's
 build date. If it doesn't, the overlay will be wrong too.
 
-**Install the userscript** (once): Tampermonkey → new script → paste
-`bridge/loader.user.js`. It is ten lines that pull the current bridge from
+**Install the userscript** (once). Install Tampermonkey from the Chrome
+Web Store, open its dashboard, click "+" to create a new script, replace
+the template with the contents of `bridge/loader.user.js`, save. Open any
+draft room (a mock will do): the "Harvey Cup Advisor" panel appears top-right
+within a few seconds of the player table rendering. That is the whole test. It is ten lines that pull the current bridge from
 GitHub Pages every time a draft room opens, so nothing needs reinstalling
 when something is fixed. It arms the advisory overlay only; the autopilot
 never loads from it. If you'd rather not install anything, see "Arming by
@@ -43,6 +46,13 @@ Then check what actually changed:
 ```bash
 python3 tools/injury_report.py        # who moved, and how recently
 ```
+
+## T-minus 30 minutes — be in the room
+
+Enter the Harvey Cup draft room as soon as Yahoo lets you (the "Enter
+Draft" link on the league page opens well before the clock starts). The
+overlay arms itself when the player table renders, before pick one. Leave
+**Autodraft off** -- the queue is for you to read, and you make every pick.
 
 ## T-minus 15 minutes — start the relay
 

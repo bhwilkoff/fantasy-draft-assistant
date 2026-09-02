@@ -206,13 +206,16 @@
    * in one mock. The Results tab knows the truth regardless of when we
    * arrived, so read it once and merge. */
   A.seedRoster = null;
-  A.seedRosterFromResults = async function () {
+  A.seedRosterFromResults = async function (opts) {
     // Passes must not read the players table while the harvester has the
     // Drafted filter on (drafted players would look available); guard
     // manual calls the same way the automatic reseed is guarded.
     A.reseeding = true; A.reseedStartedAt = Date.now();
     try {
-      var h = await window.__hcHarvest();
+      // our own team only, unless a full harvest is asked for: twelve
+      // roster renders after every one of our picks was most of the load
+      // that made the room unresponsive
+      var h = await window.__hcHarvest(Object.assign({ onlyMe: true }, opts || {}));
       if (h && h.numTeams >= 4 && h.numTeams <= 20) A.numTeamsFromResults = h.numTeams;
       if (h && h.teams && h.me && h.teams[h.me]) {
         A.seedRoster = h.teams[h.me].map(function (p) {
@@ -463,7 +466,10 @@
     /* Opponent-aware availability: who picks between now and our next turn,
      * and what do they already hold? (bridge/opponents.js) */
     var availability = null;
-    if (window.__hcOpp && A.numTeams && next > cur) {
+    if (window.__hcOpp && A.numTeams && next > cur && A.availCache && A.availCache.pick === cur
+        && A.availCache.n === pool.length) {
+      availability = A.availCache.map;      // nothing changed since the last pass
+    } else if (window.__hcOpp && A.numTeams && next > cur) {
       try {
         var oppRosters = window.__hcOpp.inferOpponentRosters(A.picks, A.numTeams, cur, next);
         A.autodraftSlots = window.__hcOpp.inferAutodraftSlots(A.picks, A.numTeams,
@@ -473,12 +479,36 @@
           autodraftSlots: A.autodraftSlots
         });
         A.availabilityAt = cur;
+        A.availCache = { pick: cur, n: pool.length, map: availability };
       } catch (e) { A.availError = String(e); availability = null; }
     }
     var advOpts = {};
     if (remaining != null) advOpts.picksRemaining = remaining;
     if (availability) advOpts.availability = availability;
     var res = HC.advise(pool, roster, cur, next, [], 6, advOpts);
+
+    /* The queue is built SEQUENTIALLY, not from the flat ranking.
+     *
+     * Yahoo drafts queue[0], and if our turn comes twice in a row (a snake
+     * turn at either end, or a fast room) it drafts queue[1] next. A flat
+     * top-N ranking against the current roster puts three quarterbacks in
+     * a row when the roster has none, and the room took two of them. So
+     * entry k is what the advisor would say AFTER entries 1..k-1 have been
+     * drafted onto the roster and off the board. */
+    var seqPool = pool.slice(), seqRoster = roster.slice(), seq = [];
+    var seqOpts = { availability: availability };
+    for (var qi = 0; qi < A.QUEUE_DEPTH; qi++) {
+      var r = qi === 0 ? res
+        : HC.advise(seqPool, seqRoster, cur, next, [], 3,
+                    Object.assign({}, seqOpts,
+                      remaining != null ? { picksRemaining: Math.max(0, remaining - qi) } : {}));
+      var pickd = r && r.recommendation;
+      if (!pickd) break;
+      seq.push(pickd);
+      seqPool = seqPool.filter(function (p) { return p.name !== pickd.name; });
+      seqRoster = seqRoster.concat([{ name: pickd.name, pos: pickd.pos, team: pickd.team,
+                                      vor: pickd.vor, points: pickd.points }]);
+    }
 
     /* Re-read our roster from the Results tab right after each of our picks.
      *
@@ -523,8 +553,8 @@
      * several star clicks in one pass reach the server in arbitrary order
      * and the queue comes back shuffled. The passes run every ~1.5 s, so the
      * queue is full and correctly ordered within a few seconds anyway. */
-    var want = [res.recommendation].concat(res.alternatives)
-      .filter(Boolean).slice(0, A.QUEUE_DEPTH);
+    var want = seq.length ? seq
+      : [res.recommendation].concat(res.alternatives).filter(Boolean).slice(0, A.QUEUE_DEPTH);
     var wantIds = [], wantName = {};
     want.forEach(function (w) {
       var yid = yidOf[w.name];
@@ -540,7 +570,7 @@
      *    fastest. Evict only players outside twice the queue depth, and
      *    anyone no longer on the board. */
     var tolerated = {};
-    [res.recommendation].concat(res.alternatives).filter(Boolean)
+    want.concat([res.recommendation].concat(res.alternatives).filter(Boolean))
       .slice(0, A.QUEUE_DEPTH * 2).forEach(function (w) {
         if (yidOf[w.name]) tolerated[yidOf[w.name]] = 1;
       });
@@ -709,6 +739,25 @@
     } catch (e) {}
   };
   A.restore();
+
+  // Seed the roster from the Results tab as soon as the room is readable:
+  // arming late (or after a tab teardown) otherwise leaves the roster empty,
+  // every position looks unfilled, and the queue fills with quarterbacks.
+  (function seedSoon() {
+    var tries = 0;
+    function attempt() {
+      if (window.__hcHarvest && document.querySelector('.ys-player[data-id]')) {
+        Promise.resolve(A.seedRosterFromResults()).then(function () { A.seededAtLoad = true; });
+        return;
+      }
+      if (++tries < 200) {
+        var ch = new MessageChannel();
+        ch.port1.onmessage = attempt;
+        ch.port2.postMessage(0);
+      }
+    }
+    attempt();
+  })();
 
   var pending = false, lastRun = 0;
   function schedule() {

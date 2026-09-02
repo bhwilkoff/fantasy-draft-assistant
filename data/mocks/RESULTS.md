@@ -18,6 +18,7 @@ degrades.
 | 7 | 10429138 | 12 | 7 | pick 1 | **7 / 12** (our proj.) | 1749.2 | 1790.0 | 89.3 |
 | 8 | 10430207 | 12 | 2 | pick 70 | **12 / 12** (our proj.) | 1637.3 | 1813.0 | 175.7 |
 | 9 | 10430908 | 12 | 10 | pick 30 | **3 / 11** (our proj.) | 1774.1 | 1819.0 | 157.1 |
+| 10 | 10501714 | 12 | 2 | pick ~75 | **4 / 12** (our proj.) | 1745.2 | 1798.2 | 313.9 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -342,3 +343,44 @@ harvester keeps duplicate labels apart.
 Of the picks the audit can vouch for after the team count was corrected:
 Evans at 82, Sutton at 87, Worthy at 130, Steelers at 154 all matched the
 live recommendation.
+
+
+## Draft 10 — room 10501714 (12-team, slot 2, human drafters), 2026-09-02
+
+A daytime room with twelve human names, watched live by the user. Not a
+valid test of anything but the entry procedure, which it failed: the
+waiting-room countdown was frozen in a background tab, the draft had been
+running for six rounds by the time "Draft has Started" was read, and Yahoo
+autodrafted rounds 1-6 for us ("you have been put into auto pick mode due
+to inactivity"). Armed at pick ~75, without the roster string and before
+the Results-tab seed had run, so the roster read empty, every position
+looked unfilled, and the queue filled with three quarterbacks in a row --
+which a snake's back-to-back picks then took. The overlay also told the
+human to "clear filters" while the harness's own harvest had the Results
+tab open. The tab went unresponsive under the per-pass load.
+
+Roster: `QB L. Jackson, Murray · WR Pickens, Olave, McLaurin, Coker · RB B.
+Robinson, Dowdle, Marks, Allgeier · TE LaPorta, Kelce, Andrews · K Reichard ·
+DEF Jaguars`. Still **4 of 12** on our projections (1745 vs 1798), which
+says more about Yahoo's autodraft picks in rounds 1-6 than about us.
+
+Fixed, all deployed the same hour:
+
+* **The queue is built sequentially.** Entry k is what the advisor says
+  after entries 1..k-1 are on the roster and off the board, so a second
+  quarterback can never sit behind the first (tests/queue_test.js tick 5).
+* **Seed at load.** The autopilot reads our roster from the Results tab
+  the moment the room is readable, not only after the next pick.
+* **Our team only.** A reseed harvests one roster, not twelve; the
+  opponent simulation runs once per pick number, not once per pass.
+* **Enter early.** The harness doc now says to go to the draft-client URL
+  a minute before the countdown ends; with the loader userscript installed
+  the overlay arms itself when the table renders.
+* The overlay says "Reading rosters…" during its own harvest instead of
+  warning about filters.
+
+Open question raised by the user and worth its own decision: whether to
+run mocks with Autodraft OFF and have the autopilot click Draft itself once
+the clock is under fifteen seconds, giving the queue the full clock to
+settle. The sequential queue removes the failure that prompted it; the
+click path needs the Draft button's DOM, to be captured in the next room.
