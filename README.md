@@ -63,7 +63,11 @@ pre-draft study tool and the fallback if Yahoo redeploys.
 Yahoo's queue equal to the advisor's current ranking and turns Autodraft on,
 so a mock room drafts the board by itself (it clicks Draft on the
 recommendation; the queue is the fallback); it audits every pick the room
-takes against the advice, harvests all rosters, and grades the draft. Fourteen
+takes against the advice, harvests all rosters, grades the draft, and
+writes the league-wide report: every team graded and summarised, the
+values, reaches and near misses, and the story of the draft round by
+round (`bridge/report.js`; the real draft gets the same report from the
+overlay). Fifteen
 mocks so far; see `data/mocks/RESULTS.md`.
 
 ## How it is built
@@ -122,6 +126,7 @@ bridge/                    inside the Yahoo draft room
   autopilot.js               mock rooms: queue actuator, pick log, audit, reseed
   harvest.js                 read every roster (and Yahoo's projections) from the room
   grade.js                   grade a harvested draft under the room's rules
+  report.js                  league-wide report: every team graded, near misses, the story
   supervise.js               one call: inspect the room, fix what it can
 tools/
   draftday.sh                pull, build, test, publish, wait for Pages
@@ -129,16 +134,18 @@ tools/
   draft_watch.py             turns relay state into a brief worth reasoning over
   injury_report.py           who moved on the injury wire, ranked by ADP
   score_mock.py              offline grader for a harvested mock
+  draft_report.js            regenerate the league-wide report from a saved bundle
   consensus_test.py          single source vs consensus, out of sample
 tests/                     run_tests.sh runs all of them
-data/                      players.json + meta.json (built), mocks/RESULTS.md
+data/                      players.json + meta.json (built), mocks/RESULTS.md,
+                           mocks/reports/ (league reports), mocks/harvests/ (bundles)
 docs/                      method, strategy, playbook, architecture, adapting,
                            in-season plan, room recon, hidden-tab constraints
 ```
 
 ## Status (2026-09-02)
 
-The harness has run fourteen live mock drafts. It survives Yahoo's tab
+The harness has run fifteen live mock drafts. It survives Yahoo's tab
 teardowns, detects the room's rules and team count, matches names at
 `unmatched <= 1/100`, keeps the queue equal to the live advice, re-reads its
 roster from the Results tab after every pick, and grades the result. The

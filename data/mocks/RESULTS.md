@@ -23,6 +23,7 @@ degrades.
 | 12 | 10504882 | 12 | 7 | before pick 1 | **3 / 12** | 1715.0 | 1719.6 | 73.0 |
 | 13 | 10510897 | 12 | 10 | Tampermonkey, before pick 1 | **3 / 12** | 1736.3 | 1743.1 | 96.6 |
 | 14 | 10511947 | 12 | 12 | Tampermonkey, before pick 1 | **1 / 12** | 1709.1 | 1642.8 (2nd) | 236.4 |
+| 15 | 10513354 | 12 | 2 | Tampermonkey, pick 10 (room started early) | **3 / 12** | 1859.1 | 2026.4 | 632.4 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -561,3 +562,51 @@ The pick-log attribution artifact from the "Last:" header (a back-to-back
 turn filed our first pick's player under the second as well) showed up
 in this room's audit as 7/12; the click record is now authoritative for
 our picks (commit ff6009e), also not in this room's code.
+
+
+## Draft 15 — room 10513354 (12-team, slot 2, Tampermonkey-armed), 2026-09-02
+
+The run for the league-wide report, on the code that shipped during
+draft 14. The room started before its own countdown said it would, so
+pick 2 (Bijan Robinson) was Yahoo's before the stack armed; the seed read
+the roster from the Results tab and every pick from 23 on was ours:
+**13 clicks, 14 of 15 the exact recommendation**, including the
+back-to-back turns at 23/26, 47/50, 71/74, 95/98, 119/122 and 143/146,
+the defense at 143 and the kicker at 146. Graded on Yahoo's projections
+at 99% coverage: **3 of 12**, 1859.1 to Mary's 2026.4; on our own
+projections the same roster grades first (1904.4).
+
+Roster: `QB Allen, Purdy · RB B. Robinson, Jeanty, Judkins, Gainwell · WR
+G. Wilson, Odunze, Golden, Shakir, Samuel · TE LaPorta, Kelce · K Dicker ·
+DEF Broncos`.
+
+**The report exists.** `data/mocks/reports/10513354.yahoo.md` is what the
+room produced at the end (Yahoo's scale); `data/mocks/reports/10513354.md`
+is the same draft regenerated offline by `tools/draft_report.js` from the
+saved bundle in `data/mocks/harvests/`, on our projections, with the
+first version's defects fixed. Every team has a grade, positional ranks,
+its best values and worst reaches, bye stacks, and whether it was
+autodrafting; the draft is narrated round by round.
+
+Three defects, all fixed the same hour:
+
+* **The roster doubled after each reseed.** The click records "Josh
+  Allen", the Results tab says "J. Allen", and the union was by name
+  text: three picks became a roster of five, then 21 of 15 at the end,
+  and the last pick had no recommendation. The merge now keys by pick
+  number, then by the matched player.
+* **The recommendation's row had no Draft button** at pick 170 (Denzel
+  Boston), the same shape as pick 133 in draft 14: rows far down the
+  table render without the button. The click now scrolls the row into
+  view and looks again next pass. Yahoo's clock took Deebo Samuel from
+  the queue.
+* **In the report**: Brian Robinson Jr. at 142 resolved to Bijan (the
+  Results tab has no ADP to split them); our own back-to-back picks were
+  listed as near misses against ourselves; zero-projection bench players
+  filled the one-pick-late list. Fixed in `bridge/report.js` and pinned
+  by `tests/report_test.js`.
+
+Chrome replaced the tab a minute after the draft ended, so the complete
+harvest lived only in localStorage's final-round copy; the saved bundle
+has 169 of 180 picks. Lesson for Saturday: run `__hcReportShow()` and
+copy the report out before leaving the room.
