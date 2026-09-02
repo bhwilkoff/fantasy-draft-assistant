@@ -20,6 +20,7 @@ function draft(rosterText, numTeams, mySlot) {
   const roster = HarveyLeague.parseRoster(rosterText);
   const size = HarveyCup.rosterSizeFrom(roster);
   HarveyCup.setRosterSize(size);
+  HarveyCup.setLineup(roster);
   const players = JSON.parse(JSON.stringify(data.players));
   HarveyLeague.applyLeague(players, {
     roster, scoring: HarveyLeague.SCORING_PRESETS.yahoo_default, numTeams
@@ -84,12 +85,24 @@ CASES.forEach(([label, text, teams, slot, wantSize]) => {
   const missing = lineupIsLegal(mine, roster);
   const sizeOk = size === wantSize;
   const picksOk = mine.length === wantSize;
-  const ok = sizeOk && picksOk && missing.length === 0;
+  /* No position may exceed what the LINEUP can use: starters at that
+   * position, plus one bench body, plus the flex slots it is eligible for.
+   * Four tight ends in a one-flex room is a wasted roster, and it came from
+   * the advisor assuming Harvey Cup's two flex slots everywhere. */
+  const over = [];
+  Object.keys(counts).forEach(pos => {
+    const flexFor = roster.flex.filter(f => f.eligible.includes(pos)).length;
+    const bench = { QB: 1, TE: 1, RB: 3, WR: 3, K: 0, DEF: 0 }[pos] || 0;
+    const cap = (roster.base[pos] || 0) + bench + flexFor;
+    if (counts[pos] > cap) over.push(`${pos}=${counts[pos]}>${cap}`);
+  });
+  const ok = sizeOk && picksOk && missing.length === 0 && over.length === 0;
   if (!ok) fails++;
   console.log(`${ok ? 'ok  ' : 'FAIL'}  ${label}`);
   console.log(`        rosterSize=${size}${sizeOk ? '' : ' (want ' + wantSize + ')'}`
     + `  picks=${mine.length}  ${JSON.stringify(counts)}`);
   if (missing.length) console.log(`        UNFILLABLE SLOTS: ${missing.join(', ')}`);
+  if (over.length) console.log(`        OVER CAP: ${over.join(', ')}`);
 });
 
 console.log('\n' + (fails ? fails + ' FAILURES' : 'ALL ROSTER CHECKS PASS'));

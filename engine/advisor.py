@@ -53,6 +53,37 @@ import vor as vor_mod
 
 BENCH_TARGET = {"QB": 1, "RB": 3, "WR": 3, "TE": 1, "K": 0, "DEF": 0}
 
+# The lineup shape is a league parameter (DECISIONS 010), mirrored in
+# web/advisor.js: base starters per position, how many flex slots exist, and
+# which positions may fill one. Harvey Cup is the default; a room with a
+# different shape calls set_lineup() -- the JS side does so from the league
+# detector, so a Yahoo mock (2 WR, one W/R/T flex) no longer hands the
+# starter bonus to a third receiver or caps tight ends at four.
+BASE_STARTERS = {"QB": 1, "RB": 2, "WR": 3, "TE": 1, "K": 1, "DEF": 1}
+NUM_FLEX = 2
+FLEX_ELIGIBLE = {"WR", "RB", "TE"}
+
+
+def set_lineup(starters, flex_eligibility=None):
+    """starters: Yahoo-style dict {"QB":1,"WR":3,"W/T":1,...};
+    flex_eligibility: {"W/T": ("WR","TE"), ...} for the slash slots."""
+    global BASE_STARTERS, NUM_FLEX, FLEX_ELIGIBLE
+    base = {p: 0 for p in ("QB", "RB", "WR", "TE", "K", "DEF")}
+    nflex, elig = 0, set()
+    for slot, n in starters.items():
+        key = slot.upper().replace("D/ST", "DEF")
+        if key in base:
+            base[key] += n
+        elif "/" in key:
+            nflex += n
+            for part in key.split("/"):
+                elig.add({"W": "WR", "R": "RB", "T": "TE", "Q": "QB"}.get(part, part))
+    if flex_eligibility:
+        for slot, positions in flex_eligibility.items():
+            elig.update(positions)
+    BASE_STARTERS, NUM_FLEX = base, nflex
+    FLEX_ELIGIBLE = {p for p in elig if p in base}
+
 # These are not taste; they were swept in sim.py against simulated projection
 # error (see docs/METHOD.md).
 #
@@ -88,18 +119,16 @@ def roster_needs(roster):
             counts[p["pos"]] += 1
 
     # Fill base starters first, then flex from the overflow.
-    base = {"QB": 1, "RB": 2, "WR": 3, "TE": 1, "K": 1, "DEF": 1}
+    base = BASE_STARTERS
     starter_gap = {p: max(0, base[p] - counts[p]) for p in base}
 
-    overflow_wr = max(0, counts["WR"] - base["WR"])
-    overflow_rb = max(0, counts["RB"] - base["RB"])
-    overflow_te = max(0, counts["TE"] - base["TE"])
-    flex_open = 2 - min(2, overflow_wr + overflow_rb + overflow_te)
+    overflow = sum(max(0, counts[p] - base[p]) for p in FLEX_ELIGIBLE)
+    flex_open = NUM_FLEX - min(NUM_FLEX, overflow)
 
     total_gap = {}
     for p in starter_gap:
         cap = base[p] + BENCH_TARGET[p]
-        if p in ("WR", "RB", "TE"):
+        if p in FLEX_ELIGIBLE:
             cap += flex_open
         total_gap[p] = max(0, cap - counts[p])
     return starter_gap, total_gap, counts, flex_open

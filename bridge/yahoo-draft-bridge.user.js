@@ -626,6 +626,11 @@
     if (window.HarveyCup && window.HarveyCup.setRosterSize) {
       window.HarveyCup.setRosterSize(window.HarveyCup.rosterSizeFrom(roster));
     }
+    // ... and what shape its lineup is, so a 2-WR / one-flex mock is not
+    // drafted as if it were Harvey Cup's 3-WR / two-flex
+    if (window.HarveyCup && window.HarveyCup.setLineup) {
+      window.HarveyCup.setLineup(roster);
+    }
     state.league.teamsFrom = det.numTeams ? 'room' : 'fallback';
     window.__hcLeague = state.league;
     state.league.isMock = isMock;

@@ -12,10 +12,34 @@
   var DROPOFF_WEIGHT = 0.0;   // see advisor.py -- VOR already prices scarcity
   var STARTER_BONUS = 3.0;
 
-  var BASE_STARTERS = { QB: 1, RB: 2, WR: 3, TE: 1, K: 1, DEF: 1 };
   var BENCH_TARGET = { QB: 1, RB: 3, WR: 3, TE: 1, K: 0, DEF: 0 };
   var POSITIONS = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
   var NUM_TEAMS = 12, ROUNDS = 17, ROSTER_SIZE = 17;
+
+  /* The LINEUP SHAPE is a league parameter too (DECISIONS 010).
+   *
+   * BASE_STARTERS used to be Harvey Cup's {WR:3, ...} with two flex slots
+   * assumed, in every room. A Yahoo mock starts two receivers and ONE flex,
+   * so under that rulebook the advisor handed the starter bonus to a third
+   * receiver who was not a starter, and computed the cap on tight ends as
+   * 1 starter + 1 bench + 2 flex = 4 -- which is exactly how many it drafted.
+   * The shape now comes from the same parsed roster the league detector
+   * already produces; Harvey Cup's remains the default. */
+  var BASE_STARTERS = { QB: 1, RB: 2, WR: 3, TE: 1, K: 1, DEF: 1 };
+  var NUM_FLEX = 2;
+  var FLEX_ELIGIBLE = { WR: 1, RB: 1, TE: 1 };
+  function setLineup(roster) {
+    if (!roster || !roster.base) return;
+    var base = {};
+    POSITIONS.forEach(function (p) { base[p] = roster.base[p] || 0; });
+    BASE_STARTERS = base;
+    NUM_FLEX = (roster.flex || []).length;
+    var elig = {};
+    (roster.flex || []).forEach(function (f) {
+      (f.eligible || []).forEach(function (p) { elig[p] = 1; });
+    });
+    FLEX_ELIGIBLE = elig;
+  }
 
   /* Roster size MUST come from the room, not from Harvey Cup's 17.
    *
@@ -72,15 +96,16 @@
     POSITIONS.forEach(function (p) {
       starterGap[p] = Math.max(0, BASE_STARTERS[p] - counts[p]);
     });
-    var oWR = Math.max(0, counts.WR - BASE_STARTERS.WR);
-    var oRB = Math.max(0, counts.RB - BASE_STARTERS.RB);
-    var oTE = Math.max(0, counts.TE - BASE_STARTERS.TE);
-    var flexOpen = 2 - Math.min(2, oWR + oRB + oTE);
+    var overflow = 0;
+    Object.keys(FLEX_ELIGIBLE).forEach(function (p) {
+      overflow += Math.max(0, counts[p] - BASE_STARTERS[p]);
+    });
+    var flexOpen = NUM_FLEX - Math.min(NUM_FLEX, overflow);
 
     var totalGap = {};
     POSITIONS.forEach(function (p) {
       var cap = BASE_STARTERS[p] + BENCH_TARGET[p];
-      if (p === 'WR' || p === 'RB' || p === 'TE') cap += flexOpen;
+      if (FLEX_ELIGIBLE[p]) cap += flexOpen;
       totalGap[p] = Math.max(0, cap - counts[p]);
     });
     return { counts: counts, starterGap: starterGap, totalGap: totalGap, flexOpen: flexOpen };
@@ -259,6 +284,10 @@
     advise: advise, survival: survival, snakePicks: snakePicks,
     rosterNeeds: rosterNeeds, expectedBestLater: expectedBestLater,
     setRosterSize: setRosterSize, rosterSizeFrom: rosterSizeFrom,
+    setLineup: setLineup,
+    getLineup: function () {
+      return { base: BASE_STARTERS, numFlex: NUM_FLEX, flexEligible: FLEX_ELIGIBLE };
+    },
     getRosterSize: function () { return ROSTER_SIZE; },
     parseName: parseName, roomKey: roomKey, buildIndex: buildIndex,
     lookup: lookup, cleanTeam: cleanTeam,

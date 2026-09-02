@@ -4,6 +4,14 @@
 global.window = global;
 require('../web/advisor.js');
 var data = require('../data/players.json');
+/* The "V. Jefferson" case guards the PARSER (a leading "V." must not be eaten
+ * as a roman-numeral suffix), not the player. Van Jefferson fell out of the
+ * projection set on 2026-09-01, so keep a synthetic row for him rather than
+ * letting a roster cut silently delete the test. */
+if (!data.players.some(function (p) { return p.name === 'Van Jefferson'; })) {
+  data.players.push({ name: 'Van Jefferson', pos: 'WR', team: 'WSH',
+                      vor: -50, points: 40, adp: null });
+}
 var index = HarveyCup.buildIndex(data.players);
 var byName = {};
 data.players.forEach(function (p) { byName[p.name] = p; });
