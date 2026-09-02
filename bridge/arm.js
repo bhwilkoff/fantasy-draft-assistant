@@ -50,7 +50,13 @@
     // players.json resolves; poll briefly rather than racing it.
     // setInterval is throttled in hidden tabs, so poll via MessageChannel --
     // the one macrotask source Chrome does not throttle in the background.
-    var tries = 0;
+    /* Bound the wait by TIME, not by a count of yields. MessageChannel
+     * yields take well under a millisecond each, so "400 tries" was a few
+     * hundred milliseconds -- enough only when players.json was already in
+     * the browser cache. A fresh data plane (pushed mid-draft) took longer
+     * than that to fetch, the poll gave up, and the room ran with the
+     * overlay but NO autopilot: a queue nobody was updating. */
+    var started = Date.now();
     function poll() {
       if (window.__hcIndex) {
         load(['bridge/autopilot.js'], function () {
@@ -59,8 +65,9 @@
         });
         return;
       }
-      if (++tries > 400) {
-        console.warn('[harvey-cup] data never loaded; autopilot not armed');
+      if (Date.now() - started > 90000) {
+        window.__hcArmError = 'data never loaded within 90s; autopilot not armed';
+        console.warn('[harvey-cup] ' + window.__hcArmError);
         return;
       }
       var ch = new MessageChannel();
