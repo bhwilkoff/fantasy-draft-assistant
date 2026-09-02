@@ -467,6 +467,36 @@
     ].filter(Boolean).join(' ');
   };
 
+  /* Did the ROOM take what the advisor recommended?
+   *
+   * Four drafts were graded before anyone checked this, and every one of
+   * them was drafting from a stale queue. The advice being right is not
+   * evidence the pick was right; compare them, pick by pick. */
+  A.audit = function () {
+    var m = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
+    if (!m) return 'not in a draft room';
+    var slot = +m[2], n = A.numTeams || 12, out = [], ok = 0, bad = 0;
+    var norm = function (s) { return String(s || '').toLowerCase().replace(/[^a-z]/g, ''); };
+    var last = function (s) { return norm(String(s || '').split(' ').slice(-1)[0]); };
+    mySnakePicks(n, slot, 20).forEach(function (pk, i) {
+      var got = A.picks[pk];
+      if (!got) return;
+      var adv = null;
+      for (var j = A.log.length - 1; j >= 0; j--) {
+        if (A.log[j].pick === pk) { adv = A.log[j]; break; }
+      }
+      var rec = adv ? adv.rec : null, qtop = adv ? adv.queueTop : null;
+      var match = rec && (norm(rec).indexOf(last(got.name)) >= 0
+                          || norm(got.name).indexOf(last(rec)) >= 0);
+      if (match) ok++; else bad++;
+      out.push('r' + (i + 1) + ' pk' + pk + ' rec=' + (rec || '?')
+        + (qtop && qtop !== rec ? ' qtop=' + qtop : '')
+        + ' got=' + got.name + '/' + got.pos + (match ? ' ok' : ' MISMATCH'));
+    });
+    return (out.length ? out.join('\n') + '\n' : 'no picks recorded\n')
+      + 'matched ' + ok + '/' + (ok + bad);
+  };
+
   A.rows = readRows;
   A.tick = tick;
   A.stop = function () {
