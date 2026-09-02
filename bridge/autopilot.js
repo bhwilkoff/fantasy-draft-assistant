@@ -474,7 +474,7 @@
         var oppRosters = window.__hcOpp.inferOpponentRosters(A.picks, A.numTeams, cur, next);
         A.autodraftSlots = window.__hcOpp.inferAutodraftSlots(A.picks, A.numTeams,
           slotM ? +slotM[1] : null);
-        availability = window.__hcProf('opponents', function () {
+        availability = (window.__hcProf || function (n, f) { return f(); })('opponents', function () {
           return window.__hcOpp.simulateAvailability(pool, cur, next, oppRosters, {
             numTeams: A.numTeams, totalRounds: rounds, trials: 150, seed: cur * 7919 + pool.length,
             autodraftSlots: A.autodraftSlots
@@ -487,7 +487,7 @@
     var advOpts = {};
     if (remaining != null) advOpts.picksRemaining = remaining;
     if (availability) advOpts.availability = availability;
-    var res = window.__hcProf('advise', function () { return HC.advise(pool, roster, cur, next, [], 6, advOpts); });
+    var res = (window.__hcProf || function (n, f) { return f(); })('advise', function () { return HC.advise(pool, roster, cur, next, [], 6, advOpts); });
 
     /* The queue is built SEQUENTIALLY, not from the flat ranking.
      *

@@ -740,14 +740,16 @@
   // The DOM readers are the part that can silently rot when Yahoo redeploys,
   // so they are exposed for tests/dom_test.js to run against a fixture built
   // from the HTML actually observed in a live room.
-  // profiled wrappers (web/league.js supplies __hcProf)
+  // profiled wrappers (web/league.js supplies __hcProf; absent in the
+  // fixture test, where the bridge is loaded alone)
+  function prof(name, fn) { return window.__hcProf ? window.__hcProf(name, fn) : fn(); }
   var _readStatus = readStatus, _readAvailable = readAvailable,
       _readDraftOrder = readDraftOrder, _readMyRoster = readMyRoster, _render = render;
-  readStatus = function () { return window.__hcProf('readStatus', _readStatus); };
-  readAvailable = function () { return window.__hcProf('readAvailable', _readAvailable); };
-  readDraftOrder = function () { return window.__hcProf('readDraftOrder', _readDraftOrder); };
-  readMyRoster = function (a) { return window.__hcProf('readMyRoster', function () { return _readMyRoster(a); }); };
-  render = function (f) { return window.__hcProf('render', function () { return _render(f); }); };
+  readStatus = function () { return prof('readStatus', _readStatus); };
+  readAvailable = function () { return prof('readAvailable', _readAvailable); };
+  readDraftOrder = function () { return prof('readDraftOrder', _readDraftOrder); };
+  readMyRoster = function (a) { return prof('readMyRoster', function () { return _readMyRoster(a); }); };
+  render = function (f) { return prof('render', function () { return _render(f); }); };
   window.__hcReaders = {
     readStatus: readStatus, readAvailable: readAvailable,
     readDraftOrder: readDraftOrder, readMyRoster: readMyRoster,
