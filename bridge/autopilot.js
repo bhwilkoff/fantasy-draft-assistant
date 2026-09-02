@@ -576,7 +576,12 @@
       if (st.pick >= totalPicks - A.numTeams) {
         A.harvestedFinal = true;
         try {
-          Promise.resolve(window.__hcHarvest()).then(function (h) {
+          /* Yahoo's projections first: the position-paged scrape only works
+           * while the room is live (draft 7 could not be graded on Yahoo's
+           * scale because the scrape was attempted after the end). */
+          Promise.resolve(window.__hcYahooProj ? window.__hcYahooProj() : null)
+            .then(function () { return window.__hcHarvest(); })
+            .then(function (h) {
             try {
               localStorage.setItem('hcFinalHarvest', JSON.stringify(h));
               A.finalHarvest = { teams: Object.keys(h.teams || {}).length,
