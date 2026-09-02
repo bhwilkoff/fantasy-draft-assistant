@@ -197,3 +197,24 @@ now blends ESPN and Sleeper per stat before scoring; the overlay shows both
 totals for the recommendation and flags a split of 25+ points. When one
 source loves a player and the other does not, that is a reason to trust the
 consensus, not to draft him.
+
+
+## 11. Bye weeks: model them, do not draft around them (added 2026-09-01)
+
+Until tonight the season simulator had no bye weeks at all. It now zeroes a
+player in his bye week (byes come from the team; 526 of 531 players carry
+one). With that in place, three drafting rules with identical valuation, 36
+drafts x 150 seasons:
+
+| rule | title odds | playoff odds |
+|---|---|---|
+| ignore byes (the advisor as is) | **14.2%** | 70.8% |
+| among near-equals, prefer a bye NOT shared with a starter | 11.3% | 60.4% |
+| among near-equals, prefer a SHARED bye (concentrate the damage) | 11.5% | 65.9% |
+
+Either bye rule costs about three points of title odds. The reason is the
+same one that killed every other tie-break (Section 3): a "near-equal" band
+wide enough to ever change a pick is wide enough to give away real value,
+and a bye week costs every roster one week of one player regardless of how
+the byes line up. The overlay shows the bye next to every recommendation so
+a human can break a genuine coin-flip with it; the engine does not.
