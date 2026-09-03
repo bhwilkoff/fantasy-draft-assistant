@@ -26,6 +26,7 @@ degrades.
 | 15 | 10513354 | 12 | 2 | Tampermonkey, pick 10 (room started early) | **3 / 12** | 1859.1 | 2026.4 | 632.4 |
 | 16 | 10515116 | 12 | 5 | Tampermonkey, before pick 1 | **7 / 12** | 1686.5 | 1739.6 | 204.5 |
 | 17 | 10672228 (Harvey Cup instant mock, 3 rounds) | 12 | 7 | Tampermonkey, before pick 1 | 3 of 3 exact | — | — | — |
+| 18 | 10526391 | 12 | 12 | Tampermonkey, before pick 1; real-room flags on | **9 / 12** (drafted on Harvey Cup rules, graded on Yahoo's) | 1670.3 | 1765.5 | 116.8 |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -661,3 +662,34 @@ not. The room header says "Harvey Cup - Mock Draft", so the overlay now
 recognises the configured league by name in any room, and
 `localStorage.hcLeagueOverride` ('config' | 'mock') forces it either way.
 Not yet seen in a room; mock 18 runs with the override on.
+
+
+## Draft 18 — room 10526391 (12-team, slot 12), real-room flags on, 2026-09-02
+
+Run with `hcDraftDelay` 20, `hcAssumeAutodraft` 1 and `hcLeagueOverride`
+'config', so the room drafted on Harvey Cup's rules (full PPR, 6-point
+passing TDs; the footer read "Harvey Cup rules (override)", then "(room)"
+once the Results tab supplied the 15-slot lineup) while being graded on
+Yahoo's defaults -- so the 9th of 12 (1670 to 1766) is not comparable
+to the other mocks and was not the point. Armed before pick one, 12 of
+15 exact, and three misses that each found a defect:
+
+* **Picks 60 and 61 were Yahoo's clock.** The 20-second override window
+  ran full autopilot passes underneath Yahoo's own on-the-clock
+  rendering; the renderer froze for 19 seconds and the click never ran.
+  The window is now quiet time: no pass while it is open, and the panel
+  reuses the autopilot's result instead of computing its own
+  (DECISIONS 023). The delay was set to zero in the room for the rest of
+  the draft.
+* **Picks 133 and 157 fell to the plan ladder** on the second pick of a
+  back-to-back turn with a defense, then a kicker, on top. The
+  recommendation's Yahoo id in the name-to-id map was one that was on no
+  row (a row at another position had overwritten it), and the clock read
+  as unknown. Fixed three ways: one id per player and only from a
+  same-position row, the clock found as the small element reading mm:ss,
+  and a second locator by the room's short name before the ladder.
+
+Everything else held: entry twenty seconds before the start, the
+autodraft prior re-classifying seats as they burned clock, the
+per-source line and Yahoo delta on every pick, the in-room report.
+Report: `data/mocks/reports/10526391.md`; bundle in `data/mocks/harvests/`.
