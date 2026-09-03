@@ -50,6 +50,10 @@
     return base;
   }
 
+  /* Finished output persists; running the snippet again only shows it.
+   * To scrape afresh: localStorage.removeItem('hcYahooProjJSON') first. */
+  var done = localStorage.getItem('hcYahooProjJSON');
+  if (done && !localStorage.getItem('hcYahooScrape')) { showJSON(done); return 'already done: shown'; }
   var st = state();
   var here = (location.search.match(/pos=([A-Z]+)/) || [])[1];
   var offset = +((location.search.match(/count=(\d+)/) || [])[1] || 0);
@@ -70,9 +74,16 @@
   var doc = { source: 'yahoo_league_players_page', league_id: LEAGUE, scoring: 'Harvey Cup (Yahoo scored)',
               fetched: new Date().toISOString().slice(0, 10), players: st.rows };
   localStorage.removeItem('hcYahooScrape');
-  var pre = document.createElement('pre');
-  pre.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;overflow:auto;background:#fff;color:#000;z-index:2147483647;font:11px monospace;white-space:pre-wrap;word-break:break-all';
-  pre.textContent = JSON.stringify(doc);
-  document.body.appendChild(pre);
+  var text = JSON.stringify(doc);
+  try { localStorage.setItem('hcYahooProjJSON', text); } catch (e) {}
+  showJSON(text);
   return 'done: ' + st.rows.length + ' players; copy the JSON to data/sources/yahoo_league_proj.json';
+
+  function showJSON(text) {
+    var pre = document.getElementById('hc-yahoo-json') || document.createElement('pre');
+    pre.id = 'hc-yahoo-json';
+    pre.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;overflow:auto;background:#fff;color:#000;z-index:2147483647;font:11px monospace;white-space:pre-wrap;word-break:break-all';
+    pre.textContent = text;
+    document.body.appendChild(pre);
+  }
 })();
