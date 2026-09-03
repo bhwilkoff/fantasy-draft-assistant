@@ -151,6 +151,22 @@
     }
     var c = body.match(/\b(\d{1,2}:\d{2})\b/);
     if (c) out.clock = c[1];
+    /* The cached status element is the smallest one holding "Round R, Pick
+     * P"; the timer is a sibling, so the clock above was null in every
+     * audit entry of mocks 10526391 and 10601647, including on our own
+     * turn. Cache the timer leaf the same way (it reads "00:45"; the
+     * opponents' bare-seconds counter does not match) and re-read it. */
+    if (!out.clock) {
+      var tEl = state.clockEl;
+      if (!(tEl && document.contains(tEl) && /^\d{1,2}:\d{2}$/.test((tEl.textContent || '').trim()))) {
+        tEl = [].slice.call(document.querySelectorAll('span,div,time')).filter(function (x) {
+          return x.children.length <= 2 && !x.closest('#hc-advisor')
+            && /^\d{1,2}:\d{2}$/.test((x.textContent || '').trim());
+        })[0] || null;
+        state.clockEl = tEl;
+      }
+      if (tEl) out.clock = tEl.textContent.trim();
+    }
     var cur = document.querySelector('.ys-draftorder-current');
     if (cur) out.onClock = textOf(cur).split('\n')[0];
     return out;
