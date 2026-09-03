@@ -77,6 +77,16 @@ the pick number move and stands down. Yahoo's own Autodraft toggle stays
 kept equal to the plan as the fallback if a click ever fails. The footer
 shows `window=20s` while the autopilot is armed.
 
+The flags, all on Yahoo's origin (set once in any Yahoo fantasy page's console):
+
+| Flag | Default | What it does |
+|---|---|---|
+| `hcRealAutopilot` | unset | `'1'` arms the autopilot in the Harvey Cup room |
+| `hcDraftDelay` | 20 in the real room, 0 in mocks | seconds of override window before the autopilot clicks |
+| `hcAssumeAutodraft` | on in the real room, off in mocks | model every seat as autodraft until it burns clock (`'1'`/`'0'`) |
+| `hcLeagueOverride` | unset | `'config'` forces our rules in any room (a copy of our league is also recognised by name), `'mock'` forces Yahoo's |
+| `hcMockAutopilot` | unset | `'1'` arms the autopilot in mock rooms and auto-enters from the waiting room |
+
 ## T-minus 15 minutes — start the relay
 
 ```bash
