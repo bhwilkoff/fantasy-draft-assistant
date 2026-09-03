@@ -436,3 +436,23 @@ parses but adds little beyond FantasySharks.
 player list before `tools/draftday.sh` so the check is current; read
 `python3 tools/bias_report.py` before the draft and decide, name by name,
 whether each big disagreement is an edge or an error.
+
+## 023 — The override window is quiet time
+
+**Rule:** on our turn, while the override window is open, the autopilot
+makes no pass at all -- no pool rebuild, no advise, no queue reconcile --
+and the overlay renders the autopilot's last result instead of computing
+its own. The first pass after the window closes clicks.
+
+**Why:** the recommendation was already known before the turn opened;
+recomputing it every second bought nothing and cost everything. In mock
+10526391 a 20-second window with full passes underneath, on top of
+Yahoo's own on-the-clock rendering, froze the renderer for 19 seconds, the
+click never ran, and Yahoo's clock took two picks from the queue. Every
+click into the room is a re-render (018) and so is every pass we run
+while Yahoo is animating our turn.
+
+**How to apply:** `windowSkips` counts the quiet passes in the
+autopilot; `window=20s(N left)` in `__hcStatus()` shows the countdown.
+The panel's "autopilot pass N" line proves it is rendering the
+autopilot's result rather than its own.

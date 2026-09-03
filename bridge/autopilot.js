@@ -599,6 +599,25 @@
      * position filter. Touching either now (the self-heal below) empties
      * its projection map -- mock 12 graded at 0% Yahoo coverage for exactly
      * that reason. Ninety seconds covers a full twelve-team harvest. */
+    /* THE OVERRIDE WINDOW IS QUIET TIME. On our turn with the window open,
+     * a full pass every second (pool rebuild, advise, panel render) on top
+     * of Yahoo's own on-the-clock rendering saturated the renderer: mock
+     * 10526391 froze for 19 s, the click never ran, and Yahoo's clock took
+     * two picks from the queue. The recommendation was already known
+     * before the turn; nothing needs recomputing until the window closes. */
+    if (A.DRAFT_DELAY > 0 && st.upIn === 0 && st.pick) {
+      var slotW = (location.pathname.match(/\/draftclient\/f1\/\d+\/(\d+)/) || [])[1];
+      if (slotW && ourPick(st.pick, +slotW)) {
+        A.onClockSince = A.onClockSince || {};
+        if (!A.onClockSince[st.pick]) A.onClockSince[st.pick] = Date.now();
+        var waitedW = (Date.now() - A.onClockSince[st.pick]) / 1000;
+        if (waitedW < A.DRAFT_DELAY && A.draftClickedPick !== st.pick) {
+          A.draftWindowLeft = Math.ceil(A.DRAFT_DELAY - waitedW);
+          A.windowSkips = (A.windowSkips || 0) + 1;
+          return;
+        }
+      }
+    }
     if (window.__hcHarvestBusy) {
       if (window.__hcHarvestBusyAt && Date.now() - window.__hcHarvestBusyAt > 90000) {
         window.__hcHarvestBusy = false; A.harvestBusyTimeouts = (A.harvestBusyTimeouts || 0) + 1;

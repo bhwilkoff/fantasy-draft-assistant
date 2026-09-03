@@ -528,12 +528,21 @@
     }
     if (harvesting && av.rows.length < 25) return;   // keep the last good panel
 
+    /* When the autopilot has a fresh result, the panel renders it and does
+     * not rebuild the pool or run advise() itself -- that doubled the work
+     * of every pass and, on our own turn, helped freeze the room. */
+    var APf = window.__hcAuto, apFresh = !!(APf && APf.lastRes && APf.last && APf.last.ts
+                                            && Date.now() - APf.last.ts < 15000);
     var pool = [], unmatched = 0;
     state.ambiguous = [];
-    av.rows.forEach(function (r) {
-      var p = lookup(r.name, r.pos, r.team, r.adp);
-      if (p) pool.push(p); else unmatched++;
-    });
+    if (!apFresh) {
+      av.rows.forEach(function (r) {
+        var p = lookup(r.name, r.pos, r.team, r.adp);
+        if (p) pool.push(p); else unmatched++;
+      });
+    } else {
+      unmatched = APf.last.unmatched || 0;
+    }
 
     var roster = readMyRoster(av.rows).map(function (r) {
       return lookup(r.name, r.pos, r.team, r.adp)
@@ -542,7 +551,7 @@
 
     var cur = st.pick || 1;
     var next = cur + (st.upIn != null ? Math.max(1, st.upIn) : 12);
-    var res = window.HarveyCup.advise(pool, roster, cur, next, []);
+    var res = apFresh ? APf.lastRes : window.HarveyCup.advise(pool, roster, cur, next, []);
     var rec = res.recommendation;
     /* When the autopilot is running, show ITS result -- the roster it
      * reconstructed from the pick log and reseeds, the advice it queued and
