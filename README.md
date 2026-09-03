@@ -7,8 +7,9 @@ inside the Yahoo draft room. Built for one league -- **Harvey Cup**
 configured entirely from one file, so it points at another league by
 editing `config/league.json`.
 
-Everything it recommends comes from its own valuation: ESPN's and Sleeper's
-raw stat projections blended per stat, scored under the league's exact
+Everything it recommends comes from its own valuation: ESPN's, Sleeper's,
+CBS's and FantasySharks' raw stat projections blended per stat, checked
+against Yahoo's own numbers under the league's rules, scored under those
 rules, valued against a replacement level simulated from the league's real
 lineup, and timed against the specific opponents in the room. Yahoo's own
 rankings are used for one thing only: predicting what an *autodrafting*
@@ -104,6 +105,8 @@ engine/                    Python
   build.py                   the pipeline -> data/players.json, data/meta.json
   sources/espn.py            ESPN raw stat projections + ESPN ADP
   sources/sleeper_proj.py    Sleeper raw stat projections (second source)
+  sources/cbs.py             CBS raw stat projections (third)
+  sources/fantasysharks.py   FantasySharks raw stat projections (fourth)
   sources/sleeper.py         Sleeper player feed: injuries, depth chart, age
   sources/ffc.py             FantasyFootballCalculator ADP + stdev + byes
   names.py                   name/team normalisation across sources and the room
@@ -137,6 +140,7 @@ tools/
   score_mock.py              offline grader for a harvested mock
   draft_report.js            regenerate the league-wide report from a saved bundle
   consensus_test.py          single source vs consensus, out of sample
+  bias_report.py             where our board is the outlier vs Yahoo and ADP
 tests/                     run_tests.sh runs all of them
 data/                      players.json + meta.json (built), mocks/RESULTS.md,
                            mocks/reports/ (league reports), mocks/harvests/ (bundles)
@@ -170,6 +174,7 @@ mechanism far better than it measures the valuation.
 
 ## Data
 
-ESPN and Sleeper (projections), Sleeper (injuries), FantasyFootballCalculator
-(ADP). None is affiliated with this project. Refresh the morning of the
+ESPN, Sleeper, CBS and FantasySharks (projections), Yahoo's league player
+list (the bias check, scraped by `bridge/yahoo_proj_scrape.js`), Sleeper
+(injuries), FantasyFootballCalculator (ADP). None is affiliated with this project. Refresh the morning of the
 draft: ADP moves in the last 48 hours and injury statuses move more.

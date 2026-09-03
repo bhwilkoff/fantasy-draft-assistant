@@ -403,3 +403,36 @@ became an opt-in flag rather than a refusal.
 
 **How to apply:** set the flag once before Saturday; watch `window=20s`
 in the footer. Mocks keep a zero window so they measure the mechanism.
+
+## 022 — Four stat-line sources in the blend; Yahoo's number is a bias check, not a peer
+
+**Rule:** the projection is the per-stat mean of every source that
+publishes the stat -- ESPN, Sleeper, CBS and FantasySharks -- scored under
+the league's rules. Yahoo's own projection, scored by Yahoo under the same
+rules and read from the league's player list, then moves the result
+toward itself by `sources.yahoo_bias_weight` (0.2). For kickers and
+defenses, where ESPN is the only stat-line source, the weight is
+`kdef_yahoo_weight` (0.5). Every source's number and the Yahoo delta are
+kept on the player and shown on the pick.
+
+**Why:** the mocks kept drafting the same names -- Kelce, Judkins, Purdy,
+Sutton -- because the same board disagrees with the market in the same
+places every time. More independent stat lines shrink the idiosyncratic
+part of that without deferring to any one of them; the consensus test
+(tools/consensus_test.py) still prefers the blend out of sample. Yahoo is
+different in kind: it is the opponents' board (every autodrafting seat
+draws from it) and it is scored under our rules by Yahoo, so it is the
+right thing to check against and the wrong thing to average in as an
+equal -- the goal is to notice when we are the outlier, not to become
+Yahoo. The kicker weight is higher because the check found a fact, not an
+opinion: ESPN projects the top kickers for 35 field goals a season
+against Yahoo's 26, and under our rules that is the entire 30% gap.
+
+**Rejected:** FantasyPros (its page serves ten rows without JavaScript),
+NFL.com (a client app now), numberFire (moved into FanDuel). FFToday
+parses but adds little beyond FantasySharks.
+
+**How to apply:** run `bridge/yahoo_proj_scrape.js` on the league's
+player list before `tools/draftday.sh` so the check is current; read
+`python3 tools/bias_report.py` before the draft and decide, name by name,
+whether each big disagreement is an edge or an error.

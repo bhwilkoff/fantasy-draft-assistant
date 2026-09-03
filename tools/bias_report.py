@@ -60,7 +60,7 @@ def main():
     for p in top:
         if not p.get("adp") or p["name"] not in vor_rank:
             continue
-        rows.append((p.get("adp_rank") or p["adp"]) - vor_rank[p["name"]], p)
+        rows.append(((p.get("adp_rank") or p["adp"]) - vor_rank[p["name"]], p))
     rows.sort(key=lambda t: -abs(t[0]))
     print(f"{'player':24} {'pos':4} {'vor#':>5} {'adp#':>5} {'gap':>5}  {'final':>6}  {'yahoo delta':>11}")
     for gap, p in rows[:args.n]:

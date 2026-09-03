@@ -32,8 +32,15 @@ hand" below.
 
 ## T-minus 2 hours — the last data refresh that matters
 
+First the Yahoo bias check (two minutes, needs the logged-in browser):
+open the league's player list and paste `bridge/yahoo_proj_scrape.js`
+into the console; it pages through offense, kickers and defenses by
+itself and shows the JSON. Copy it over `data/sources/yahoo_league_proj.json`.
+Then:
+
 ```bash
 tools/draftday.sh
+python3 tools/bias_report.py      # where our board is the outlier; read it
 ```
 
 ADP moves hard in the final 48 hours and injury news moves harder. The build
