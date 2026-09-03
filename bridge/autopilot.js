@@ -634,6 +634,52 @@
     return e ? (e.querySelector('button') || e) : null;
   }
 
+  /* ------------------------------------------------------- the deadline
+   * A pass runs when the DOM changes or the 15 s backstop fires. On our
+   * turn Yahoo changes almost nothing, so once the override window closed
+   * nothing woke the click until the backstop -- and a hidden tab throttles
+   * that backstop to once a minute. Mock 10603061 (2026-09-03): the click
+   * landed with five seconds left and Yahoo answered "the pick you are
+   * trying to make is not the current pick". So the moment the window
+   * opens, a timer is armed for its exact end and forces a pass then, and
+   * again every second until the click is recorded or the turn passes.
+   * The timer lives in a Web Worker because Chrome does not throttle
+   * worker timers in a hidden tab (a blob worker; if the page's CSP
+   * refuses it, a plain setTimeout is the fallback -- exact while the tab
+   * is visible, which the real draft's is). */
+  var deadlineWorker = null, deadlineArmedFor = null;
+  function ensureDeadlineWorker() {
+    if (deadlineWorker !== null) return deadlineWorker;
+    try {
+      var src = 'onmessage=function(e){setTimeout(function(){postMessage(e.data.id)},e.data.ms)}';
+      deadlineWorker = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+      deadlineWorker.onmessage = function (e) { onDeadline(e.data); };
+      A.deadlineVia = 'worker';
+    } catch (e) { deadlineWorker = false; A.deadlineVia = 'setTimeout'; }
+    return deadlineWorker;
+  }
+  function deadlineIn(ms, id) {
+    var w = ensureDeadlineWorker();
+    if (w) w.postMessage({ id: id, ms: ms }); else setTimeout(function () { onDeadline(id); }, ms);
+  }
+  function armDeadline(pick, ms) {
+    if (deadlineArmedFor === pick) return;
+    deadlineArmedFor = pick;
+    A.deadlineArmed = (A.deadlineArmed || 0) + 1;
+    deadlineIn(ms + 50, pick);
+  }
+  function onDeadline(pick) {
+    if (!A.on) return;
+    if (A.draftClickedPick === pick) return;                    // already drafted
+    var st = null;
+    try { st = window.__hcReaders.readStatus(); } catch (e) {}
+    if (!st || st.pick !== pick || st.upIn !== 0) return;       // the turn has passed
+    A.deadlineFires = (A.deadlineFires || 0) + 1;
+    lastRun = 0;                                                // bypass the rate limit
+    schedule();
+    deadlineIn(1000, pick);                                     // and again until it lands
+  }
+
   function tick() {
     if (!A.on) return;
     var HC = window.HarveyCup, R = window.__hcReaders, idx = window.__hcIndex;
@@ -687,6 +733,7 @@
         if (waitedW < A.DRAFT_DELAY && A.draftClickedPick !== st.pick) {
           A.draftWindowLeft = Math.ceil(A.DRAFT_DELAY - waitedW);
           A.windowSkips = (A.windowSkips || 0) + 1;
+          armDeadline(st.pick, Math.max(0, A.DRAFT_DELAY * 1000 - (Date.now() - A.onClockSince[st.pick])));
           return;
         }
       }
@@ -1247,6 +1294,7 @@
         + '/avg' + (A.passCount ? Math.round(A.passTotal / A.passCount) : 0) + '/every' + A.RATE_MS,
       'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ' pre:' + (A.preMs == null ? '?' : A.preMs + 'ms') + ' reconcile:' + (A.reconcileMs == null ? '?' : A.reconcileMs + 'ms') + ' seq:' + (A.seqMs == null ? '?' : A.seqMs + 'ms') + ']',
       'dialogs=' + ((window.__hcDialogs || []).length),
+      'deadline=' + (A.deadlineVia || '-') + '/armed' + (A.deadlineArmed || 0) + '/fired' + (A.deadlineFires || 0),
       'stalls=' + ((window.__hcStalls || []).length) + (window.__hcStalls && window.__hcStalls.length ? '/max' + Math.round(Math.max.apply(null, window.__hcStalls.map(function (x) { return x.gap; })) / 1000) + 's' : ''),
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
