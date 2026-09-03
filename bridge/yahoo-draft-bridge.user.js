@@ -737,6 +737,18 @@
     // engine/build.py), so a real room runs exactly the rules the engine was
     // built with; only a mock falls back to Yahoo's defaults.
     var cfg = (j.meta && j.meta.league) || {};
+    /* A copy of OUR league is our league. Yahoo's instant mock of Harvey
+     * Cup runs under a fresh mock id but names the league in the room
+     * header ("Harvey Cup - Mock Draft"); it drafts 17 rounds under our
+     * scoring, and is the only rehearsal that does. Detect the configured
+     * league's name in the room, or take an explicit override:
+     * localStorage.hcLeagueOverride = 'config' (our rules) | 'mock' (Yahoo). */
+    var override = null;
+    try { override = localStorage.getItem('hcLeagueOverride'); } catch (e) {}
+    var headText = (document.title || '') + ' ' + ((document.querySelector('header, h1, [class*="header"]') || {}).textContent || '');
+    var namedOurs = !!(cfg.name && headText.toLowerCase().indexOf(String(cfg.name).toLowerCase()) >= 0);
+    if (override === 'config' || (override !== 'mock' && namedOurs)) isMock = false;
+    state.leagueByName = namedOurs;
     // a Yahoo mock is always 15 slots: 9 starters and 6 bench. Without the
     // bench the roster size read 9 and the K/DEF gate opened in round 6.
     var rosterText = det.rosterText
@@ -761,7 +773,7 @@
       roster: roster, scoring: scoring, numTeams: numTeams
     });
     state.league.detectedFrom = (det.rosterText || window.__hcRosterText)
-      ? 'room' : 'fallback';
+      ? 'room' : (isMock ? 'fallback' : (override === 'config' ? 'override' : (namedOurs ? 'league name' : 'config')));
     state.league.rosterText = rosterText;
     // teach the advisor how many picks this league actually has
     if (window.HarveyCup && window.HarveyCup.setRosterSize) {
