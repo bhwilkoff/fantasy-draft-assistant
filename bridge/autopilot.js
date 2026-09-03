@@ -36,6 +36,43 @@
     }
   } catch (e) {}
 
+  /* ---------------------------------------------------------- stall watch
+   * Mock 10601647 (2026-09-03): the renderer froze for 70-180 s on each of
+   * our turns with the 20 s override window open, even though the window
+   * is quiet time (DECISIONS 023) -- the page itself must say when it
+   * stalls and what was running. Two instruments, both persisted with the
+   * log: a heartbeat that records every gap over 1.5 s between two 250 ms
+   * timer ticks (with the tab's visibility, so a throttled hidden tab is not
+   * mistaken for a freeze), and the browser's own long-task entries with
+   * their attribution. */
+  window.__hcStalls = window.__hcStalls || [];
+  window.__hcLongTasks = window.__hcLongTasks || [];
+  if (!window.__hcStallWatch) {
+    window.__hcStallWatch = true;
+    var hbLast = Date.now();
+    setInterval(function () {
+      var now = Date.now(), gap = now - hbLast; hbLast = now;
+      if (gap > 1500) {
+        var AA = window.__hcAuto || {};
+        window.__hcStalls.push({ at: now - gap, gap: gap, vis: document.visibilityState,
+          title: String(document.title).slice(0, 24), upIn: AA.last && AA.last.upIn,
+          pick: AA.last && AA.last.pick, win: AA.draftWindowLeft || 0, pass: AA.passSeq || 0 });
+        if (window.__hcStalls.length > 80) window.__hcStalls.shift();
+      }
+    }, 250);
+    try {
+      new PerformanceObserver(function (l) {
+        l.getEntries().forEach(function (e) {
+          if (e.duration < 300) return;
+          var a = (e.attribution && e.attribution[0]) || {};
+          window.__hcLongTasks.push({ t: Math.round(performance.timeOrigin + e.startTime), d: Math.round(e.duration),
+            c: [a.containerType, a.containerName, a.containerSrc].filter(Boolean).join(':').slice(0, 80) });
+          if (window.__hcLongTasks.length > 120) window.__hcLongTasks.shift();
+        });
+      }).observe({ type: 'longtask', buffered: true });
+    } catch (e) {}
+  }
+
   var RELAY = 'http://127.0.0.1:8830';
   var LOG_KEY = 'hcAutopilotLog';
   var A = window.__hcAuto = {
@@ -1084,7 +1121,8 @@
     try {
       localStorage.setItem(LOG_KEY, JSON.stringify({
         room: location.pathname, log: A.log.slice(-260),
-        picks: A.picks, queued: A.queued, last: A.last, savedAt: Date.now()
+        picks: A.picks, queued: A.queued, last: A.last, savedAt: Date.now(),
+        stalls: (window.__hcStalls || []).slice(-80), longTasks: (window.__hcLongTasks || []).slice(-120)
       }));
     } catch (e) { /* quota or private mode: the draft still runs */ }
   }
@@ -1209,6 +1247,7 @@
         + '/avg' + (A.passCount ? Math.round(A.passTotal / A.passCount) : 0) + '/every' + A.RATE_MS,
       'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ' pre:' + (A.preMs == null ? '?' : A.preMs + 'ms') + ' reconcile:' + (A.reconcileMs == null ? '?' : A.reconcileMs + 'ms') + ' seq:' + (A.seqMs == null ? '?' : A.seqMs + 'ms') + ']',
       'dialogs=' + ((window.__hcDialogs || []).length),
+      'stalls=' + ((window.__hcStalls || []).length) + (window.__hcStalls && window.__hcStalls.length ? '/max' + Math.round(Math.max.apply(null, window.__hcStalls.map(function (x) { return x.gap; })) / 1000) + 's' : ''),
       A.blind ? 'BLIND=' + A.blind : '',
       A.blindRecoveries ? 'recovered=' + A.blindRecoveries : '',
       A.filterFixes ? 'filterfix=' + A.filterFixes : '',
