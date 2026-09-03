@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T02:24:04+00:00",
+  "generated_at": "2026-09-03T16:27:53+00:00",
   "league": {
     "id": 539156,
     "name": "Harvey Cup",
@@ -46,10 +46,10 @@
     "config": "league.json"
   },
   "replacement_points": {
-    "QB": 356.81,
-    "RB": 157.08,
+    "QB": 356.8,
+    "RB": 157.2,
     "WR": 155.19,
-    "TE": 153.31,
+    "TE": 153.55,
     "K": 138.41,
     "DEF": 96.65
   },
@@ -68,8 +68,8 @@
       "fetched": "2026-09-03",
       "players_checked": 360
     },
-    "injuries": "Sleeper (280 statuses)",
-    "adp": "FantasyFootballCalculator PPR 12-team, 8007 drafts 2026-08-26..2026-09-02"
+    "injuries": "Sleeper (279 statuses)",
+    "adp": "FantasyFootballCalculator PPR 12-team, 7848 drafts 2026-08-27..2026-09-03"
   },
   "player_count": 531
 }
