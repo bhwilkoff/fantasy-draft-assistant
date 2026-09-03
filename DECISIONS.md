@@ -456,3 +456,26 @@ while Yahoo is animating our turn.
 autopilot; `window=20s(N left)` in `__hcStatus()` shows the countdown.
 The panel's "autopilot pass N" line proves it is rendering the
 autopilot's result rather than its own.
+
+## 024 — The window's end is a deadline, not a hope
+
+**Rule:** the moment our turn opens with the override window on, the
+autopilot arms a timer for the window's exact end (a blob Web Worker,
+which Chrome does not throttle in a hidden tab; plain `setTimeout` if the
+page's CSP refuses the worker) and that timer forces a pass, then another
+every second until the click is recorded or the turn has passed.
+
+**Why:** a pass ran only when the DOM changed or the 15 s backstop fired.
+On our turn Yahoo changes almost nothing in the DOM (the clock is a text
+change, which the observer ignores on purpose), so once the window closed
+nothing woke the click until the backstop -- and a tab in the background
+has that backstop throttled to once a minute. In mock 10603061 the click
+landed with five seconds left and Yahoo answered "the pick you are trying
+to make is not the current pick"; the queue had already taken the right
+player, which is what the queue is for, but the click is the mechanism.
+The quiet window (023) made this worse, not better: with no passes inside
+the window there was nothing to notice its end.
+
+**How to apply:** `deadline=worker/armedN/firedM` in `__hcStatus()`; a
+click should now be recorded within a second of `hcDraftDelay` elapsing.
+A user watching the real draft sees the click at 20 s, not at 55.
