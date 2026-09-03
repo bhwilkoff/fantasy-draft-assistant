@@ -25,6 +25,7 @@ degrades.
 | 14 | 10511947 | 12 | 12 | Tampermonkey, before pick 1 | **1 / 12** | 1709.1 | 1642.8 (2nd) | 236.4 |
 | 15 | 10513354 | 12 | 2 | Tampermonkey, pick 10 (room started early) | **3 / 12** | 1859.1 | 2026.4 | 632.4 |
 | 16 | 10515116 | 12 | 5 | Tampermonkey, before pick 1 | **7 / 12** | 1686.5 | 1739.6 | 204.5 |
+| 17 | 10672228 (Harvey Cup instant mock, 3 rounds) | 12 | 7 | Tampermonkey, before pick 1 | 3 of 3 exact | — | — | — |
 
 ## Draft 1 — room 10188821, 2026-08-30
 
@@ -638,3 +639,25 @@ Roster: `QB Allen, Purdy · RB Taylor, J. Williams, Judkins, Gainwell · WR
 Evans, Sutton, Worthy, Samuel, Boston · TE LaPorta, Kelce · K Myers · DEF
 Broncos`. Report: `data/mocks/reports/10515116.md`; bundle:
 `data/mocks/harvests/10515116.json`.
+
+
+## Draft 17 — Yahoo's instant mock of Harvey Cup (room 10672228, slot 7, 3 rounds free), 2026-09-02
+
+The dress rehearsal on our own league's settings: snake, one-minute
+clock, 12 teams, 17 rounds, simulated opponents, and Yahoo put us in
+slot 7. Run with the real-room flags forced on (`hcDraftDelay` 20,
+`hcAssumeAutodraft` 1). All three picks were the recommendation, each
+clicked by the autopilot after the 20-second override window ran down
+(Taylor 7, Pickens 18, Nabers 31); every opponent seat was modelled as
+autodraft until seat 6 burned clock and was re-classified. The new
+per-source line showed on every pick (ESPN / Sleeper / CBS / Sharks and
+the Yahoo delta). The preview ends after three rounds and the offer was
+one-time.
+
+**What it found:** the room runs under a fresh mock id, so the overlay
+treated it as a Yahoo mock and used Yahoo's default scoring -- the
+roster size did self-correct to 17 from the Results tab, the scoring did
+not. The room header says "Harvey Cup - Mock Draft", so the overlay now
+recognises the configured league by name in any room, and
+`localStorage.hcLeagueOverride` ('config' | 'mock') forces it either way.
+Not yet seen in a room; mock 18 runs with the override on.
