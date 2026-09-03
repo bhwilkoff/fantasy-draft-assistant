@@ -434,11 +434,13 @@
       var clock = st.clock;
       if (!clock) {
         /* the status reader's clock is null on our own turn (the timer is
-         * not inside the "Round R, Pick P" element it caches); read it
-         * from the room header directly -- textContent, no layout */
-        var host = document.querySelector('#root, #app, [data-reactroot]') || document.body;
-        var cm = ((host && host.textContent) || '').match(/\b(\d{1,2}):(\d{2})\b/);
-        if (cm) clock = cm[1] + ':' + cm[2];
+         * not inside the "Round R, Pick P" element it caches). The timer is
+         * a leaf span reading "00:45"; find it directly. Only runs on our
+         * turn when the recommendation's button is missing. */
+        var leaf = [].slice.call(document.querySelectorAll('span,div,time')).filter(function (x) {
+          return x.children.length <= 2 && /^\d{1,2}:\d{2}$/.test((x.textContent || '').trim());
+        })[0];
+        if (leaf) clock = leaf.textContent.trim();
       }
       var secs = clock ? (+clock.split(':')[0]) * 60 + (+clock.split(':')[1]) : null;
       A.draftClock = clock || 'unknown';
@@ -677,7 +679,13 @@
       var m = HC.lookup(idx, r.name, r.pos, r.team, r.adp);
       if (m.player) {
         m.player.xrank = r.xrank;   // Yahoo's rank, for modelling autodrafters
-        pool.push(m.player); yidOf[m.player.name] = r.yid;
+        pool.push(m.player);
+        /* One projection-set player, one Yahoo id -- and only from a row of
+         * the same position. Mock 10526391 pick 133: a row at another
+         * position resolved to "Broncos D/ST" and overwrote the defense's
+         * id with a player id that was on no row, so the Draft click had
+         * nothing to find and the ladder took plan entry 3. */
+        if (yidOf[m.player.name] == null || r.pos === m.player.pos) yidOf[m.player.name] = r.yid;
       }
       else unmatched++;
     });
