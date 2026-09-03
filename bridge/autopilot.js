@@ -388,6 +388,25 @@
    * if the pick is still open when the window closes. Mocks: 0. */
   A.DRAFT_DELAY = IN_REAL_ROOM ? 20 : 0;
   try { var dd = localStorage.getItem('hcDraftDelay'); if (dd != null && dd !== '' && !isNaN(+dd)) A.DRAFT_DELAY = +dd; } catch (e) {}
+  /* The window can never leave less than CLOCK_MARGIN seconds on the room's
+   * clock. Yahoo's lobby mocks run a 30-second clock (mock 10603061: the
+   * slowest of 97 opponent picks was 32 s); Harvey Cup's is 60. A 20 s
+   * window on a 30 s clock put our click at 21-30 s and Yahoo answered
+   * "not the current pick" once. The clock is read from the header timer on
+   * the first pass of our turn; if it cannot be read, the configured window
+   * stands (the real room's clock is known to be 60 s). */
+  A.CLOCK_MARGIN = 15;
+  A.windowFor = A.windowFor || {};
+  function windowSeconds(pick, st) {
+    if (A.windowFor[pick] != null) return A.windowFor[pick];
+    var w = A.DRAFT_DELAY, c = st && st.clock;
+    if (c && /^\d{1,2}:\d{2}$/.test(c)) {
+      var secs = (+c.split(':')[0]) * 60 + (+c.split(':')[1]);
+      if (secs > 0) w = Math.max(0, Math.min(w, secs - A.CLOCK_MARGIN));
+      A.windowFor[pick] = w; A.clockAtTurn = c;
+    }
+    return w;   // unreadable clock: not cached, try again next pass
+  }
   /* ASSUME AUTODRAFT UNTIL PROVEN HUMAN. Harvey Cup is a new family league
    * where most managers are expected not to show up; a seat that has not
    * yet burned clock on any pick is modelled as Yahoo's autodraft (its
@@ -464,8 +483,9 @@
     A.onClockSince = A.onClockSince || {};
     if (!A.onClockSince[cur]) A.onClockSince[cur] = Date.now();
     var waited = (Date.now() - A.onClockSince[cur]) / 1000;
-    if (A.DRAFT_DELAY > 0 && waited < A.DRAFT_DELAY) {
-      A.draftWindowLeft = Math.ceil(A.DRAFT_DELAY - waited);
+    var winC = windowSeconds(cur, st);
+    if (winC > 0 && waited < winC) {
+      A.draftWindowLeft = Math.ceil(winC - waited);
       return;
     }
     A.draftWindowLeft = 0;
@@ -730,10 +750,11 @@
         A.onClockSince = A.onClockSince || {};
         if (!A.onClockSince[st.pick]) A.onClockSince[st.pick] = Date.now();
         var waitedW = (Date.now() - A.onClockSince[st.pick]) / 1000;
-        if (waitedW < A.DRAFT_DELAY && A.draftClickedPick !== st.pick) {
-          A.draftWindowLeft = Math.ceil(A.DRAFT_DELAY - waitedW);
+        var winW = windowSeconds(st.pick, st);
+        if (waitedW < winW && A.draftClickedPick !== st.pick) {
+          A.draftWindowLeft = Math.ceil(winW - waitedW);
           A.windowSkips = (A.windowSkips || 0) + 1;
-          armDeadline(st.pick, Math.max(0, A.DRAFT_DELAY * 1000 - (Date.now() - A.onClockSince[st.pick])));
+          armDeadline(st.pick, Math.max(0, winW * 1000 - (Date.now() - A.onClockSince[st.pick])));
           return;
         }
       }
@@ -1294,6 +1315,7 @@
         + '/avg' + (A.passCount ? Math.round(A.passTotal / A.passCount) : 0) + '/every' + A.RATE_MS,
       'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ' pre:' + (A.preMs == null ? '?' : A.preMs + 'ms') + ' reconcile:' + (A.reconcileMs == null ? '?' : A.reconcileMs + 'ms') + ' seq:' + (A.seqMs == null ? '?' : A.seqMs + 'ms') + ']',
       'dialogs=' + ((window.__hcDialogs || []).length),
+      'clockAtTurn=' + (A.clockAtTurn || '-'),
       'deadline=' + (A.deadlineVia || '-') + '/armed' + (A.deadlineArmed || 0) + '/fired' + (A.deadlineFires || 0),
       'stalls=' + ((window.__hcStalls || []).length) + (window.__hcStalls && window.__hcStalls.length ? '/max' + Math.round(Math.max.apply(null, window.__hcStalls.map(function (x) { return x.gap; })) / 1000) + 's' : ''),
       A.blind ? 'BLIND=' + A.blind : '',

@@ -736,3 +736,54 @@ Roster (Yahoo's picks 1-9 for the seat from our queue, then ours): `RB
 Achane, C. Brown, Pollard · WR Rice, G. Wilson, McLaurin, Sutton · TE
 Fannin, Goedert, Ferguson · QB Prescott · DEF Broncos · K Myers`. The
 saved log is in localStorage on the Yahoo origin as `hcSavedLog_10601647`.
+
+
+## Draft 20 — room 10603061 (12-team, slot 4, twelve humans), real-room flags, 2026-09-03
+
+**2nd of 12 on Yahoo's projections, 1707.4 to Cj's 1739.0**, graded at 100%
+coverage; every one of the fourteen picks after we entered was the exact
+recommendation, drafted by our own click (Yahoo took J. Chase at 4 before
+we were in: slot 7 was taken in the last seconds of the lobby and the
+waiting room's countdown had frozen in a background tab). Run with
+`hcDraftDelay` 20 and `hcAssumeAutodraft` 1 against a room of twelve
+humans (two seats were later re-classified as autodrafting from their
+2-3 s medians). No tool call was sent into the draft tab during any of
+our turns; the page's own stall recorder saw nothing over 3 s while the
+tab was visible.
+
+Roster: `QB Allen, Dart · RB Skattebo, Judkins, Monangai, A. Jones · WR
+Chase, Evans, Sutton, Samuel, Shakir · TE McBride, Fannin · K Myers · DEF
+Broncos`. QB, TE and K graded 1st; RB 12th. Report:
+`data/mocks/reports/10603061.yahoo.md`; bundle and both autopilot logs in
+`data/mocks/harvests/`.
+
+What it found, by click time after the previous pick landed:
+
+| picks | code | click landed at |
+|---|---|---|
+| 21, 28, 45, 52, 69, 76 | before the reload | 23.3, 20.7, 23.6, **29.7**, 26.8, 22.6 s |
+| 93, 100, 117, 124, 141, 148, 165, 172 | deadline timer (DECISIONS 024) | 20.6, 21.1, 21.6, 20.1, 20.1, 21.1, 21.8, 21.7 s |
+
+* **The room's clock is 30 seconds, not 60.** The slowest of 97 opponent
+  picks took 32 s. A 20 s window on a 30 s clock put the click at 21-30 s;
+  the user watched it land with five seconds left, and at pick 52 Yahoo
+  answered "the pick you are trying to make is not the current pick"
+  while its clock drafted Judkins from our queue. Harvey Cup's clock is
+  60 s (`config/league.json`), so the real room keeps 40 s of margin --
+  but the window is now capped at the room's clock minus 15 s, read from
+  the header timer on the first pass of our turn (`clockAtTurn=` in the
+  status line), so no room can be left with less.
+* **After the window closed, nothing woke the click.** A pass ran only on
+  a DOM change or the 15 s backstop, and a hidden tab throttles the
+  backstop to once a minute. The window's end is now a deadline: a blob
+  Worker timer forces a pass at the exact end and every second after until
+  the click is recorded (DECISIONS 024). Armed 8, fired 8.
+* The reload mid-draft (with 15 picks to spare) re-armed through
+  Tampermonkey and restored all six clicked picks from the persisted log.
+* Long tasks attributed to the page itself: 0.5-1.1 s around each click,
+  which is Yahoo's re-render plus our pass; nothing else.
+
+Open: the clock capture in the audit log still read null at pick 93 (the
+re-arm may have fetched the previous bridge from the Pages cache); and
+Jaxson Dart at 100 as a second quarterback with RB graded 12th is worth a
+look at `BENCH_DISCOUNT.QB` under Yahoo-default scoring.
