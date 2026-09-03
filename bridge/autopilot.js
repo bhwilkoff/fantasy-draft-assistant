@@ -393,6 +393,31 @@
     };
     return null;
   }
+  /* Second locator: by the room's short name. "Travis Kelce" renders as
+   * "T. Kelce", "Broncos D/ST" as "Broncos"; the row's player cell starts
+   * with that. Used when the id map has no button for the recommendation
+   * (mock 10526391, picks 133 and 157: the id on file was on no row). */
+  function draftButtonForName(name, pos) {
+    var short;
+    if (pos === 'DEF') short = String(name).replace(/\s*D\/ST$/i, '').trim().toLowerCase();
+    else {
+      var w = String(name).trim().split(/\s+/);
+      short = (w[0].charAt(0) + '. ' + w.slice(1).join(' ')).toLowerCase();
+    }
+    var btns = [].slice.call(document.querySelectorAll('button'))
+      .filter(function (b) { return /^\s*draft\s*$/i.test(T(b)); });
+    for (var i = 0; i < btns.length; i++) {
+      var row = btns[i];
+      while (row && row.querySelectorAll('.ys-player[data-id]').length < 1 && row.parentElement) row = row.parentElement;
+      if (!row) continue;
+      var pes = row.querySelectorAll('.ys-player[data-id]');
+      if (pes.length !== 1) continue;
+      var t = (pes[0].textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      if (t.indexOf(short) === 0) return btns[i];
+    }
+    return null;
+  }
+
   function draftClick(st, res, yidOf, slot, cur) {
     if (A.DRAFT_CLICK === false) return;
     if (st.upIn !== 0) return;                       // not on the clock
@@ -410,8 +435,17 @@
     var rec = res.recommendation;
     if (!rec) return;
     var yid = yidOf[rec.name];
-    if (!yid) { A.draftMiss = 'no yid for ' + rec.name; return; }
+    if (!yid) {
+      var bn = draftButtonForName(rec.name, rec.pos);
+      if (!bn) { A.draftMiss = 'no yid for ' + rec.name; return; }
+      bn.click();
+      A.draftClickedPick = cur; A.draftMiss = null;
+      A.draftClicks = (A.draftClicks || 0) + 1;
+      A.draftLog = (A.draftLog || []).concat([cur + ' ' + rec.name + ' (by name)']);
+      return;
+    }
     var b = draftButtonFor(yid), via = rec.name;
+    if (!b) { b = draftButtonForName(rec.name, rec.pos); if (b) via = rec.name + ' (by name)'; }
     if (!b) {
       /* THE CLOCK MUST NEVER EXPIRE: one missed clock puts the seat into
        * Yahoo's auto-pick mode for the rest of the draft (mock 10510897,
