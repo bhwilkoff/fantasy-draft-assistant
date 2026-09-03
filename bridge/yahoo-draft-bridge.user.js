@@ -589,12 +589,21 @@
       }
       // per-source disagreement: one forecaster's optimism is information,
       // not valuation (DECISIONS 016)
-      if (full && full.points_sleeper != null && full.points_espn != null) {
-        var gap = full.points_espn - full.points_sleeper;
-        why.push('ESPN ' + Math.round(full.points_espn) + ' / Sleeper '
-          + Math.round(full.points_sleeper)
-          + (Math.abs(gap) >= 25 ? ' <span class="warn">(sources split by '
-             + Math.round(Math.abs(gap)) + ')</span>' : ''));
+      if (full && full.points_espn != null) {
+        var srcs = [['ESPN', full.points_espn], ['Sleeper', full.points_sleeper],
+                    ['CBS', full.points_cbs], ['Sharks', full.points_sharks]]
+          .filter(function (x) { return x[1] != null; });
+        var vals = srcs.map(function (x) { return x[1]; });
+        var spread = vals.length > 1 ? Math.max.apply(null, vals) - Math.min.apply(null, vals) : 0;
+        var line = srcs.map(function (x) { return x[0] + ' ' + Math.round(x[1]); }).join(' / ')
+          + (spread >= 30 ? ' <span class="warn">(sources split by ' + Math.round(spread) + ')</span>' : '');
+        if (full.points_yahoo != null && full.yahoo_delta != null) {
+          var pct = Math.round(full.yahoo_delta * 100);
+          line += ' · Yahoo ' + Math.round(full.points_yahoo)
+            + (Math.abs(pct) >= 15 ? ' <span class="warn">(we are ' + (pct > 0 ? '+' : '') + pct + '% vs Yahoo)</span>'
+                                   : ' (' + (pct > 0 ? '+' : '') + pct + '%)');
+        }
+        why.push(line);
       }
       if (full && full.injury && String(full.injury).toLowerCase() !== 'active') {
         // the body part is the part a multiplier cannot interpret

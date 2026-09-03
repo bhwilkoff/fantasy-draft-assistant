@@ -24,6 +24,8 @@ import espn as espn_src
 import ffc as ffc_src
 import sleeper as sleeper_src
 import sleeper_proj as sleeper_proj_src
+import cbs as cbs_src
+import fantasysharks as sharks_src
 
 OUT_DIR = os.path.join(os.path.dirname(HERE), "data")
 
@@ -60,11 +62,58 @@ def build():
     except Exception as exc:   # a second source is an improvement, never a dependency
         print(f"  UNAVAILABLE ({exc}); building from ESPN alone")
         sproj_rows = []
-    sproj_by_key, sproj_by_sur = {}, {}
-    for r in sproj_rows:
-        sproj_by_key[names.key(r["name"], r["pos"], r["team"])] = r
-        sproj_by_sur.setdefault(names.surname_key(r["name"], r["pos"]), []).append(r)
     print(f"  {len(sproj_rows)} players")
+
+    # Third and fourth stat-line sources (DECISIONS 022). Each is an
+    # improvement, never a dependency: a source that fails to fetch is
+    # simply absent from the blend for this build.
+    extra_sources = [("sleeper", sproj_rows)]
+    for label, mod in (("cbs", cbs_src), ("sharks", sharks_src)):
+        print(f"fetching {label} projections ...")
+        try:
+            rows = mod.normalize(mod.fetch())
+            print(f"  {len(rows)} players")
+        except Exception as exc:
+            print(f"  UNAVAILABLE ({exc})")
+            rows = []
+        extra_sources.append((label, rows))
+    src_index = {}
+    for label, rows in extra_sources:
+        by_key, by_sur = {}, {}
+        for r in rows:
+            by_key[names.key(r["name"], r["pos"], r["team"])] = r
+            by_sur.setdefault(names.surname_key(r["name"], r["pos"]), []).append(r)
+        src_index[label] = (by_key, by_sur)
+
+    # Yahoo's own projections, scored by Yahoo under THIS league's rules,
+    # read from the league's player list (tools/yahoo_proj_scrape.js). Not
+    # a peer source: a bias check. The blend moves toward Yahoo's number by
+    # yahoo_bias_weight (config), and the disagreement is recorded so the
+    # panel and tools/bias_report.py can show where we are the outlier.
+    yahoo_by_key, yahoo_by_sur, yahoo_meta = {}, {}, None
+    ypath = os.path.join(OUT_DIR, "sources", "yahoo_league_proj.json")
+    if os.path.exists(ypath):
+        with open(ypath) as f:
+            ydoc = json.load(f)
+        yahoo_meta = {k: v for k, v in ydoc.items() if k != "players"}
+        for r in ydoc["players"]:
+            yahoo_by_key[names.key(r["name"], r["pos"], r["team"])] = r
+            yahoo_by_sur.setdefault(names.surname_key(r["name"], r["pos"]), []).append(r)
+        print(f"Yahoo league projections: {len(ydoc['players'])} players, fetched {yahoo_meta.get('fetched')}")
+    yahoo_w = float(L.CONFIG.get("sources", {}).get("yahoo_bias_weight", 0.2))
+    kdef_w = float(L.CONFIG.get("sources", {}).get("kdef_yahoo_weight", 0.5))
+
+    def find_in(by_key, by_sur, e):
+        r = by_key.get(names.key(e["name"], e["pos"], e["team"]))
+        if r is not None:
+            return r
+        bucket = by_sur.get(names.surname_key(e["name"], e["pos"]), [])
+        same = [x for x in bucket
+                if names.clean_team(x["team"]) == names.clean_team(e["team"])
+                and names.first_names_compatible(
+                    names.parse_name(x["name"])[0],
+                    names.parse_name(e["name"])[0])]
+        return same[0] if len(same) == 1 else None
 
     print("fetching FFC ADP ...")
     ffc_rows, ffc_meta = ffc_src.normalize(ffc_src.fetch(fmt="ppr", teams=12))
@@ -106,35 +155,51 @@ def build():
         if m:
             matched += 1
 
-        # Consensus projection: blend Sleeper's stat line with ESPN's, stat by
-        # stat, before scoring (DECISIONS 016). Each source keeps its own
-        # scored total so the overlay can show the disagreement.
-        sp = sproj_by_key.get(k)
-        if sp is None:
-            bucket = sproj_by_sur.get(names.surname_key(e["name"], e["pos"]), [])
-            same = [r for r in bucket
-                    if names.clean_team(r["team"]) == names.clean_team(e["team"])
-                    and names.first_names_compatible(
-                        names.parse_name(r["name"])[0],
-                        names.parse_name(e["name"])[0])]
-            if len(same) == 1:
-                sp = same[0]
+        # Consensus projection: blend every source's stat line with ESPN's,
+        # stat by stat, before scoring (DECISIONS 016, 022). Each stat is
+        # the mean over the sources that publish it; each source keeps its
+        # own scored total so the overlay can show the disagreement.
         points_espn = scoring.score_player(e)
-        points_sleeper = None
-        if sp and e["pos"] in ("QB", "RB", "WR", "TE"):
-            blended = dict(e["stats"])
-            keys = set(k2 for k2 in e["stats"]) | set(sp["stats"])
-            for k2 in keys:
-                if k2 in ("games",):
+        per_source = {}
+        matched_rows = []
+        if e["pos"] in ("QB", "RB", "WR", "TE"):
+            for label, (by_key, by_sur) in src_index.items():
+                r = find_in(by_key, by_sur, e)
+                if r is None:
                     continue
-                a = e["stats"].get(k2, 0.0)
-                b = sp["stats"].get(k2, 0.0)
-                blended[k2] = (a + b) / 2.0
-            points_sleeper = scoring.score_player({"pos": e["pos"], "stats": sp["stats"]})
+                matched_rows.append((label, r))
+                per_source[label] = scoring.score_player({"pos": e["pos"], "stats": r["stats"]})
+        if matched_rows:
+            lines = [e["stats"]] + [r["stats"] for _, r in matched_rows]
+            keys = set()
+            for ln in lines:
+                keys |= set(ln)
+            blended = {}
+            for k2 in keys:
+                if k2 == "games":
+                    blended[k2] = e["stats"].get("games", 0.0)
+                    continue
+                vals = [ln[k2] for ln in lines if k2 in ln]
+                blended[k2] = sum(vals) / len(vals)
             e = dict(e)
             e["stats_espn"] = dict(e["stats"])
             e["stats"] = blended
         raw_pts = scoring.score_player(e)
+        points_blend = raw_pts
+        # Yahoo bias check (all positions, K and DEF included)
+        yr = find_in(yahoo_by_key, yahoo_by_sur, e) if yahoo_by_key else None
+        points_yahoo = yr["points"] if yr and yr.get("points") is not None else None
+        yahoo_delta = None
+        if points_yahoo:
+            yahoo_delta = round((points_blend - points_yahoo) / points_yahoo, 3)
+            if e["pos"] in ("K", "DEF"):
+                # ESPN is the only stat-line source for kickers and defenses,
+                # and its kicker lines run ~30% hot (35 field goals a season
+                # for the top men against Yahoo's 26). Yahoo's number, scored
+                # under these rules, is a genuine second source here.
+                raw_pts = points_blend + kdef_w * (points_yahoo - points_blend)
+            else:
+                raw_pts = points_blend + yahoo_w * (points_yahoo - points_blend)
 
         # Sleeper's status is timestamped and tracks to within the hour;
         # ESPN's moves only when ESPN rebuilds projections. Prefer Sleeper,
@@ -181,8 +246,13 @@ def build():
             "stats": {k2: round(v, 2) for k2, v in e["stats"].items()},
             "breakdown": scoring.explain(e),
             "points_espn": round(points_espn, 2),
-            "points_sleeper": None if points_sleeper is None else round(points_sleeper, 2),
-            "sources": 2 if points_sleeper is not None else 1,
+            "points_sleeper": None if per_source.get("sleeper") is None else round(per_source["sleeper"], 2),
+            "points_cbs": None if per_source.get("cbs") is None else round(per_source["cbs"], 2),
+            "points_sharks": None if per_source.get("sharks") is None else round(per_source["sharks"], 2),
+            "points_blend": round(points_blend, 2),
+            "points_yahoo": None if points_yahoo is None else round(points_yahoo, 2),
+            "yahoo_delta": yahoo_delta,
+            "sources": 1 + len(per_source),
         })
     print(f"  matched ADP for {matched}/{len(players)} "
           f"({ambiguous} surname collisions refused)")
@@ -236,10 +306,16 @@ def build():
         "replacement_points": {k: round(v, 2) for k, v in levels.items()},
         "starters_consumed": counts,
         "sources": {
-            "projections": ("consensus of ESPN kona_player_info + Sleeper "
+            "projections": ("consensus of ESPN + Sleeper + CBS + FantasySharks "
                             "(raw stats blended per stat, re-scored); "
-                            f"{sum(1 for p in players if p.get('sources') == 2)} "
-                            "players with both, K/DEF ESPN-only"),
+                            + ", ".join(f"{n} players with {n_src} sources" for n_src, n in sorted(
+                                {k: sum(1 for p in players if p.get('sources') == k)
+                                 for k in set(p.get('sources') for p in players)}.items()))
+                            + "; K/DEF ESPN-only"),
+            "yahoo_bias_check": (None if not yahoo_meta else {
+                "weight": yahoo_w, "fetched": yahoo_meta.get("fetched"),
+                "players_checked": sum(1 for p in players if p.get("points_yahoo") is not None),
+            }),
             "injuries": f"Sleeper ({n_inj} statuses)",
             "adp": f"FantasyFootballCalculator PPR 12-team, "
                    f"{ffc_meta.get('total_drafts')} drafts "

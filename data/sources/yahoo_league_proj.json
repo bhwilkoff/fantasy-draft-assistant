@@ -1,0 +1,7495 @@
+{
+"source": "yahoo_league_players_page",
+"league_id": "539156",
+"scoring": "Harvey Cup (Yahoo scored)",
+"fetched": "2026-09-02",
+"players": [
+{
+"name": "Josh Allen",
+"team": "BUF",
+"pos": "QB",
+"bye": 7.0,
+"points": 385.0,
+"yahoo_rank": 32.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3606.0,
+"pass_td": 25.8,
+"pass_int": 9.7,
+"rush_att": 103.0,
+"rush_yd": 511.0,
+"rush_td": 7.6,
+"two_pt": 2.1,
+"fum_lost": 2.6
+}
+},
+{
+"name": "Lamar Jackson",
+"team": "BAL",
+"pos": "QB",
+"bye": 13.0,
+"points": 361.0,
+"yahoo_rank": 50.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"pass_yd": 3450.0,
+"pass_td": 26.3,
+"pass_int": 9.7,
+"rush_att": 107.0,
+"rush_yd": 564.0,
+"rush_td": 3.5,
+"two_pt": 1.5,
+"fum_lost": 2.7
+}
+},
+{
+"name": "Drake Maye",
+"team": "NE",
+"pos": "QB",
+"bye": 11.0,
+"points": 357.0,
+"yahoo_rank": 61.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3820.0,
+"pass_td": 26.1,
+"pass_int": 9.8,
+"rush_att": 87.0,
+"rush_yd": 433.0,
+"rush_td": 2.7,
+"two_pt": 1.5,
+"fum_lost": 2.5
+}
+},
+{
+"name": "Joe Burrow",
+"team": "CIN",
+"pos": "QB",
+"bye": 6.0,
+"points": 356.0,
+"yahoo_rank": 63.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"pass_yd": 4087.0,
+"pass_td": 30.0,
+"pass_int": 10.4,
+"rush_att": 42.8,
+"rush_yd": 151.0,
+"rush_td": 1.7,
+"two_pt": 1.6,
+"fum_lost": 2.7
+}
+},
+{
+"name": "Jalen Hurts",
+"team": "PHI",
+"pos": "QB",
+"bye": 10.0,
+"points": 353.0,
+"yahoo_rank": 66.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3425.0,
+"pass_td": 22.7,
+"pass_int": 8.1,
+"rush_att": 105.0,
+"rush_yd": 452.0,
+"rush_td": 7.4,
+"two_pt": 1.6,
+"fum_lost": 2.8
+}
+},
+{
+"name": "Dak Prescott",
+"team": "DAL",
+"pos": "QB",
+"bye": 14.0,
+"points": 350.0,
+"yahoo_rank": 78.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 4092.0,
+"pass_td": 28.5,
+"pass_int": 10.4,
+"rush_att": 45.2,
+"rush_yd": 173.0,
+"rush_td": 1.8,
+"two_pt": 1.6,
+"fum_lost": 2.6
+}
+},
+{
+"name": "Jahmyr Gibbs",
+"team": "DET",
+"pos": "RB",
+"bye": 6.0,
+"points": 350.0,
+"yahoo_rank": 1.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 281.0,
+"rush_yd": 1386.0,
+"rush_td": 12.9,
+"targets": 80.7,
+"rec": 63.3,
+"rec_yd": 516.0,
+"rec_td": 3.2,
+"two_pt": 1.0,
+"fum_lost": 1.1
+}
+},
+{
+"name": "Jayden Daniels",
+"team": "WAS",
+"pos": "QB",
+"bye": 7.0,
+"points": 349.0,
+"yahoo_rank": 65.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3374.0,
+"pass_td": 23.2,
+"pass_int": 9.0,
+"rush_att": 118.0,
+"rush_yd": 621.0,
+"rush_td": 4.2,
+"two_pt": 1.2,
+"fum_lost": 2.8
+}
+},
+{
+"name": "Bijan Robinson",
+"team": "ATL",
+"pos": "RB",
+"bye": 11.0,
+"points": 345.0,
+"yahoo_rank": 2.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 290.0,
+"rush_yd": 1348.0,
+"rush_td": 9.8,
+"targets": 86.7,
+"rec": 67.6,
+"rec_yd": 632.0,
+"rec_td": 3.7,
+"two_pt": 1.0,
+"fum_lost": 1.6
+}
+},
+{
+"name": "Caleb Williams",
+"team": "CHI",
+"pos": "QB",
+"bye": 10.0,
+"points": 338.0,
+"yahoo_rank": 71.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3531.0,
+"pass_td": 26.0,
+"pass_int": 8.1,
+"rush_att": 70.8,
+"rush_yd": 356.0,
+"rush_td": 2.5,
+"two_pt": 1.5,
+"fum_lost": 2.4
+}
+},
+{
+"name": "Trevor Lawrence",
+"team": "JAX",
+"pos": "QB",
+"bye": 7.0,
+"points": 335.0,
+"yahoo_rank": 80.0,
+"pct_rostered": 95.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3718.0,
+"pass_td": 24.6,
+"pass_int": 11.4,
+"rush_att": 69.8,
+"rush_yd": 305.0,
+"rush_td": 3.8,
+"two_pt": 1.1,
+"fum_lost": 2.5
+}
+},
+{
+"name": "Bo Nix",
+"team": "DEN",
+"pos": "QB",
+"bye": 10.0,
+"points": 333.0,
+"yahoo_rank": 102.0,
+"pct_rostered": 93.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3686.0,
+"pass_td": 25.3,
+"pass_int": 10.9,
+"rush_att": 68.4,
+"rush_yd": 292.0,
+"rush_td": 2.9,
+"two_pt": 1.5,
+"fum_lost": 2.4
+}
+},
+{
+"name": "Ja'Marr Chase",
+"team": "CIN",
+"pos": "WR",
+"bye": 6.0,
+"points": 332.0,
+"yahoo_rank": 3.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 3.7,
+"rush_yd": 19.4,
+"rush_td": 0.1,
+"targets": 172.0,
+"rec": 121.0,
+"rec_yd": 1444.0,
+"rec_td": 10.6,
+"two_pt": 0.7,
+"fum_lost": 0.3
+}
+},
+{
+"name": "Jared Goff",
+"team": "DET",
+"pos": "QB",
+"bye": 6.0,
+"points": 329.0,
+"yahoo_rank": 118.0,
+"pct_rostered": 85.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 4020.0,
+"pass_td": 28.1,
+"pass_int": 9.7,
+"rush_att": 24.5,
+"rush_yd": 64.5,
+"rush_td": 0.7,
+"two_pt": 1.5,
+"fum_lost": 2.3
+}
+},
+{
+"name": "Jordan Love",
+"team": "GB",
+"pos": "QB",
+"bye": 11.0,
+"points": 327.0,
+"yahoo_rank": 122.0,
+"pct_rostered": 66.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3766.0,
+"pass_td": 26.2,
+"pass_int": 8.9,
+"rush_att": 52.2,
+"rush_yd": 210.0,
+"rush_td": 1.6,
+"two_pt": 1.5,
+"fum_lost": 2.9
+}
+},
+{
+"name": "Jaxson Dart",
+"team": "NYG",
+"pos": "QB",
+"bye": 8.0,
+"points": 326.0,
+"yahoo_rank": 106.0,
+"pct_rostered": 93.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3206.0,
+"pass_td": 21.6,
+"pass_int": 9.8,
+"rush_att": 93.7,
+"rush_yd": 482.0,
+"rush_td": 5.4,
+"two_pt": 1.2,
+"fum_lost": 2.4
+}
+},
+{
+"name": "Justin Herbert",
+"team": "LAC",
+"pos": "QB",
+"bye": 7.0,
+"points": 321.0,
+"yahoo_rank": 74.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3599.0,
+"pass_td": 24.3,
+"pass_int": 10.9,
+"rush_att": 68.6,
+"rush_yd": 332.0,
+"rush_td": 2.0,
+"two_pt": 1.0,
+"fum_lost": 2.5
+}
+},
+{
+"name": "Brock Purdy",
+"team": "SF",
+"pos": "QB",
+"bye": 8.0,
+"points": 319.0,
+"yahoo_rank": 97.0,
+"pct_rostered": 91.0,
+"stats": {
+"games": 15.0,
+"pass_yd": 3721.0,
+"pass_td": 24.7,
+"pass_int": 11.6,
+"rush_att": 54.7,
+"rush_yd": 231.0,
+"rush_td": 2.2,
+"two_pt": 1.4,
+"fum_lost": 2.6
+}
+},
+{
+"name": "Matthew Stafford",
+"team": "LAR",
+"pos": "QB",
+"bye": 11.0,
+"points": 319.0,
+"yahoo_rank": 113.0,
+"pct_rostered": 92.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3774.0,
+"pass_td": 28.5,
+"pass_int": 9.4,
+"rush_att": 24.2,
+"rush_yd": 48.3,
+"rush_td": 0.6,
+"two_pt": 1.5,
+"fum_lost": 2.2
+}
+},
+{
+"name": "C.J. Stroud",
+"team": "HOU",
+"pos": "QB",
+"bye": 8.0,
+"points": 318.0,
+"yahoo_rank": 165.0,
+"pct_rostered": 28.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3793.0,
+"pass_td": 24.8,
+"pass_int": 11.0,
+"rush_att": 50.9,
+"rush_yd": 220.0,
+"rush_td": 1.6,
+"two_pt": 1.0,
+"fum_lost": 2.5
+}
+},
+{
+"name": "Kyler Murray",
+"team": "MIN",
+"pos": "QB",
+"bye": 6.0,
+"points": 317.0,
+"yahoo_rank": 115.0,
+"pct_rostered": 78.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3413.0,
+"pass_td": 22.7,
+"pass_int": 10.1,
+"rush_att": 77.2,
+"rush_yd": 414.0,
+"rush_td": 2.8,
+"two_pt": 1.0,
+"fum_lost": 3.0
+}
+},
+{
+"name": "Puka Nacua",
+"team": "LAR",
+"pos": "WR",
+"bye": 11.0,
+"points": 316.0,
+"yahoo_rank": 4.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 12.0,
+"rush_yd": 79.6,
+"rush_td": 0.6,
+"targets": 157.0,
+"rec": 113.0,
+"rec_yd": 1443.0,
+"rec_td": 8.2,
+"two_pt": 0.1,
+"fum_lost": 0.8
+}
+},
+{
+"name": "Jaxon Smith-Njigba",
+"team": "SEA",
+"pos": "WR",
+"bye": 11.0,
+"points": 316.0,
+"yahoo_rank": 8.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 7.1,
+"rush_yd": 38.4,
+"rush_td": 0.1,
+"targets": 156.0,
+"rec": 108.0,
+"rec_yd": 1495.0,
+"rec_td": 8.9,
+"two_pt": 0.2,
+"fum_lost": 0.3
+}
+},
+{
+"name": "Tyler Shough",
+"team": "NO",
+"pos": "QB",
+"bye": 8.0,
+"points": 313.0,
+"yahoo_rank": 138.0,
+"pct_rostered": 43.0,
+"stats": {
+"games": 15.0,
+"pass_yd": 3581.0,
+"pass_td": 22.4,
+"pass_int": 10.2,
+"rush_att": 68.8,
+"rush_yd": 279.0,
+"rush_td": 3.4,
+"two_pt": 1.1,
+"fum_lost": 2.6
+}
+},
+{
+"name": "Amon-Ra St. Brown",
+"team": "DET",
+"pos": "WR",
+"bye": 6.0,
+"points": 311.0,
+"yahoo_rank": 7.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.9,
+"rush_yd": 14.0,
+"rush_td": 0.0,
+"targets": 159.0,
+"rec": 113.0,
+"rec_yd": 1345.0,
+"rec_td": 10.2,
+"two_pt": 0.7,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Patrick Mahomes",
+"team": "KC",
+"pos": "QB",
+"bye": 5.0,
+"points": 310.0,
+"yahoo_rank": 120.0,
+"pct_rostered": 88.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3596.0,
+"pass_td": 24.8,
+"pass_int": 10.4,
+"rush_att": 45.4,
+"rush_yd": 237.0,
+"rush_td": 1.1,
+"two_pt": 1.5,
+"fum_lost": 2.6
+}
+},
+{
+"name": "Malik Willis",
+"team": "MIA",
+"pos": "QB",
+"bye": 6.0,
+"points": 305.0,
+"yahoo_rank": 132.0,
+"pct_rostered": 41.0,
+"stats": {
+"games": 15.0,
+"pass_yd": 2974.0,
+"pass_td": 19.3,
+"pass_int": 8.4,
+"rush_att": 102.0,
+"rush_yd": 545.0,
+"rush_td": 4.4,
+"two_pt": 1.1,
+"fum_lost": 2.2
+}
+},
+{
+"name": "Baker Mayfield",
+"team": "TB",
+"pos": "QB",
+"bye": 10.0,
+"points": 305.0,
+"yahoo_rank": 135.0,
+"pct_rostered": 57.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3525.0,
+"pass_td": 24.0,
+"pass_int": 11.3,
+"rush_att": 50.8,
+"rush_yd": 255.0,
+"rush_td": 1.3,
+"two_pt": 1.5,
+"fum_lost": 2.4
+}
+},
+{
+"name": "Christian McCaffrey",
+"team": "SF",
+"pos": "RB",
+"bye": 8.0,
+"points": 304.0,
+"yahoo_rank": 6.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 237.0,
+"rush_yd": 956.0,
+"rush_td": 8.8,
+"targets": 89.7,
+"rec": 68.8,
+"rec_yd": 607.0,
+"rec_td": 4.5,
+"two_pt": 0.9,
+"fum_lost": 1.1
+}
+},
+{
+"name": "Sam Darnold",
+"team": "SEA",
+"pos": "QB",
+"bye": 11.0,
+"points": 304.0,
+"yahoo_rank": 151.0,
+"pct_rostered": 39.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3685.0,
+"pass_td": 25.0,
+"pass_int": 12.3,
+"rush_att": 41.9,
+"rush_yd": 147.0,
+"rush_td": 1.1,
+"two_pt": 1.5,
+"fum_lost": 2.8
+}
+},
+{
+"name": "Daniel Jones",
+"team": "IND",
+"pos": "QB",
+"bye": 13.0,
+"points": 303.0,
+"yahoo_rank": 163.0,
+"pct_rostered": 25.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3494.0,
+"pass_td": 22.9,
+"pass_int": 9.7,
+"rush_att": 55.9,
+"rush_yd": 246.0,
+"rush_td": 2.4,
+"two_pt": 1.1,
+"fum_lost": 2.8
+}
+},
+{
+"name": "Jonathan Taylor",
+"team": "IND",
+"pos": "RB",
+"bye": 13.0,
+"points": 293.0,
+"yahoo_rank": 5.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 308.0,
+"rush_yd": 1444.0,
+"rush_td": 11.2,
+"targets": 46.5,
+"rec": 39.2,
+"rec_yd": 321.0,
+"rec_td": 1.8,
+"two_pt": 0.9,
+"fum_lost": 1.0
+}
+},
+{
+"name": "De'Von Achane",
+"team": "MIA",
+"pos": "RB",
+"bye": 6.0,
+"points": 284.0,
+"yahoo_rank": 15.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 226.0,
+"rush_yd": 1162.0,
+"rush_td": 6.8,
+"targets": 70.4,
+"rec": 60.1,
+"rec_yd": 449.0,
+"rec_td": 3.9,
+"two_pt": 0.3,
+"fum_lost": 0.9
+}
+},
+{
+"name": "CeeDee Lamb",
+"team": "DAL",
+"pos": "WR",
+"bye": 14.0,
+"points": 279.0,
+"yahoo_rank": 11.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 3.2,
+"rush_yd": 15.1,
+"rush_td": 0.1,
+"targets": 145.0,
+"rec": 99.3,
+"rec_yd": 1313.0,
+"rec_td": 7.8,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Cam Ward",
+"team": "TEN",
+"pos": "QB",
+"bye": 9.0,
+"points": 279.0,
+"yahoo_rank": 179.0,
+"pct_rostered": 14.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3385.0,
+"pass_td": 21.4,
+"pass_int": 9.4,
+"rush_att": 44.7,
+"rush_yd": 177.0,
+"rush_td": 1.7,
+"two_pt": 1.0,
+"fum_lost": 2.7
+}
+},
+{
+"name": "Bryce Young",
+"team": "CAR",
+"pos": "QB",
+"bye": 5.0,
+"points": 278.0,
+"yahoo_rank": 183.0,
+"pct_rostered": 13.0,
+"stats": {
+"games": 16.0,
+"pass_yd": 3226.0,
+"pass_td": 20.9,
+"pass_int": 10.9,
+"rush_att": 56.5,
+"rush_yd": 262.0,
+"rush_td": 1.8,
+"two_pt": 1.0,
+"fum_lost": 2.6
+}
+},
+{
+"name": "Justin Jefferson",
+"team": "MIN",
+"pos": "WR",
+"bye": 6.0,
+"points": 276.0,
+"yahoo_rank": 13.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.1,
+"rush_yd": 10.9,
+"rush_td": 0.1,
+"targets": 161.0,
+"rec": 99.0,
+"rec_yd": 1300.0,
+"rec_td": 7.6,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Aaron Rodgers",
+"team": "PIT",
+"pos": "QB",
+"bye": 9.0,
+"points": 272.0,
+"yahoo_rank": 249.0,
+"pct_rostered": 10.0,
+"stats": {
+"games": 15.0,
+"pass_yd": 3348.0,
+"pass_td": 23.3,
+"pass_int": 10.0,
+"rush_att": 22.2,
+"rush_yd": 69.9,
+"rush_td": 0.7,
+"two_pt": 0.9,
+"fum_lost": 2.4
+}
+},
+{
+"name": "Drake London",
+"team": "ATL",
+"pos": "WR",
+"bye": 11.0,
+"points": 266.0,
+"yahoo_rank": 20.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 1.3,
+"targets": 148.0,
+"rec": 91.3,
+"rec_yd": 1230.0,
+"rec_td": 8.6,
+"two_pt": 0.2,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Nico Collins",
+"team": "HOU",
+"pos": "WR",
+"bye": 8.0,
+"points": 262.0,
+"yahoo_rank": 18.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 2.0,
+"rush_yd": 12.2,
+"rush_td": 0.1,
+"targets": 134.0,
+"rec": 86.0,
+"rec_yd": 1274.0,
+"rec_td": 7.8,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "James Cook III",
+"team": "BUF",
+"pos": "RB",
+"bye": 7.0,
+"points": 260.0,
+"yahoo_rank": 9.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 267.0,
+"rush_yd": 1308.0,
+"rush_td": 8.8,
+"targets": 45.7,
+"rec": 35.2,
+"rec_yd": 290.0,
+"rec_td": 2.2,
+"two_pt": 0.8,
+"fum_lost": 1.1
+}
+},
+{
+"name": "Chase Brown",
+"team": "CIN",
+"pos": "RB",
+"bye": 6.0,
+"points": 260.0,
+"yahoo_rank": 14.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 222.0,
+"rush_yd": 937.0,
+"rush_td": 7.6,
+"targets": 74.1,
+"rec": 59.5,
+"rec_yd": 412.0,
+"rec_td": 3.4,
+"two_pt": 0.4,
+"fum_lost": 1.0
+}
+},
+{
+"name": "George Pickens",
+"team": "DAL",
+"pos": "WR",
+"bye": 14.0,
+"points": 260.0,
+"yahoo_rank": 22.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.7,
+"rush_yd": 3.0,
+"targets": 129.0,
+"rec": 84.8,
+"rec_yd": 1276.0,
+"rec_td": 7.8,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Zay Flowers",
+"team": "BAL",
+"pos": "WR",
+"bye": 13.0,
+"points": 254.0,
+"yahoo_rank": 33.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 8.1,
+"rush_yd": 50.5,
+"rush_td": 0.1,
+"targets": 130.0,
+"rec": 88.3,
+"rec_yd": 1189.0,
+"rec_td": 6.9,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "A.J. Brown",
+"team": "NE",
+"pos": "WR",
+"bye": 11.0,
+"points": 245.0,
+"yahoo_rank": 23.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 0.7,
+"rush_yd": 2.9,
+"rush_td": 0.1,
+"targets": 128.0,
+"rec": 84.5,
+"rec_yd": 1119.0,
+"rec_td": 7.8,
+"two_pt": 0.6,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Kenneth Walker III",
+"team": "KC",
+"pos": "RB",
+"bye": 5.0,
+"points": 242.0,
+"yahoo_rank": 12.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 242.0,
+"rush_yd": 1057.0,
+"rush_td": 7.8,
+"targets": 53.9,
+"rec": 43.2,
+"rec_yd": 365.0,
+"rec_td": 1.7,
+"two_pt": 0.8,
+"fum_lost": 0.8
+}
+},
+{
+"name": "Saquon Barkley",
+"team": "PHI",
+"pos": "RB",
+"bye": 10.0,
+"points": 241.0,
+"yahoo_rank": 10.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 272.0,
+"rush_yd": 1146.0,
+"rush_td": 7.9,
+"targets": 52.9,
+"rec": 37.7,
+"rec_yd": 301.0,
+"rec_td": 2.2,
+"two_pt": 0.3,
+"fum_lost": 1.1
+}
+},
+{
+"name": "Jacoby Brissett",
+"team": "ARI",
+"pos": "QB",
+"bye": 14.0,
+"points": 241.0,
+"yahoo_rank": 208.0,
+"pct_rostered": 7.0,
+"stats": {
+"games": 13.0,
+"pass_yd": 3009.0,
+"pass_td": 18.5,
+"pass_int": 8.0,
+"rush_att": 33.9,
+"rush_yd": 144.0,
+"rush_td": 0.9,
+"two_pt": 1.1,
+"fum_lost": 2.3
+}
+},
+{
+"name": "Derrick Henry",
+"team": "BAL",
+"pos": "RB",
+"bye": 13.0,
+"points": 239.0,
+"yahoo_rank": 17.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 268.0,
+"rush_yd": 1323.0,
+"rush_td": 11.0,
+"targets": 23.5,
+"rec": 18.4,
+"rec_yd": 170.0,
+"rec_td": 1.0,
+"two_pt": 0.8,
+"fum_lost": 1.1
+}
+},
+{
+"name": "Trey McBride",
+"team": "ARI",
+"pos": "TE",
+"bye": 14.0,
+"points": 239.0,
+"yahoo_rank": 31.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"targets": 138.0,
+"rec": 98.9,
+"rec_yd": 983.0,
+"rec_td": 6.9,
+"two_pt": 0.2,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Javonte Williams",
+"team": "DAL",
+"pos": "RB",
+"bye": 14.0,
+"points": 238.0,
+"yahoo_rank": 34.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 16.0,
+"rush_att": 265.0,
+"rush_yd": 1169.0,
+"rush_td": 9.7,
+"targets": 46.1,
+"rec": 34.9,
+"rec_yd": 194.0,
+"rec_td": 1.6,
+"two_pt": 0.4,
+"fum_lost": 0.9
+}
+},
+{
+"name": "Omarion Hampton",
+"team": "LAC",
+"pos": "RB",
+"bye": 7.0,
+"points": 238.0,
+"yahoo_rank": 16.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 225.0,
+"rush_yd": 983.0,
+"rush_td": 8.0,
+"targets": 61.8,
+"rec": 49.6,
+"rec_yd": 320.0,
+"rec_td": 1.9,
+"two_pt": 0.4,
+"fum_lost": 0.9
+}
+},
+{
+"name": "Rashee Rice",
+"team": "KC",
+"pos": "WR",
+"bye": 5.0,
+"points": 238.0,
+"yahoo_rank": 36.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 15.0,
+"rush_att": 6.8,
+"rush_yd": 44.2,
+"rush_td": 0.3,
+"targets": 137.0,
+"rec": 86.6,
+"rec_yd": 975.0,
+"rec_td": 7.9,
+"two_pt": 0.2,
+"fum_lost": 0.3
+}
+},
+{
+"name": "Jeremiyah Love",
+"team": "ARI",
+"pos": "RB",
+"bye": 14.0,
+"points": 236.0,
+"yahoo_rank": 28.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 205.0,
+"rush_yd": 868.0,
+"rush_td": 6.2,
+"targets": 67.6,
+"rec": 52.0,
+"rec_yd": 457.0,
+"rec_td": 2.6,
+"two_pt": 0.4,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Chris Olave",
+"team": "NO",
+"pos": "WR",
+"bye": 8.0,
+"points": 235.0,
+"yahoo_rank": 25.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 0.7,
+"rush_yd": 3.5,
+"rush_td": 0.0,
+"targets": 141.0,
+"rec": 86.9,
+"rec_yd": 1045.0,
+"rec_td": 7.2,
+"two_pt": 0.2,
+"fum_lost": 0.2
+}
+},
+{
+"name": "DeVonta Smith",
+"team": "PHI",
+"pos": "WR",
+"bye": 10.0,
+"points": 233.0,
+"yahoo_rank": 26.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.7,
+"rush_yd": 2.7,
+"targets": 127.0,
+"rec": 85.5,
+"rec_yd": 1072.0,
+"rec_td": 6.7,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Breece Hall",
+"team": "NYJ",
+"pos": "RB",
+"bye": 13.0,
+"points": 229.0,
+"yahoo_rank": 30.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 15.0,
+"rush_att": 242.0,
+"rush_yd": 1063.0,
+"rush_td": 6.3,
+"targets": 50.6,
+"rec": 39.0,
+"rec_yd": 341.0,
+"rec_td": 2.1,
+"two_pt": 0.3,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Geno Smith",
+"team": "NYJ",
+"pos": "QB",
+"bye": 13.0,
+"points": 228.0,
+"yahoo_rank": 248.0,
+"pct_rostered": 5.0,
+"stats": {
+"games": 15.0,
+"pass_yd": 2902.0,
+"pass_td": 17.0,
+"pass_int": 12.5,
+"rush_att": 45.4,
+"rush_yd": 177.0,
+"rush_td": 1.2,
+"two_pt": 0.9,
+"fum_lost": 2.5
+}
+},
+{
+"name": "Brock Bowers",
+"team": "LV",
+"pos": "TE",
+"bye": 13.0,
+"points": 227.0,
+"yahoo_rank": 19.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 3.0,
+"rush_yd": 10.1,
+"rush_td": 0.0,
+"targets": 132.0,
+"rec": 92.0,
+"rec_yd": 949.0,
+"rec_td": 6.4,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Jaylen Waddle",
+"team": "DEN",
+"pos": "WR",
+"bye": 10.0,
+"points": 225.0,
+"yahoo_rank": 35.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 15.0,
+"rush_att": 2.5,
+"rush_yd": 15.8,
+"rush_td": 0.0,
+"targets": 120.0,
+"rec": 79.7,
+"rec_yd": 1061.0,
+"rec_td": 6.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Ashton Jeanty",
+"team": "LV",
+"pos": "RB",
+"bye": 13.0,
+"points": 224.0,
+"yahoo_rank": 21.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 248.0,
+"rush_yd": 950.0,
+"rush_td": 6.5,
+"targets": 63.2,
+"rec": 46.9,
+"rec_yd": 306.0,
+"rec_td": 2.3,
+"two_pt": 0.3,
+"fum_lost": 1.1
+}
+},
+{
+"name": "Tee Higgins",
+"team": "CIN",
+"pos": "WR",
+"bye": 6.0,
+"points": 222.0,
+"yahoo_rank": 29.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 15.0,
+"rush_att": 0.7,
+"rush_yd": 3.0,
+"targets": 108.0,
+"rec": 71.5,
+"rec_yd": 1008.0,
+"rec_td": 8.1,
+"two_pt": 0.6,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Malik Nabers",
+"team": "NYG",
+"pos": "WR",
+"bye": 8.0,
+"points": 221.0,
+"yahoo_rank": 24.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 15.0,
+"rush_att": 2.4,
+"rush_yd": 6.5,
+"rush_td": 0.1,
+"targets": 136.0,
+"rec": 80.6,
+"rec_yd": 955.0,
+"rec_td": 7.3,
+"two_pt": 0.2,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Kyren Williams",
+"team": "LAR",
+"pos": "RB",
+"bye": 11.0,
+"points": 220.0,
+"yahoo_rank": 27.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 223.0,
+"rush_yd": 1038.0,
+"rush_td": 9.1,
+"targets": 38.6,
+"rec": 29.4,
+"rec_yd": 217.0,
+"rec_td": 1.8,
+"two_pt": 0.8,
+"fum_lost": 0.8
+}
+},
+{
+"name": "Tetairoa McMillan",
+"team": "CAR",
+"pos": "WR",
+"bye": 5.0,
+"points": 218.0,
+"yahoo_rank": 39.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.6,
+"rush_yd": 3.2,
+"targets": 127.0,
+"rec": 74.0,
+"rec_yd": 1065.0,
+"rec_td": 6.2,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Cam Skattebo",
+"team": "NYG",
+"pos": "RB",
+"bye": 8.0,
+"points": 214.0,
+"yahoo_rank": 46.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 15.0,
+"rush_att": 219.0,
+"rush_yd": 928.0,
+"rush_td": 7.1,
+"targets": 45.8,
+"rec": 35.9,
+"rec_yd": 313.0,
+"rec_td": 1.8,
+"two_pt": 0.8,
+"fum_lost": 0.9
+}
+},
+{
+"name": "Travis Etienne Jr.",
+"team": "NO",
+"pos": "RB",
+"bye": 8.0,
+"points": 212.0,
+"yahoo_rank": 41.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 15.0,
+"rush_att": 237.0,
+"rush_yd": 985.0,
+"rush_td": 6.5,
+"targets": 45.9,
+"rec": 35.7,
+"rec_yd": 282.0,
+"rec_td": 2.0,
+"two_pt": 0.3,
+"fum_lost": 0.9
+}
+},
+{
+"name": "Fernando Mendoza",
+"team": "LV",
+"pos": "QB",
+"bye": 13.0,
+"points": 212.0,
+"yahoo_rank": 240.0,
+"pct_rostered": 13.0,
+"stats": {
+"games": 14.0,
+"pass_yd": 2549.0,
+"pass_td": 15.5,
+"pass_int": 8.8,
+"rush_att": 45.7,
+"rush_yd": 184.0,
+"rush_td": 1.7,
+"two_pt": 0.9,
+"fum_lost": 2.4
+}
+},
+{
+"name": "Luther Burden III",
+"team": "CHI",
+"pos": "WR",
+"bye": 10.0,
+"points": 209.0,
+"yahoo_rank": 44.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 15.0,
+"rush_att": 8.9,
+"rush_yd": 42.7,
+"rush_td": 0.1,
+"targets": 111.0,
+"rec": 73.3,
+"rec_yd": 955.0,
+"rec_td": 5.9,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Terry McLaurin",
+"team": "WAS",
+"pos": "WR",
+"bye": 7.0,
+"points": 207.0,
+"yahoo_rank": 45.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.7,
+"rush_yd": 2.8,
+"targets": 114.0,
+"rec": 70.6,
+"rec_yd": 977.0,
+"rec_td": 6.4,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "David Montgomery",
+"team": "HOU",
+"pos": "RB",
+"bye": 8.0,
+"points": 205.0,
+"yahoo_rank": 57.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 16.0,
+"rush_att": 224.0,
+"rush_yd": 931.0,
+"rush_td": 8.5,
+"targets": 39.0,
+"rec": 31.0,
+"rec_yd": 242.0,
+"rec_td": 1.1,
+"two_pt": 0.8,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Ladd McConkey",
+"team": "LAC",
+"pos": "WR",
+"bye": 7.0,
+"points": 205.0,
+"yahoo_rank": 40.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.2,
+"rush_yd": 4.7,
+"rush_td": 0.0,
+"targets": 119.0,
+"rec": 76.1,
+"rec_yd": 940.0,
+"rec_td": 5.7,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Tyler Warren",
+"team": "IND",
+"pos": "TE",
+"bye": 13.0,
+"points": 205.0,
+"yahoo_rank": 48.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 5.7,
+"rush_yd": 18.3,
+"rush_td": 0.2,
+"targets": 106.0,
+"rec": 77.1,
+"rec_yd": 833.0,
+"rec_td": 7.0,
+"two_pt": 0.2,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Jaylen Warren",
+"team": "PIT",
+"pos": "RB",
+"bye": 9.0,
+"points": 203.0,
+"yahoo_rank": 69.0,
+"pct_rostered": 94.0,
+"stats": {
+"games": 16.0,
+"rush_att": 177.0,
+"rush_yd": 780.0,
+"rush_td": 5.2,
+"targets": 55.6,
+"rec": 45.8,
+"rec_yd": 369.0,
+"rec_td": 2.0,
+"two_pt": 0.3,
+"fum_lost": 0.8
+}
+},
+{
+"name": "Davante Adams",
+"team": "LAR",
+"pos": "WR",
+"bye": 11.0,
+"points": 200.0,
+"yahoo_rank": 56.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 15.0,
+"targets": 119.0,
+"rec": 65.3,
+"rec_yd": 858.0,
+"rec_td": 8.1,
+"two_pt": 0.2,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Bucky Irving",
+"team": "TB",
+"pos": "RB",
+"bye": 10.0,
+"points": 199.0,
+"yahoo_rank": 51.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 15.0,
+"rush_att": 217.0,
+"rush_yd": 860.0,
+"rush_td": 6.5,
+"targets": 43.4,
+"rec": 34.6,
+"rec_yd": 296.0,
+"rec_td": 1.8,
+"two_pt": 0.3,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Garrett Wilson",
+"team": "NYJ",
+"pos": "WR",
+"bye": 13.0,
+"points": 198.0,
+"yahoo_rank": 38.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.8,
+"rush_yd": 6.5,
+"targets": 133.0,
+"rec": 77.7,
+"rec_yd": 882.0,
+"rec_td": 5.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Parker Washington",
+"team": "JAX",
+"pos": "WR",
+"bye": 7.0,
+"points": 198.0,
+"yahoo_rank": 55.0,
+"pct_rostered": 95.0,
+"stats": {
+"games": 16.0,
+"rush_att": 6.3,
+"rush_yd": 26.7,
+"rush_td": 0.0,
+"targets": 105.0,
+"rec": 64.6,
+"rec_yd": 907.0,
+"rec_td": 6.0,
+"ret_td": 0.7,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Colston Loveland",
+"team": "CHI",
+"pos": "TE",
+"bye": 10.0,
+"points": 198.0,
+"yahoo_rank": 37.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 1.3,
+"targets": 106.0,
+"rec": 71.6,
+"rec_yd": 860.0,
+"rec_td": 6.7,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "MarShawn Lloyd",
+"team": "GB",
+"pos": "RB",
+"bye": 11.0,
+"points": 195.0,
+"yahoo_rank": 84.0,
+"pct_rostered": 75.0,
+"stats": {
+"games": 16.0,
+"rush_att": 206.0,
+"rush_yd": 842.0,
+"rush_td": 7.7,
+"targets": 39.5,
+"rec": 32.2,
+"rec_yd": 225.0,
+"rec_td": 1.9,
+"two_pt": 0.4,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Christian Watson",
+"team": "GB",
+"pos": "WR",
+"bye": 11.0,
+"points": 195.0,
+"yahoo_rank": 53.0,
+"pct_rostered": 96.0,
+"stats": {
+"games": 15.0,
+"rush_att": 1.9,
+"rush_yd": 8.2,
+"rush_td": 0.1,
+"targets": 99.0,
+"rec": 57.4,
+"rec_yd": 932.0,
+"rec_td": 7.2,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "D'Andre Swift",
+"team": "CHI",
+"pos": "RB",
+"bye": 10.0,
+"points": 195.0,
+"yahoo_rank": 42.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 15.0,
+"rush_att": 203.0,
+"rush_yd": 920.0,
+"rush_td": 7.0,
+"targets": 44.7,
+"rec": 31.1,
+"rec_yd": 251.0,
+"rec_td": 1.0,
+"two_pt": 0.3,
+"fum_lost": 0.8
+}
+},
+{
+"name": "Quinshon Judkins",
+"team": "CLE",
+"pos": "RB",
+"bye": 11.0,
+"points": 194.0,
+"yahoo_rank": 58.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 15.0,
+"rush_att": 253.0,
+"rush_yd": 995.0,
+"rush_td": 7.3,
+"targets": 36.0,
+"rec": 27.3,
+"rec_yd": 189.0,
+"rec_td": 1.0,
+"two_pt": 0.4,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Jadarian Price",
+"team": "SEA",
+"pos": "RB",
+"bye": 11.0,
+"points": 192.0,
+"yahoo_rank": 59.0,
+"pct_rostered": 96.0,
+"stats": {
+"games": 16.0,
+"rush_att": 214.0,
+"rush_yd": 914.0,
+"rush_td": 7.6,
+"targets": 28.4,
+"rec": 23.9,
+"rec_yd": 222.0,
+"rec_td": 1.2,
+"ret_td": 0.5,
+"two_pt": 0.3,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Emeka Egbuka",
+"team": "TB",
+"pos": "WR",
+"bye": 10.0,
+"points": 191.0,
+"yahoo_rank": 43.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.5,
+"rush_yd": 10.6,
+"rush_td": 0.0,
+"targets": 120.0,
+"rec": 62.4,
+"rec_yd": 896.0,
+"rec_td": 6.3,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Alec Pierce",
+"team": "IND",
+"pos": "WR",
+"bye": 13.0,
+"points": 190.0,
+"yahoo_rank": 98.0,
+"pct_rostered": 89.0,
+"stats": {
+"games": 15.0,
+"rush_att": 0.5,
+"rush_yd": 2.4,
+"targets": 91.3,
+"rec": 55.1,
+"rec_yd": 960.0,
+"rec_td": 6.5,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "DJ Moore",
+"team": "BUF",
+"pos": "WR",
+"bye": 7.0,
+"points": 190.0,
+"yahoo_rank": 47.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 16.0,
+"rush_att": 7.8,
+"rush_yd": 33.6,
+"rush_td": 0.1,
+"targets": 103.0,
+"rec": 65.5,
+"rec_yd": 829.0,
+"rec_td": 6.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Tucker Kraft",
+"team": "GB",
+"pos": "TE",
+"bye": 11.0,
+"points": 189.0,
+"yahoo_rank": 67.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 15.0,
+"rush_att": 1.3,
+"rush_yd": 4.7,
+"rush_td": 0.0,
+"targets": 88.7,
+"rec": 64.6,
+"rec_yd": 860.0,
+"rec_td": 6.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Jameson Williams",
+"team": "DET",
+"pos": "WR",
+"bye": 6.0,
+"points": 188.0,
+"yahoo_rank": 52.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 16.0,
+"rush_att": 7.4,
+"rush_yd": 39.5,
+"rush_td": 0.2,
+"targets": 96.2,
+"rec": 59.0,
+"rec_yd": 896.0,
+"rec_td": 5.6,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Rico Dowdle",
+"team": "PIT",
+"pos": "RB",
+"bye": 9.0,
+"points": 186.0,
+"yahoo_rank": 81.0,
+"pct_rostered": 93.0,
+"stats": {
+"games": 16.0,
+"rush_att": 199.0,
+"rush_yd": 844.0,
+"rush_td": 6.4,
+"targets": 41.8,
+"rec": 31.4,
+"rec_yd": 245.0,
+"rec_td": 1.5,
+"two_pt": 0.3,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Rome Odunze",
+"team": "CHI",
+"pos": "WR",
+"bye": 10.0,
+"points": 186.0,
+"yahoo_rank": 49.0,
+"pct_rostered": 96.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.8,
+"rush_yd": 3.4,
+"targets": 116.0,
+"rec": 59.0,
+"rec_yd": 831.0,
+"rec_td": 7.3,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Josh Downs",
+"team": "IND",
+"pos": "WR",
+"bye": 13.0,
+"points": 183.0,
+"yahoo_rank": 87.0,
+"pct_rostered": 87.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.9,
+"rush_yd": 12.7,
+"rush_td": 0.0,
+"targets": 101.0,
+"rec": 73.0,
+"rec_yd": 763.0,
+"rec_td": 5.4,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "TreVeyon Henderson",
+"team": "NE",
+"pos": "RB",
+"bye": 11.0,
+"points": 181.0,
+"yahoo_rank": 64.0,
+"pct_rostered": 95.0,
+"stats": {
+"games": 16.0,
+"rush_att": 170.0,
+"rush_yd": 788.0,
+"rush_td": 6.3,
+"targets": 41.4,
+"rec": 34.4,
+"rec_yd": 230.0,
+"rec_td": 1.4,
+"two_pt": 0.2,
+"fum_lost": 0.9
+}
+},
+{
+"name": "Jayden Reed",
+"team": "GB",
+"pos": "WR",
+"bye": 11.0,
+"points": 181.0,
+"yahoo_rank": 96.0,
+"pct_rostered": 84.0,
+"stats": {
+"games": 16.0,
+"rush_att": 12.1,
+"rush_yd": 78.3,
+"rush_td": 0.5,
+"targets": 87.5,
+"rec": 60.8,
+"rec_yd": 773.0,
+"rec_td": 5.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "DK Metcalf",
+"team": "PIT",
+"pos": "WR",
+"bye": 9.0,
+"points": 180.0,
+"yahoo_rank": 76.0,
+"pct_rostered": 93.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.5,
+"rush_yd": 5.0,
+"rush_td": 0.0,
+"targets": 102.0,
+"rec": 59.0,
+"rec_yd": 844.0,
+"rec_td": 6.0,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Michael Pittman Jr.",
+"team": "PIT",
+"pos": "WR",
+"bye": 9.0,
+"points": 178.0,
+"yahoo_rank": 104.0,
+"pct_rostered": 81.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 2.0,
+"targets": 110.0,
+"rec": 72.7,
+"rec_yd": 772.0,
+"rec_td": 4.7,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Sam LaPorta",
+"team": "DET",
+"pos": "TE",
+"bye": 6.0,
+"points": 177.0,
+"yahoo_rank": 70.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 15.0,
+"rush_att": 0.3,
+"rush_yd": 1.3,
+"targets": 93.9,
+"rec": 69.6,
+"rec_yd": 751.0,
+"rec_td": 5.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Rhamondre Stevenson",
+"team": "NE",
+"pos": "RB",
+"bye": 11.0,
+"points": 176.0,
+"yahoo_rank": 62.0,
+"pct_rostered": 94.0,
+"stats": {
+"games": 16.0,
+"rush_att": 167.0,
+"rush_yd": 727.0,
+"rush_td": 5.9,
+"targets": 40.6,
+"rec": 33.1,
+"rec_yd": 268.0,
+"rec_td": 1.6,
+"two_pt": 0.2,
+"fum_lost": 0.9
+}
+},
+{
+"name": "Harold Fannin Jr.",
+"team": "CLE",
+"pos": "TE",
+"bye": 11.0,
+"points": 176.0,
+"yahoo_rank": 77.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 16.0,
+"rush_att": 5.6,
+"rush_yd": 20.1,
+"rush_td": 0.1,
+"targets": 106.0,
+"rec": 70.6,
+"rec_yd": 738.0,
+"rec_td": 4.9,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Mike Evans",
+"team": "SF",
+"pos": "WR",
+"bye": 8.0,
+"points": 176.0,
+"yahoo_rank": 60.0,
+"pct_rostered": 95.0,
+"stats": {
+"games": 15.0,
+"targets": 109.0,
+"rec": 58.9,
+"rec_yd": 792.0,
+"rec_td": 6.4,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Bucky Irving",
+"team": "TB",
+"pos": "RB",
+"bye": 10.0,
+"points": 199.0,
+"yahoo_rank": 51.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 15.0,
+"rush_att": 217.0,
+"rush_yd": 860.0,
+"rush_td": 6.5,
+"targets": 43.4,
+"rec": 34.6,
+"rec_yd": 296.0,
+"rec_td": 1.8,
+"two_pt": 0.3,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Garrett Wilson",
+"team": "NYJ",
+"pos": "WR",
+"bye": 13.0,
+"points": 198.0,
+"yahoo_rank": 38.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.8,
+"rush_yd": 6.5,
+"targets": 133.0,
+"rec": 77.7,
+"rec_yd": 882.0,
+"rec_td": 5.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Parker Washington",
+"team": "JAX",
+"pos": "WR",
+"bye": 7.0,
+"points": 198.0,
+"yahoo_rank": 55.0,
+"pct_rostered": 95.0,
+"stats": {
+"games": 16.0,
+"rush_att": 6.3,
+"rush_yd": 26.7,
+"rush_td": 0.0,
+"targets": 105.0,
+"rec": 64.6,
+"rec_yd": 907.0,
+"rec_td": 6.0,
+"ret_td": 0.7,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Colston Loveland",
+"team": "CHI",
+"pos": "TE",
+"bye": 10.0,
+"points": 198.0,
+"yahoo_rank": 37.0,
+"pct_rostered": 100.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 1.3,
+"targets": 106.0,
+"rec": 71.6,
+"rec_yd": 860.0,
+"rec_td": 6.7,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "MarShawn Lloyd",
+"team": "GB",
+"pos": "RB",
+"bye": 11.0,
+"points": 195.0,
+"yahoo_rank": 84.0,
+"pct_rostered": 75.0,
+"stats": {
+"games": 16.0,
+"rush_att": 206.0,
+"rush_yd": 842.0,
+"rush_td": 7.7,
+"targets": 39.5,
+"rec": 32.2,
+"rec_yd": 225.0,
+"rec_td": 1.9,
+"two_pt": 0.4,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Christian Watson",
+"team": "GB",
+"pos": "WR",
+"bye": 11.0,
+"points": 195.0,
+"yahoo_rank": 53.0,
+"pct_rostered": 96.0,
+"stats": {
+"games": 15.0,
+"rush_att": 1.9,
+"rush_yd": 8.2,
+"rush_td": 0.1,
+"targets": 99.0,
+"rec": 57.4,
+"rec_yd": 932.0,
+"rec_td": 7.2,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "D'Andre Swift",
+"team": "CHI",
+"pos": "RB",
+"bye": 10.0,
+"points": 195.0,
+"yahoo_rank": 42.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 15.0,
+"rush_att": 203.0,
+"rush_yd": 920.0,
+"rush_td": 7.0,
+"targets": 44.7,
+"rec": 31.1,
+"rec_yd": 251.0,
+"rec_td": 1.0,
+"two_pt": 0.3,
+"fum_lost": 0.8
+}
+},
+{
+"name": "Quinshon Judkins",
+"team": "CLE",
+"pos": "RB",
+"bye": 11.0,
+"points": 194.0,
+"yahoo_rank": 58.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 15.0,
+"rush_att": 253.0,
+"rush_yd": 995.0,
+"rush_td": 7.3,
+"targets": 36.0,
+"rec": 27.3,
+"rec_yd": 189.0,
+"rec_td": 1.0,
+"two_pt": 0.4,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Jadarian Price",
+"team": "SEA",
+"pos": "RB",
+"bye": 11.0,
+"points": 192.0,
+"yahoo_rank": 59.0,
+"pct_rostered": 96.0,
+"stats": {
+"games": 16.0,
+"rush_att": 214.0,
+"rush_yd": 914.0,
+"rush_td": 7.6,
+"targets": 28.4,
+"rec": 23.9,
+"rec_yd": 222.0,
+"rec_td": 1.2,
+"ret_td": 0.5,
+"two_pt": 0.3,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Emeka Egbuka",
+"team": "TB",
+"pos": "WR",
+"bye": 10.0,
+"points": 191.0,
+"yahoo_rank": 43.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.5,
+"rush_yd": 10.6,
+"rush_td": 0.0,
+"targets": 120.0,
+"rec": 62.4,
+"rec_yd": 896.0,
+"rec_td": 6.3,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Alec Pierce",
+"team": "IND",
+"pos": "WR",
+"bye": 13.0,
+"points": 190.0,
+"yahoo_rank": 98.0,
+"pct_rostered": 89.0,
+"stats": {
+"games": 15.0,
+"rush_att": 0.5,
+"rush_yd": 2.4,
+"targets": 91.3,
+"rec": 55.1,
+"rec_yd": 960.0,
+"rec_td": 6.5,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "DJ Moore",
+"team": "BUF",
+"pos": "WR",
+"bye": 7.0,
+"points": 190.0,
+"yahoo_rank": 47.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 16.0,
+"rush_att": 7.8,
+"rush_yd": 33.6,
+"rush_td": 0.1,
+"targets": 103.0,
+"rec": 65.5,
+"rec_yd": 829.0,
+"rec_td": 6.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Tucker Kraft",
+"team": "GB",
+"pos": "TE",
+"bye": 11.0,
+"points": 189.0,
+"yahoo_rank": 67.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 15.0,
+"rush_att": 1.3,
+"rush_yd": 4.7,
+"rush_td": 0.0,
+"targets": 88.7,
+"rec": 64.6,
+"rec_yd": 860.0,
+"rec_td": 6.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Jameson Williams",
+"team": "DET",
+"pos": "WR",
+"bye": 6.0,
+"points": 188.0,
+"yahoo_rank": 52.0,
+"pct_rostered": 97.0,
+"stats": {
+"games": 16.0,
+"rush_att": 7.4,
+"rush_yd": 39.5,
+"rush_td": 0.2,
+"targets": 96.2,
+"rec": 59.0,
+"rec_yd": 896.0,
+"rec_td": 5.6,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Rico Dowdle",
+"team": "PIT",
+"pos": "RB",
+"bye": 9.0,
+"points": 186.0,
+"yahoo_rank": 81.0,
+"pct_rostered": 93.0,
+"stats": {
+"games": 16.0,
+"rush_att": 199.0,
+"rush_yd": 844.0,
+"rush_td": 6.4,
+"targets": 41.8,
+"rec": 31.4,
+"rec_yd": 245.0,
+"rec_td": 1.5,
+"two_pt": 0.3,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Rome Odunze",
+"team": "CHI",
+"pos": "WR",
+"bye": 10.0,
+"points": 186.0,
+"yahoo_rank": 49.0,
+"pct_rostered": 96.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.8,
+"rush_yd": 3.4,
+"targets": 116.0,
+"rec": 59.0,
+"rec_yd": 831.0,
+"rec_td": 7.3,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Josh Downs",
+"team": "IND",
+"pos": "WR",
+"bye": 13.0,
+"points": 183.0,
+"yahoo_rank": 87.0,
+"pct_rostered": 87.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.9,
+"rush_yd": 12.7,
+"rush_td": 0.0,
+"targets": 101.0,
+"rec": 73.0,
+"rec_yd": 763.0,
+"rec_td": 5.4,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "TreVeyon Henderson",
+"team": "NE",
+"pos": "RB",
+"bye": 11.0,
+"points": 181.0,
+"yahoo_rank": 64.0,
+"pct_rostered": 95.0,
+"stats": {
+"games": 16.0,
+"rush_att": 170.0,
+"rush_yd": 788.0,
+"rush_td": 6.3,
+"targets": 41.4,
+"rec": 34.4,
+"rec_yd": 230.0,
+"rec_td": 1.4,
+"two_pt": 0.2,
+"fum_lost": 0.9
+}
+},
+{
+"name": "Jayden Reed",
+"team": "GB",
+"pos": "WR",
+"bye": 11.0,
+"points": 181.0,
+"yahoo_rank": 96.0,
+"pct_rostered": 84.0,
+"stats": {
+"games": 16.0,
+"rush_att": 12.1,
+"rush_yd": 78.3,
+"rush_td": 0.5,
+"targets": 87.5,
+"rec": 60.8,
+"rec_yd": 773.0,
+"rec_td": 5.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "DK Metcalf",
+"team": "PIT",
+"pos": "WR",
+"bye": 9.0,
+"points": 180.0,
+"yahoo_rank": 76.0,
+"pct_rostered": 93.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.5,
+"rush_yd": 5.0,
+"rush_td": 0.0,
+"targets": 102.0,
+"rec": 59.0,
+"rec_yd": 844.0,
+"rec_td": 6.0,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Michael Pittman Jr.",
+"team": "PIT",
+"pos": "WR",
+"bye": 9.0,
+"points": 178.0,
+"yahoo_rank": 104.0,
+"pct_rostered": 81.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 2.0,
+"targets": 110.0,
+"rec": 72.7,
+"rec_yd": 772.0,
+"rec_td": 4.7,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Sam LaPorta",
+"team": "DET",
+"pos": "TE",
+"bye": 6.0,
+"points": 177.0,
+"yahoo_rank": 70.0,
+"pct_rostered": 99.0,
+"stats": {
+"games": 15.0,
+"rush_att": 0.3,
+"rush_yd": 1.3,
+"targets": 93.9,
+"rec": 69.6,
+"rec_yd": 751.0,
+"rec_td": 5.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Rhamondre Stevenson",
+"team": "NE",
+"pos": "RB",
+"bye": 11.0,
+"points": 176.0,
+"yahoo_rank": 62.0,
+"pct_rostered": 94.0,
+"stats": {
+"games": 16.0,
+"rush_att": 167.0,
+"rush_yd": 727.0,
+"rush_td": 5.9,
+"targets": 40.6,
+"rec": 33.1,
+"rec_yd": 268.0,
+"rec_td": 1.6,
+"two_pt": 0.2,
+"fum_lost": 0.9
+}
+},
+{
+"name": "Harold Fannin Jr.",
+"team": "CLE",
+"pos": "TE",
+"bye": 11.0,
+"points": 176.0,
+"yahoo_rank": 77.0,
+"pct_rostered": 98.0,
+"stats": {
+"games": 16.0,
+"rush_att": 5.6,
+"rush_yd": 20.1,
+"rush_td": 0.1,
+"targets": 106.0,
+"rec": 70.6,
+"rec_yd": 738.0,
+"rec_td": 4.9,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Mike Evans",
+"team": "SF",
+"pos": "WR",
+"bye": 8.0,
+"points": 176.0,
+"yahoo_rank": 60.0,
+"pct_rostered": 95.0,
+"stats": {
+"games": 15.0,
+"targets": 109.0,
+"rec": 58.9,
+"rec_yd": 792.0,
+"rec_td": 6.4,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Romeo Doubs",
+"team": "NE",
+"pos": "WR",
+"bye": 11.0,
+"points": 157.0,
+"yahoo_rank": 124.0,
+"pct_rostered": 55.0,
+"stats": {
+"games": 16.0,
+"targets": 86.0,
+"rec": 55.0,
+"rec_yd": 706.0,
+"rec_td": 5.2,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Dallas Goedert",
+"team": "PHI",
+"pos": "TE",
+"bye": 10.0,
+"points": 156.0,
+"yahoo_rank": 119.0,
+"pct_rostered": 91.0,
+"stats": {
+"games": 15.0,
+"targets": 86.1,
+"rec": 60.4,
+"rec_yd": 622.0,
+"rec_td": 5.5,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Jalen Coker",
+"team": "CAR",
+"pos": "WR",
+"bye": 5.0,
+"points": 155.0,
+"yahoo_rank": 117.0,
+"pct_rostered": 57.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 2.0,
+"targets": 78.4,
+"rec": 58.4,
+"rec_yd": 715.0,
+"rec_td": 4.1,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Chuba Hubbard",
+"team": "CAR",
+"pos": "RB",
+"bye": 5.0,
+"points": 154.0,
+"yahoo_rank": 89.0,
+"pct_rostered": 89.0,
+"stats": {
+"games": 15.0,
+"rush_att": 171.0,
+"rush_yd": 688.0,
+"rush_td": 5.2,
+"targets": 34.0,
+"rec": 28.3,
+"rec_yd": 196.0,
+"rec_td": 1.3,
+"two_pt": 0.2,
+"fum_lost": 0.9
+}
+},
+{
+"name": "Tua Tagovailoa",
+"team": "ATL",
+"pos": "QB",
+"bye": 11.0,
+"points": 153.0,
+"yahoo_rank": 295.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 8.0,
+"pass_yd": 1957.0,
+"pass_td": 12.3,
+"pass_int": 5.8,
+"rush_att": 16.9,
+"rush_yd": 42.0,
+"rush_td": 0.6,
+"two_pt": 0.8,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Hunter Henry",
+"team": "NE",
+"pos": "TE",
+"bye": 11.0,
+"points": 152.0,
+"yahoo_rank": 164.0,
+"pct_rostered": 56.0,
+"stats": {
+"games": 16.0,
+"targets": 81.5,
+"rec": 56.7,
+"rec_yd": 648.0,
+"rec_td": 5.1,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Rachaad White",
+"team": "WAS",
+"pos": "RB",
+"bye": 7.0,
+"points": 152.0,
+"yahoo_rank": 116.0,
+"pct_rostered": 64.0,
+"stats": {
+"games": 16.0,
+"rush_att": 127.0,
+"rush_yd": 549.0,
+"rush_td": 4.0,
+"targets": 45.2,
+"rec": 36.6,
+"rec_yd": 242.0,
+"rec_td": 2.3,
+"two_pt": 0.3,
+"fum_lost": 0.8
+}
+},
+{
+"name": "Jordan Mason",
+"team": "MIN",
+"pos": "RB",
+"bye": 6.0,
+"points": 152.0,
+"yahoo_rank": 103.0,
+"pct_rostered": 84.0,
+"stats": {
+"games": 16.0,
+"rush_att": 174.0,
+"rush_yd": 823.0,
+"rush_td": 6.2,
+"targets": 23.6,
+"rec": 18.2,
+"rec_yd": 107.0,
+"rec_td": 0.8,
+"two_pt": 0.3,
+"fum_lost": 0.8
+}
+},
+{
+"name": "Blake Corum",
+"team": "LAR",
+"pos": "RB",
+"bye": 11.0,
+"points": 150.0,
+"yahoo_rank": 93.0,
+"pct_rostered": 88.0,
+"stats": {
+"games": 16.0,
+"rush_att": 176.0,
+"rush_yd": 830.0,
+"rush_td": 6.3,
+"targets": 20.7,
+"rec": 15.4,
+"rec_yd": 93.6,
+"rec_td": 0.9,
+"two_pt": 0.2,
+"fum_lost": 0.8
+}
+},
+{
+"name": "Kyle Monangai",
+"team": "CHI",
+"pos": "RB",
+"bye": 10.0,
+"points": 148.0,
+"yahoo_rank": 109.0,
+"pct_rostered": 80.0,
+"stats": {
+"games": 16.0,
+"rush_att": 160.0,
+"rush_yd": 726.0,
+"rush_td": 5.6,
+"targets": 27.0,
+"rec": 19.7,
+"rec_yd": 171.0,
+"rec_td": 1.1,
+"two_pt": 0.3,
+"fum_lost": 0.8
+}
+},
+{
+"name": "Xavier Worthy",
+"team": "KC",
+"pos": "WR",
+"bye": 5.0,
+"points": 146.0,
+"yahoo_rank": 130.0,
+"pct_rostered": 56.0,
+"stats": {
+"games": 16.0,
+"rush_att": 14.1,
+"rush_yd": 81.6,
+"rush_td": 0.7,
+"targets": 89.5,
+"rec": 48.4,
+"rec_yd": 623.0,
+"rec_td": 3.9,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "KC Concepcion",
+"team": "CLE",
+"pos": "WR",
+"bye": 11.0,
+"points": 145.0,
+"yahoo_rank": 99.0,
+"pct_rostered": 72.0,
+"stats": {
+"games": 16.0,
+"rush_att": 6.5,
+"rush_yd": 26.1,
+"rush_td": 0.1,
+"targets": 86.2,
+"rec": 53.2,
+"rec_yd": 643.0,
+"rec_td": 3.6,
+"ret_td": 0.5,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Dalton Schultz",
+"team": "HOU",
+"pos": "TE",
+"bye": 8.0,
+"points": 144.0,
+"yahoo_rank": 149.0,
+"pct_rostered": 41.0,
+"stats": {
+"games": 16.0,
+"targets": 89.0,
+"rec": 61.3,
+"rec_yd": 599.0,
+"rec_td": 3.9,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Dalton Kincaid",
+"team": "BUF",
+"pos": "TE",
+"bye": 7.0,
+"points": 144.0,
+"yahoo_rank": 107.0,
+"pct_rostered": 92.0,
+"stats": {
+"games": 16.0,
+"targets": 74.6,
+"rec": 54.1,
+"rec_yd": 643.0,
+"rec_td": 4.4,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Jacory Croskey-Merritt",
+"team": "WAS",
+"pos": "RB",
+"bye": 7.0,
+"points": 144.0,
+"yahoo_rank": 90.0,
+"pct_rostered": 85.0,
+"stats": {
+"games": 16.0,
+"rush_att": 164.0,
+"rush_yd": 736.0,
+"rush_td": 6.2,
+"targets": 24.3,
+"rec": 16.3,
+"rec_yd": 139.0,
+"rec_td": 0.7,
+"two_pt": 0.3,
+"fum_lost": 0.9
+}
+},
+{
+"name": "Isaiah Likely",
+"team": "NYG",
+"pos": "TE",
+"bye": 8.0,
+"points": 142.0,
+"yahoo_rank": 123.0,
+"pct_rostered": 88.0,
+"stats": {
+"games": 16.0,
+"targets": 80.3,
+"rec": 56.6,
+"rec_yd": 608.0,
+"rec_td": 4.2,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "J.K. Dobbins",
+"team": "DEN",
+"pos": "RB",
+"bye": 10.0,
+"points": 139.0,
+"yahoo_rank": 85.0,
+"pct_rostered": 90.0,
+"stats": {
+"games": 14.0,
+"rush_att": 167.0,
+"rush_yd": 761.0,
+"rush_td": 5.4,
+"targets": 23.5,
+"rec": 17.8,
+"rec_yd": 94.3,
+"rec_td": 0.7,
+"two_pt": 0.2,
+"fum_lost": 0.8
+}
+},
+{
+"name": "Juwan Johnson",
+"team": "NO",
+"pos": "TE",
+"bye": 8.0,
+"points": 137.0,
+"yahoo_rank": 141.0,
+"pct_rostered": 60.0,
+"stats": {
+"games": 16.0,
+"targets": 79.1,
+"rec": 55.5,
+"rec_yd": 607.0,
+"rec_td": 3.5,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Brenton Strange",
+"team": "JAX",
+"pos": "TE",
+"bye": 7.0,
+"points": 136.0,
+"yahoo_rank": 166.0,
+"pct_rostered": 36.0,
+"stats": {
+"games": 16.0,
+"targets": 79.7,
+"rec": 53.1,
+"rec_yd": 596.0,
+"rec_td": 3.8,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Tyjae Spears",
+"team": "TEN",
+"pos": "RB",
+"bye": 9.0,
+"points": 135.0,
+"yahoo_rank": 139.0,
+"pct_rostered": 38.0,
+"stats": {
+"games": 16.0,
+"rush_att": 107.0,
+"rush_yd": 428.0,
+"rush_td": 3.7,
+"targets": 47.9,
+"rec": 36.6,
+"rec_yd": 252.0,
+"rec_td": 1.7,
+"two_pt": 0.3,
+"fum_lost": 0.9
+}
+},
+{
+"name": "Rashid Shaheed",
+"team": "SEA",
+"pos": "WR",
+"bye": 11.0,
+"points": 133.0,
+"yahoo_rank": 133.0,
+"pct_rostered": 49.0,
+"stats": {
+"games": 16.0,
+"rush_att": 11.1,
+"rush_yd": 67.6,
+"rush_td": 0.3,
+"targets": 73.2,
+"rec": 43.3,
+"rec_yd": 545.0,
+"rec_td": 3.7,
+"ret_td": 0.8,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Makai Lemon",
+"team": "PHI",
+"pos": "WR",
+"bye": 10.0,
+"points": 133.0,
+"yahoo_rank": 105.0,
+"pct_rostered": 75.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.7,
+"rush_yd": 3.0,
+"targets": 73.8,
+"rec": 48.8,
+"rec_yd": 626.0,
+"rec_td": 3.6,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Greg Dulcich",
+"team": "MIA",
+"pos": "TE",
+"bye": 6.0,
+"points": 131.0,
+"yahoo_rank": 191.0,
+"pct_rostered": 11.0,
+"stats": {
+"games": 16.0,
+"targets": 65.7,
+"rec": 49.8,
+"rec_yd": 587.0,
+"rec_td": 3.7,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Kayshon Boutte",
+"team": "HOU",
+"pos": "WR",
+"bye": 8.0,
+"points": 131.0,
+"yahoo_rank": 171.0,
+"pct_rostered": 15.0,
+"stats": {
+"games": 16.0,
+"targets": 68.6,
+"rec": 43.2,
+"rec_yd": 610.0,
+"rec_td": 4.4,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Woody Marks",
+"team": "HOU",
+"pos": "RB",
+"bye": 8.0,
+"points": 130.0,
+"yahoo_rank": 131.0,
+"pct_rostered": 47.0,
+"stats": {
+"games": 16.0,
+"rush_att": 143.0,
+"rush_yd": 554.0,
+"rush_td": 4.0,
+"targets": 29.2,
+"rec": 22.9,
+"rec_yd": 198.0,
+"rec_td": 1.5,
+"two_pt": 0.2,
+"fum_lost": 0.8
+}
+},
+{
+"name": "T.J. Hockenson",
+"team": "MIN",
+"pos": "TE",
+"bye": 6.0,
+"points": 127.0,
+"yahoo_rank": 212.0,
+"pct_rostered": 22.0,
+"stats": {
+"games": 16.0,
+"targets": 80.0,
+"rec": 56.6,
+"rec_yd": 524.0,
+"rec_td": 3.1,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Deshaun Watson",
+"team": "CLE",
+"pos": "QB",
+"bye": 11.0,
+"points": 127.0,
+"yahoo_rank": 306.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 7.0,
+"pass_yd": 1570.0,
+"pass_td": 9.0,
+"pass_int": 5.1,
+"rush_att": 27.0,
+"rush_yd": 111.0,
+"rush_td": 0.8,
+"two_pt": 0.8,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Denzel Boston",
+"team": "CLE",
+"pos": "WR",
+"bye": 11.0,
+"points": 126.0,
+"yahoo_rank": 143.0,
+"pct_rostered": 30.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.7,
+"rush_yd": 3.3,
+"targets": 79.6,
+"rec": 47.8,
+"rec_yd": 584.0,
+"rec_td": 3.2,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Chig Okonkwo",
+"team": "WAS",
+"pos": "TE",
+"bye": 7.0,
+"points": 124.0,
+"yahoo_rank": 156.0,
+"pct_rostered": 41.0,
+"stats": {
+"games": 16.0,
+"targets": 77.9,
+"rec": 53.4,
+"rec_yd": 527.0,
+"rec_td": 3.1,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "AJ Barner",
+"team": "SEA",
+"pos": "TE",
+"bye": 11.0,
+"points": 123.0,
+"yahoo_rank": 182.0,
+"pct_rostered": 18.0,
+"stats": {
+"games": 16.0,
+"rush_att": 8.2,
+"rush_yd": 29.7,
+"rush_td": 0.2,
+"targets": 67.5,
+"rec": 48.1,
+"rec_yd": 465.0,
+"rec_td": 4.1,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Shedeur Sanders",
+"team": "CLE",
+"pos": "QB",
+"bye": 11.0,
+"points": 122.0,
+"yahoo_rank": 305.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 7.0,
+"pass_yd": 1491.0,
+"pass_td": 9.5,
+"pass_int": 8.1,
+"rush_att": 18.7,
+"rush_yd": 109.0,
+"rush_td": 0.5,
+"two_pt": 0.8,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Deebo Samuel Sr.",
+"team": "SF",
+"pos": "WR",
+"bye": 8.0,
+"points": 120.0,
+"yahoo_rank": 150.0,
+"pct_rostered": 50.0,
+"stats": {
+"games": 15.0,
+"rush_att": 16.3,
+"rush_yd": 60.4,
+"rush_td": 0.7,
+"targets": 65.6,
+"rec": 42.3,
+"rec_yd": 488.0,
+"rec_td": 3.2,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Tre Tucker",
+"team": "LV",
+"pos": "WR",
+"bye": 13.0,
+"points": 119.0,
+"yahoo_rank": 148.0,
+"pct_rostered": 23.0,
+"stats": {
+"games": 16.0,
+"rush_att": 8.2,
+"rush_yd": 43.1,
+"rush_td": 0.1,
+"targets": 74.7,
+"rec": 41.8,
+"rec_yd": 518.0,
+"rec_td": 3.2,
+"ret_td": 0.3,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Pat Freiermuth",
+"team": "PIT",
+"pos": "TE",
+"bye": 9.0,
+"points": 118.0,
+"yahoo_rank": 282.0,
+"pct_rostered": 6.0,
+"stats": {
+"games": 16.0,
+"targets": 64.9,
+"rec": 46.7,
+"rec_yd": 499.0,
+"rec_td": 3.6,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Keenan Allen",
+"team": "IND",
+"pos": "WR",
+"bye": 13.0,
+"points": 117.0,
+"yahoo_rank": 145.0,
+"pct_rostered": 27.0,
+"stats": {
+"games": 14.0,
+"targets": 71.2,
+"rec": 46.6,
+"rec_yd": 510.0,
+"rec_td": 3.2,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Malik Washington",
+"team": "MIA",
+"pos": "WR",
+"bye": 6.0,
+"points": 117.0,
+"yahoo_rank": 209.0,
+"pct_rostered": 13.0,
+"stats": {
+"games": 16.0,
+"rush_att": 13.8,
+"rush_yd": 70.1,
+"rush_td": 0.5,
+"targets": 69.4,
+"rec": 47.8,
+"rec_yd": 396.0,
+"rec_td": 2.9,
+"ret_td": 0.3,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Jauan Jennings",
+"team": "MIN",
+"pos": "WR",
+"bye": 6.0,
+"points": 116.0,
+"yahoo_rank": 214.0,
+"pct_rostered": 10.0,
+"stats": {
+"games": 16.0,
+"targets": 68.0,
+"rec": 41.5,
+"rec_yd": 506.0,
+"rec_td": 4.0,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Jalen Nailor",
+"team": "LV",
+"pos": "WR",
+"bye": 13.0,
+"points": 115.0,
+"yahoo_rank": 177.0,
+"pct_rostered": 19.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.0,
+"rush_yd": 9.4,
+"rush_td": 0.0,
+"targets": 70.2,
+"rec": 39.2,
+"rec_yd": 554.0,
+"rec_td": 3.2,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Chris Rodriguez Jr.",
+"team": "JAX",
+"pos": "RB",
+"bye": 7.0,
+"points": 114.0,
+"yahoo_rank": 111.0,
+"pct_rostered": 60.0,
+"stats": {
+"games": 16.0,
+"rush_att": 148.0,
+"rush_yd": 650.0,
+"rush_td": 5.0,
+"targets": 11.5,
+"rec": 8.7,
+"rec_yd": 79.9,
+"rec_td": 0.6,
+"two_pt": 0.2,
+"fum_lost": 0.8
+}
+},
+{
+"name": "De'Zhaun Stribling",
+"team": "SF",
+"pos": "WR",
+"bye": 8.0,
+"points": 112.0,
+"yahoo_rank": 94.0,
+"pct_rostered": 73.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.1,
+"rush_yd": 6.3,
+"rush_td": 0.0,
+"targets": 62.9,
+"rec": 41.7,
+"rec_yd": 506.0,
+"rec_td": 3.2,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Ryan Flournoy",
+"team": "DAL",
+"pos": "WR",
+"bye": 14.0,
+"points": 112.0,
+"yahoo_rank": 162.0,
+"pct_rostered": 8.0,
+"stats": {
+"games": 16.0,
+"rush_att": 3.2,
+"rush_yd": 15.8,
+"rush_td": 0.1,
+"targets": 57.4,
+"rec": 41.5,
+"rec_yd": 499.0,
+"rec_td": 3.2,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Gunnar Helm",
+"team": "TEN",
+"pos": "TE",
+"bye": 9.0,
+"points": 112.0,
+"yahoo_rank": 218.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 16.0,
+"targets": 66.7,
+"rec": 46.6,
+"rec_yd": 422.0,
+"rec_td": 3.8,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Jordyn Tyson",
+"team": "NO",
+"pos": "WR",
+"bye": 8.0,
+"points": 110.0,
+"yahoo_rank": 129.0,
+"pct_rostered": 59.0,
+"stats": {
+"games": 11.0,
+"rush_att": 0.7,
+"rush_yd": 2.7,
+"targets": 63.2,
+"rec": 41.1,
+"rec_yd": 508.0,
+"rec_td": 3.0,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Cade Otton",
+"team": "TB",
+"pos": "TE",
+"bye": 10.0,
+"points": 110.0,
+"yahoo_rank": 262.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 16.0,
+"targets": 72.9,
+"rec": 47.5,
+"rec_yd": 468.0,
+"rec_td": 2.6,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Jalen McMillan",
+"team": "TB",
+"pos": "WR",
+"bye": 10.0,
+"points": 109.0,
+"yahoo_rank": 153.0,
+"pct_rostered": 17.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.4,
+"rush_yd": 13.7,
+"rush_td": 0.1,
+"targets": 57.2,
+"rec": 37.5,
+"rec_yd": 496.0,
+"rec_td": 3.4,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Caleb Douglas",
+"team": "MIA",
+"pos": "WR",
+"bye": 6.0,
+"points": 108.0,
+"yahoo_rank": 170.0,
+"pct_rostered": 10.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 1.4,
+"targets": 60.0,
+"rec": 40.3,
+"rec_yd": 480.0,
+"rec_td": 3.3,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Zach Charbonnet",
+"team": "SEA",
+"pos": "RB",
+"bye": 11.0,
+"points": 107.0,
+"yahoo_rank": 144.0,
+"pct_rostered": 53.0,
+"stats": {
+"games": 10.0,
+"rush_att": 106.0,
+"rush_yd": 450.0,
+"rush_td": 4.7,
+"targets": 22.8,
+"rec": 16.8,
+"rec_yd": 124.0,
+"rec_td": 0.8,
+"two_pt": 0.2,
+"fum_lost": 0.3
+}
+},
+{
+"name": "Jerry Jeudy",
+"team": "CLE",
+"pos": "WR",
+"bye": 11.0,
+"points": 107.0,
+"yahoo_rank": 194.0,
+"pct_rostered": 12.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.0,
+"rush_yd": 5.2,
+"rush_td": 0.0,
+"targets": 75.8,
+"rec": 39.6,
+"rec_yd": 499.0,
+"rec_td": 2.8,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Dylan Sampson",
+"team": "CLE",
+"pos": "RB",
+"bye": 11.0,
+"points": 106.0,
+"yahoo_rank": 180.0,
+"pct_rostered": 15.0,
+"stats": {
+"games": 16.0,
+"rush_att": 86.3,
+"rush_yd": 314.0,
+"rush_td": 1.6,
+"targets": 38.5,
+"rec": 30.5,
+"rec_yd": 249.0,
+"rec_td": 1.8,
+"two_pt": 0.1,
+"fum_lost": 0.7
+}
+},
+{
+"name": "Kenyon Sadiq",
+"team": "NYJ",
+"pos": "TE",
+"bye": 13.0,
+"points": 105.0,
+"yahoo_rank": 195.0,
+"pct_rostered": 17.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.7,
+"rush_yd": 2.7,
+"targets": 63.2,
+"rec": 44.3,
+"rec_yd": 445.0,
+"rec_td": 2.7,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Tyler Allgeier",
+"team": "ARI",
+"pos": "RB",
+"bye": 14.0,
+"points": 104.0,
+"yahoo_rank": 136.0,
+"pct_rostered": 47.0,
+"stats": {
+"games": 16.0,
+"rush_att": 123.0,
+"rush_yd": 489.0,
+"rush_td": 3.8,
+"targets": 21.1,
+"rec": 16.8,
+"rec_yd": 124.0,
+"rec_td": 0.7,
+"two_pt": 0.3,
+"fum_lost": 0.7
+}
+},
+{
+"name": "Darren Waller",
+"team": "CAR",
+"pos": "TE",
+"bye": 5.0,
+"points": 104.0,
+"yahoo_rank": 247.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 15.0,
+"targets": 56.8,
+"rec": 38.9,
+"rec_yd": 429.0,
+"rec_td": 3.7,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Tre' Harris",
+"team": "LAC",
+"pos": "WR",
+"bye": 7.0,
+"points": 103.0,
+"yahoo_rank": 186.0,
+"pct_rostered": 5.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.2,
+"rush_yd": 5.2,
+"rush_td": 0.0,
+"targets": 60.4,
+"rec": 39.4,
+"rec_yd": 473.0,
+"rec_td": 2.7,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Keaton Mitchell",
+"team": "LAC",
+"pos": "RB",
+"bye": 7.0,
+"points": 101.0,
+"yahoo_rank": 127.0,
+"pct_rostered": 41.0,
+"stats": {
+"games": 16.0,
+"rush_att": 93.8,
+"rush_yd": 447.0,
+"rush_td": 2.8,
+"targets": 23.6,
+"rec": 19.8,
+"rec_yd": 150.0,
+"rec_td": 0.8,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Dontayvion Wicks",
+"team": "PHI",
+"pos": "WR",
+"bye": 10.0,
+"points": 100.0,
+"yahoo_rank": 154.0,
+"pct_rostered": 13.0,
+"stats": {
+"games": 15.0,
+"rush_att": 0.7,
+"rush_yd": 3.8,
+"rush_td": 0.0,
+"targets": 54.1,
+"rec": 35.7,
+"rec_yd": 450.0,
+"rec_td": 3.1,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Adonai Mitchell",
+"team": "NYJ",
+"pos": "WR",
+"bye": 13.0,
+"points": 99.0,
+"yahoo_rank": 147.0,
+"pct_rostered": 16.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.6,
+"rush_yd": 3.0,
+"rush_td": 0.0,
+"targets": 67.5,
+"rec": 33.9,
+"rec_yd": 470.0,
+"rec_td": 3.0,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Pat Bryant",
+"team": "DEN",
+"pos": "WR",
+"bye": 10.0,
+"points": 97.0,
+"yahoo_rank": 158.0,
+"pct_rostered": 7.0,
+"stats": {
+"games": 15.0,
+"rush_att": 0.3,
+"rush_yd": 2.3,
+"targets": 54.1,
+"rec": 36.8,
+"rec_yd": 441.0,
+"rec_td": 2.7,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Devaughn Vele",
+"team": "NO",
+"pos": "WR",
+"bye": 8.0,
+"points": 96.0,
+"yahoo_rank": 192.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 1.3,
+"targets": 58.2,
+"rec": 35.7,
+"rec_yd": 431.0,
+"rec_td": 2.9,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Terrance Ferguson",
+"team": "LAR",
+"pos": "TE",
+"bye": 11.0,
+"points": 96.0,
+"yahoo_rank": 157.0,
+"pct_rostered": 19.0,
+"stats": {
+"games": 16.0,
+"targets": 51.3,
+"rec": 32.5,
+"rec_yd": 438.0,
+"rec_td": 3.3,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Rashod Bateman",
+"team": "BAL",
+"pos": "WR",
+"bye": 13.0,
+"points": 95.0,
+"yahoo_rank": 222.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.5,
+"rush_yd": 2.0,
+"targets": 58.4,
+"rec": 31.6,
+"rec_yd": 411.0,
+"rec_td": 3.7,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Calvin Ridley",
+"team": "TEN",
+"pos": "WR",
+"bye": 9.0,
+"points": 95.0,
+"yahoo_rank": 254.0,
+"pct_rostered": 4.0,
+"stats": {
+"games": 14.0,
+"rush_att": 1.2,
+"rush_yd": 5.6,
+"targets": 59.1,
+"rec": 30.4,
+"rec_yd": 464.0,
+"rec_td": 2.9,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Jaylin Noel",
+"team": "HOU",
+"pos": "WR",
+"bye": 8.0,
+"points": 93.0,
+"yahoo_rank": 190.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 16.0,
+"rush_att": 4.5,
+"rush_yd": 16.7,
+"rush_td": 0.1,
+"targets": 45.8,
+"rec": 33.9,
+"rec_yd": 392.0,
+"rec_td": 2.7,
+"ret_td": 0.3,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Jonah Coleman",
+"team": "DEN",
+"pos": "RB",
+"bye": 10.0,
+"points": 92.0,
+"yahoo_rank": 142.0,
+"pct_rostered": 32.0,
+"stats": {
+"games": 16.0,
+"rush_att": 80.8,
+"rush_yd": 341.0,
+"rush_td": 2.6,
+"targets": 23.2,
+"rec": 20.2,
+"rec_yd": 175.0,
+"rec_td": 0.9,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Brian Robinson",
+"team": "ATL",
+"pos": "RB",
+"bye": 11.0,
+"points": 92.0,
+"yahoo_rank": 160.0,
+"pct_rostered": 25.0,
+"stats": {
+"games": 16.0,
+"rush_att": 114.0,
+"rush_yd": 475.0,
+"rush_td": 3.7,
+"targets": 15.7,
+"rec": 10.7,
+"rec_yd": 69.4,
+"rec_td": 0.6,
+"ret_td": 0.1,
+"two_pt": 0.2,
+"fum_lost": 0.3
+}
+},
+{
+"name": "Malachi Fields",
+"team": "NYG",
+"pos": "WR",
+"bye": 8.0,
+"points": 91.0,
+"yahoo_rank": 224.0,
+"pct_rostered": 6.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 1.3,
+"targets": 54.2,
+"rec": 34.5,
+"rec_yd": 407.0,
+"rec_td": 2.6,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Mike Gesicki",
+"team": "CIN",
+"pos": "TE",
+"bye": 6.0,
+"points": 90.0,
+"yahoo_rank": 316.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 15.0,
+"targets": 53.9,
+"rec": 36.3,
+"rec_yd": 371.0,
+"rec_td": 2.8,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Samaje Perine",
+"team": "CIN",
+"pos": "RB",
+"bye": 6.0,
+"points": 88.0,
+"yahoo_rank": 246.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 16.0,
+"rush_att": 72.3,
+"rush_yd": 302.0,
+"rush_td": 3.0,
+"targets": 29.0,
+"rec": 19.9,
+"rec_yd": 144.0,
+"rec_td": 0.9,
+"ret_td": 0.1,
+"two_pt": 0.2,
+"fum_lost": 0.3
+}
+},
+{
+"name": "Chris Bell",
+"team": "MIA",
+"pos": "WR",
+"bye": 6.0,
+"points": 86.0,
+"yahoo_rank": 206.0,
+"pct_rostered": 4.0,
+"stats": {
+"games": 12.0,
+"rush_att": 0.3,
+"rush_yd": 1.3,
+"targets": 46.6,
+"rec": 33.4,
+"rec_yd": 387.0,
+"rec_td": 2.4,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Cooper Kupp",
+"team": "SEA",
+"pos": "WR",
+"bye": 11.0,
+"points": 85.0,
+"yahoo_rank": 235.0,
+"pct_rostered": 12.0,
+"stats": {
+"games": 15.0,
+"rush_att": 0.3,
+"rush_yd": 1.2,
+"targets": 48.9,
+"rec": 31.1,
+"rec_yd": 380.0,
+"rec_td": 2.6,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Mike Washington Jr.",
+"team": "LV",
+"pos": "RB",
+"bye": 13.0,
+"points": 85.0,
+"yahoo_rank": 128.0,
+"pct_rostered": 56.0,
+"stats": {
+"games": 16.0,
+"rush_att": 88.4,
+"rush_yd": 357.0,
+"rush_td": 2.2,
+"targets": 19.9,
+"rec": 17.0,
+"rec_yd": 151.0,
+"rec_td": 0.8,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Ja'Kobi Lane",
+"team": "BAL",
+"pos": "WR",
+"bye": 13.0,
+"points": 85.0,
+"yahoo_rank": 172.0,
+"pct_rostered": 18.0,
+"stats": {
+"games": 16.0,
+"rush_yd": 0.3,
+"targets": 41.5,
+"rec": 30.4,
+"rec_yd": 378.0,
+"rec_td": 2.8,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Alvin Kamara",
+"team": "NO",
+"pos": "RB",
+"bye": 8.0,
+"points": 84.0,
+"yahoo_rank": 184.0,
+"pct_rostered": 28.0,
+"stats": {
+"games": 14.0,
+"rush_att": 83.2,
+"rush_yd": 319.0,
+"rush_td": 2.0,
+"targets": 27.2,
+"rec": 20.9,
+"rec_yd": 136.0,
+"rec_td": 1.0,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Zachariah Branch",
+"team": "ATL",
+"pos": "WR",
+"bye": 11.0,
+"points": 84.0,
+"yahoo_rank": 213.0,
+"pct_rostered": 4.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.6,
+"rush_yd": 9.5,
+"rush_td": 0.1,
+"targets": 44.7,
+"rec": 30.9,
+"rec_yd": 349.0,
+"rec_td": 2.1,
+"ret_td": 0.7,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Tyreek Hill",
+"team": "MIA",
+"pos": "WR",
+"bye": 6.0,
+"points": 82.0,
+"yahoo_rank": 354.0,
+"pct_rostered": 6.0,
+"stats": {
+"games": 10.0,
+"rush_att": 1.0,
+"rush_yd": 3.0,
+"targets": 44.0,
+"rec": 28.0,
+"rec_yd": 359.0,
+"rec_td": 3.0
+}
+},
+{
+"name": "Germie Bernard",
+"team": "PIT",
+"pos": "WR",
+"bye": 9.0,
+"points": 82.0,
+"yahoo_rank": 264.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.4,
+"rush_yd": 6.1,
+"rush_td": 0.0,
+"targets": 52.2,
+"rec": 30.7,
+"rec_yd": 365.0,
+"rec_td": 2.3,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Omar Cooper Jr.",
+"team": "NYJ",
+"pos": "WR",
+"bye": 13.0,
+"points": 81.0,
+"yahoo_rank": 200.0,
+"pct_rostered": 7.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.7,
+"rush_yd": 5.5,
+"rush_td": 0.0,
+"targets": 47.9,
+"rec": 29.7,
+"rec_yd": 367.0,
+"rec_td": 2.3,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Charlie Kolar",
+"team": "LAC",
+"pos": "TE",
+"bye": 7.0,
+"points": 81.0,
+"yahoo_rank": 258.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.7,
+"rush_yd": 2.3,
+"targets": 41.6,
+"rec": 30.5,
+"rec_yd": 354.0,
+"rec_td": 2.5,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Kirk Cousins",
+"team": "LV",
+"pos": "QB",
+"bye": 13.0,
+"points": 81.0,
+"yahoo_rank": 309.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 3.0,
+"pass_yd": 1115.0,
+"pass_td": 6.4,
+"pass_int": 3.2,
+"rush_att": 7.7,
+"rush_yd": 17.9,
+"rush_td": 0.1,
+"two_pt": 0.2,
+"fum_lost": 1.0
+}
+},
+{
+"name": "Emmett Johnson",
+"team": "KC",
+"pos": "RB",
+"bye": 5.0,
+"points": 80.0,
+"yahoo_rank": 167.0,
+"pct_rostered": 14.0,
+"stats": {
+"games": 14.0,
+"rush_att": 70.8,
+"rush_yd": 295.0,
+"rush_td": 2.2,
+"targets": 18.1,
+"rec": 16.6,
+"rec_yd": 155.0,
+"rec_td": 0.9,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Evan Engram",
+"team": "DEN",
+"pos": "TE",
+"bye": 10.0,
+"points": 79.0,
+"yahoo_rank": 287.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 15.0,
+"rush_att": 0.3,
+"rush_yd": 1.3,
+"rush_td": 0.0,
+"targets": 52.2,
+"rec": 36.8,
+"rec_yd": 322.0,
+"rec_td": 1.7,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Travis Hunter",
+"team": "JAX",
+"pos": "WR",
+"bye": 7.0,
+"points": 79.0,
+"yahoo_rank": 174.0,
+"pct_rostered": 21.0,
+"stats": {
+"games": 15.0,
+"rush_att": 2.1,
+"rush_yd": 6.7,
+"rush_td": 0.0,
+"targets": 49.5,
+"rec": 30.2,
+"rec_yd": 334.0,
+"rec_td": 2.4,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Isaac TeSlaa",
+"team": "DET",
+"pos": "WR",
+"bye": 6.0,
+"points": 78.0,
+"yahoo_rank": 260.0,
+"pct_rostered": 6.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.7,
+"rush_yd": 3.3,
+"targets": 43.0,
+"rec": 26.3,
+"rec_yd": 349.0,
+"rec_td": 2.8,
+"two_pt": 0.1,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Braelon Allen",
+"team": "NYJ",
+"pos": "RB",
+"bye": 13.0,
+"points": 78.0,
+"yahoo_rank": 161.0,
+"pct_rostered": 16.0,
+"stats": {
+"games": 16.0,
+"rush_att": 86.1,
+"rush_yd": 350.0,
+"rush_td": 2.8,
+"targets": 15.3,
+"rec": 11.6,
+"rec_yd": 93.0,
+"rec_td": 0.9,
+"two_pt": 0.2,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Xavier Legette",
+"team": "CAR",
+"pos": "WR",
+"bye": 5.0,
+"points": 78.0,
+"yahoo_rank": 267.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 14.0,
+"rush_att": 1.3,
+"rush_yd": 4.7,
+"rush_td": 0.0,
+"targets": 50.4,
+"rec": 29.3,
+"rec_yd": 317.0,
+"rec_td": 2.7,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "DeMario Douglas",
+"team": "NE",
+"pos": "WR",
+"bye": 11.0,
+"points": 78.0,
+"yahoo_rank": 293.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 6.7,
+"rush_yd": 35.5,
+"rush_td": 0.1,
+"targets": 41.9,
+"rec": 28.3,
+"rec_yd": 338.0,
+"rec_td": 1.9,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Ray Davis",
+"team": "BUF",
+"pos": "RB",
+"bye": 7.0,
+"points": 77.0,
+"yahoo_rank": 152.0,
+"pct_rostered": 15.0,
+"stats": {
+"games": 16.0,
+"rush_att": 81.4,
+"rush_yd": 363.0,
+"rush_td": 1.7,
+"targets": 15.3,
+"rec": 13.2,
+"rec_yd": 111.0,
+"rec_td": 0.9,
+"ret_td": 0.1,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Jahan Dotson",
+"team": "ATL",
+"pos": "WR",
+"bye": 11.0,
+"points": 77.0,
+"yahoo_rank": 232.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.7,
+"rush_yd": 2.3,
+"targets": 49.1,
+"rec": 27.0,
+"rec_yd": 354.0,
+"rec_td": 2.4,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Tyquan Thornton",
+"team": "KC",
+"pos": "WR",
+"bye": 5.0,
+"points": 76.0,
+"yahoo_rank": 230.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 8.0,
+"targets": 43.5,
+"rec": 22.8,
+"rec_yd": 378.0,
+"rec_td": 2.6,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Tank Bigsby",
+"team": "PHI",
+"pos": "RB",
+"bye": 10.0,
+"points": 76.0,
+"yahoo_rank": 137.0,
+"pct_rostered": 35.0,
+"stats": {
+"games": 16.0,
+"rush_att": 92.5,
+"rush_yd": 428.0,
+"rush_td": 3.0,
+"targets": 8.1,
+"rec": 6.3,
+"rec_yd": 60.6,
+"rec_td": 0.5,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Cyrus Allen",
+"team": "KC",
+"pos": "WR",
+"bye": 5.0,
+"points": 76.0,
+"yahoo_rank": 173.0,
+"pct_rostered": 9.0,
+"stats": {
+"games": 8.0,
+"rush_att": 0.9,
+"rush_yd": 2.4,
+"rush_td": 0.0,
+"targets": 40.5,
+"rec": 28.5,
+"rec_yd": 338.0,
+"rec_td": 2.2,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Justice Hill",
+"team": "BAL",
+"pos": "RB",
+"bye": 13.0,
+"points": 75.0,
+"yahoo_rank": 255.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 15.0,
+"rush_att": 28.1,
+"rush_yd": 128.0,
+"rush_td": 0.9,
+"targets": 40.4,
+"rec": 26.7,
+"rec_yd": 220.0,
+"rec_td": 1.5,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Darnell Washington",
+"team": "PIT",
+"pos": "TE",
+"bye": 9.0,
+"points": 74.0,
+"yahoo_rank": 312.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"targets": 45.3,
+"rec": 29.7,
+"rec_yd": 322.0,
+"rec_td": 2.1,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Colby Parkinson",
+"team": "LAR",
+"pos": "TE",
+"bye": 11.0,
+"points": 74.0,
+"yahoo_rank": 245.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 16.0,
+"targets": 38.5,
+"rec": 28.7,
+"rec_yd": 279.0,
+"rec_td": 2.9,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "David Njoku",
+"team": "LAC",
+"pos": "TE",
+"bye": 7.0,
+"points": 74.0,
+"yahoo_rank": 307.0,
+"pct_rostered": 5.0,
+"stats": {
+"games": 15.0,
+"targets": 38.0,
+"rec": 30.5,
+"rec_yd": 282.0,
+"rec_td": 2.6,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "KaVontae Turpin",
+"team": "DAL",
+"pos": "WR",
+"bye": 14.0,
+"points": 74.0,
+"yahoo_rank": 2080.0,
+"pct_rostered": 4.0,
+"stats": {
+"games": 16.0,
+"rush_att": 16.8,
+"rush_yd": 124.0,
+"rush_td": 0.5,
+"targets": 31.6,
+"rec": 18.8,
+"rec_yd": 248.0,
+"rec_td": 1.7,
+"ret_td": 0.8,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Michael Mayer",
+"team": "LV",
+"pos": "TE",
+"bye": 13.0,
+"points": 73.0,
+"yahoo_rank": 302.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"targets": 51.0,
+"rec": 32.0,
+"rec_yd": 305.0,
+"rec_td": 1.8,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Dawson Knox",
+"team": "BUF",
+"pos": "TE",
+"bye": 7.0,
+"points": 73.0,
+"yahoo_rank": 364.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"targets": 43.3,
+"rec": 26.4,
+"rec_yd": 303.0,
+"rec_td": 2.7,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Kendrick Bourne",
+"team": "ARI",
+"pos": "WR",
+"bye": 14.0,
+"points": 72.0,
+"yahoo_rank": 344.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 12.0,
+"rush_att": 0.3,
+"rush_yd": 1.1,
+"targets": 47.2,
+"rec": 27.3,
+"rec_yd": 351.0,
+"rec_td": 1.5,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Najee Harris",
+"team": "NYG",
+"pos": "RB",
+"bye": 8.0,
+"points": 72.0,
+"yahoo_rank": 198.0,
+"pct_rostered": 8.0,
+"stats": {
+"games": 14.0,
+"rush_att": 89.4,
+"rush_yd": 361.0,
+"rush_td": 2.5,
+"targets": 14.0,
+"rec": 10.3,
+"rec_yd": 82.1,
+"rec_td": 0.4,
+"two_pt": 0.1,
+"fum_lost": 0.3
+}
+},
+{
+"name": "Darnell Mooney",
+"team": "NYG",
+"pos": "WR",
+"bye": 8.0,
+"points": 72.0,
+"yahoo_rank": 261.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.1,
+"rush_yd": 4.5,
+"targets": 46.9,
+"rec": 24.4,
+"rec_yd": 336.0,
+"rec_td": 2.2,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Andrei Iosivas",
+"team": "CIN",
+"pos": "WR",
+"bye": 6.0,
+"points": 71.0,
+"yahoo_rank": 320.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.5,
+"rush_yd": 8.0,
+"rush_td": 0.0,
+"targets": 42.7,
+"rec": 24.9,
+"rec_yd": 322.0,
+"rec_td": 2.1,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Mason Taylor",
+"team": "NYJ",
+"pos": "TE",
+"bye": 13.0,
+"points": 70.0,
+"yahoo_rank": 315.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"targets": 50.2,
+"rec": 31.7,
+"rec_yd": 277.0,
+"rec_td": 1.8,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Troy Franklin",
+"team": "DEN",
+"pos": "WR",
+"bye": 10.0,
+"points": 67.0,
+"yahoo_rank": 298.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.4,
+"rush_yd": 9.3,
+"rush_td": 0.0,
+"targets": 40.0,
+"rec": 24.0,
+"rec_yd": 271.0,
+"rec_td": 2.5,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Oronde Gadsden",
+"team": "LAC",
+"pos": "TE",
+"bye": 7.0,
+"points": 67.0,
+"yahoo_rank": 216.0,
+"pct_rostered": 14.0,
+"stats": {
+"games": 16.0,
+"targets": 33.5,
+"rec": 24.3,
+"rec_yd": 303.0,
+"rec_td": 2.0,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Malik Davis",
+"team": "DAL",
+"pos": "RB",
+"bye": 14.0,
+"points": 66.0,
+"yahoo_rank": 211.0,
+"pct_rostered": 4.0,
+"stats": {
+"games": 16.0,
+"rush_att": 71.1,
+"rush_yd": 309.0,
+"rush_td": 2.6,
+"targets": 13.9,
+"rec": 10.1,
+"rec_yd": 84.4,
+"rec_td": 0.3,
+"two_pt": 0.2,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Theo Johnson",
+"team": "NYG",
+"pos": "TE",
+"bye": 8.0,
+"points": 66.0,
+"yahoo_rank": 331.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"targets": 39.9,
+"rec": 25.3,
+"rec_yd": 286.0,
+"rec_td": 2.1,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Chris Brooks",
+"team": "GB",
+"pos": "RB",
+"bye": 11.0,
+"points": 65.0,
+"yahoo_rank": 279.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 14.0,
+"rush_att": 43.5,
+"rush_yd": 186.0,
+"rush_td": 1.7,
+"targets": 24.3,
+"rec": 17.5,
+"rec_yd": 127.0,
+"rec_td": 1.0,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Cole Kmet",
+"team": "CHI",
+"pos": "TE",
+"bye": 10.0,
+"points": 64.0,
+"yahoo_rank": 377.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"targets": 37.7,
+"rec": 25.4,
+"rec_yd": 265.0,
+"rec_td": 2.1,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Tory Horton",
+"team": "SEA",
+"pos": "WR",
+"bye": 11.0,
+"points": 64.0,
+"yahoo_rank": 299.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 1.3,
+"targets": 37.9,
+"rec": 22.7,
+"rec_yd": 279.0,
+"rec_td": 2.2,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Keon Coleman",
+"team": "BUF",
+"pos": "WR",
+"bye": 7.0,
+"points": 64.0,
+"yahoo_rank": 270.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 12.0,
+"rush_att": 0.7,
+"rush_yd": 2.6,
+"targets": 37.3,
+"rec": 22.5,
+"rec_yd": 282.0,
+"rec_td": 2.2,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Elijah Arroyo",
+"team": "SEA",
+"pos": "TE",
+"bye": 11.0,
+"points": 63.0,
+"yahoo_rank": 314.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"targets": 35.5,
+"rec": 23.5,
+"rec_yd": 275.0,
+"rec_td": 2.1,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Darius Slayton",
+"team": "NYG",
+"pos": "WR",
+"bye": 8.0,
+"points": 63.0,
+"yahoo_rank": 274.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.7,
+"rush_yd": 3.0,
+"targets": 40.6,
+"rec": 23.0,
+"rec_yd": 319.0,
+"rec_td": 1.3,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Antonio Williams",
+"team": "WAS",
+"pos": "WR",
+"bye": 7.0,
+"points": 63.0,
+"yahoo_rank": 236.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.6,
+"rush_yd": 5.4,
+"rush_td": 0.0,
+"targets": 34.7,
+"rec": 24.1,
+"rec_yd": 276.0,
+"rec_td": 1.8,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Xavier Hutchinson",
+"team": "HOU",
+"pos": "WR",
+"bye": 8.0,
+"points": 63.0,
+"yahoo_rank": 294.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.4,
+"rush_yd": 8.4,
+"rush_td": 0.0,
+"targets": 40.6,
+"rec": 23.2,
+"rec_yd": 283.0,
+"rec_td": 1.8,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Ted Hurst III",
+"team": "TB",
+"pos": "WR",
+"bye": 10.0,
+"points": 63.0,
+"yahoo_rank": 241.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 2.0,
+"targets": 36.5,
+"rec": 23.5,
+"rec_yd": 287.0,
+"rec_td": 1.7,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Kaleb Johnson",
+"team": "GB",
+"pos": "RB",
+"bye": 11.0,
+"points": 61.0,
+"yahoo_rank": 210.0,
+"pct_rostered": 12.0,
+"stats": {
+"games": 14.0,
+"rush_att": 80.5,
+"rush_yd": 311.0,
+"rush_td": 2.6,
+"targets": 9.7,
+"rec": 6.9,
+"rec_yd": 59.9,
+"rec_td": 0.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Noah Gray",
+"team": "KC",
+"pos": "TE",
+"bye": 5.0,
+"points": 60.0,
+"yahoo_rank": 2113.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"targets": 41.8,
+"rec": 26.0,
+"rec_yd": 250.0,
+"rec_td": 1.5,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Jack Bech",
+"team": "LV",
+"pos": "WR",
+"bye": 13.0,
+"points": 58.0,
+"yahoo_rank": 234.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_yd": 0.7,
+"targets": 34.6,
+"rec": 22.7,
+"rec_yd": 262.0,
+"rec_td": 1.5,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Josh Jacobs",
+"team": "GB",
+"pos": "RB",
+"bye": 11.0,
+"points": 58.0,
+"yahoo_rank": 108.0,
+"pct_rostered": 92.0,
+"stats": {
+"games": 6.0,
+"rush_att": 64.7,
+"rush_yd": 265.0,
+"rush_td": 2.9,
+"targets": 9.7,
+"rec": 7.3,
+"rec_yd": 58.5,
+"rec_td": 0.1,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Tank Dell",
+"team": "HOU",
+"pos": "WR",
+"bye": 8.0,
+"points": 58.0,
+"yahoo_rank": 252.0,
+"pct_rostered": 14.0,
+"stats": {
+"games": 14.0,
+"rush_att": 2.3,
+"rush_yd": 11.4,
+"targets": 27.2,
+"rec": 20.3,
+"rec_yd": 257.0,
+"rec_td": 1.7,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Isaiah Davis",
+"team": "NYJ",
+"pos": "RB",
+"bye": 13.0,
+"points": 57.0,
+"yahoo_rank": 281.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 40.1,
+"rush_yd": 186.0,
+"rush_td": 1.4,
+"targets": 23.6,
+"rec": 15.0,
+"rec_yd": 127.0,
+"rec_td": 0.5,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Kaelon Black",
+"team": "SF",
+"pos": "RB",
+"bye": 8.0,
+"points": 57.0,
+"yahoo_rank": 159.0,
+"pct_rostered": 18.0,
+"stats": {
+"games": 12.0,
+"rush_att": 64.6,
+"rush_yd": 270.0,
+"rush_td": 2.1,
+"targets": 7.9,
+"rec": 8.3,
+"rec_yd": 79.0,
+"rec_td": 0.3,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Chimere Dike",
+"team": "TEN",
+"pos": "WR",
+"bye": 9.0,
+"points": 57.0,
+"yahoo_rank": 323.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 16.0,
+"rush_att": 7.6,
+"rush_yd": 25.2,
+"rush_td": 0.3,
+"targets": 30.7,
+"rec": 17.8,
+"rec_yd": 179.0,
+"rec_td": 2.1,
+"ret_td": 0.8,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Tyrone Tracy Jr.",
+"team": "NYG",
+"pos": "RB",
+"bye": 8.0,
+"points": 57.0,
+"yahoo_rank": 221.0,
+"pct_rostered": 22.0,
+"stats": {
+"games": 16.0,
+"rush_att": 61.1,
+"rush_yd": 254.0,
+"rush_td": 1.3,
+"targets": 14.5,
+"rec": 11.0,
+"rec_yd": 87.6,
+"rec_td": 0.7,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Erick All Jr.",
+"team": "CIN",
+"pos": "TE",
+"bye": 6.0,
+"points": 57.0,
+"yahoo_rank": 317.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 12.0,
+"targets": 29.5,
+"rec": 24.2,
+"rec_yd": 238.0,
+"rec_td": 1.5,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Ty Johnson",
+"team": "BUF",
+"pos": "RB",
+"bye": 7.0,
+"points": 57.0,
+"yahoo_rank": 339.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"rush_att": 31.8,
+"rush_yd": 135.0,
+"rush_td": 1.2,
+"targets": 25.6,
+"rec": 15.5,
+"rec_yd": 151.0,
+"rec_td": 0.9,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Jaylen Wright",
+"team": "MIA",
+"pos": "RB",
+"bye": 6.0,
+"points": 56.0,
+"yahoo_rank": 271.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 12.0,
+"rush_att": 58.1,
+"rush_yd": 242.0,
+"rush_td": 1.5,
+"targets": 15.9,
+"rec": 10.6,
+"rec_yd": 88.1,
+"rec_td": 0.6,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Marvin Mims Jr.",
+"team": "DEN",
+"pos": "WR",
+"bye": 10.0,
+"points": 55.0,
+"yahoo_rank": 337.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 7.4,
+"rush_yd": 40.3,
+"rush_td": 0.1,
+"targets": 30.8,
+"rec": 19.6,
+"rec_yd": 202.0,
+"rec_td": 1.1,
+"ret_td": 0.8,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Roman Wilson",
+"team": "PIT",
+"pos": "WR",
+"bye": 9.0,
+"points": 54.0,
+"yahoo_rank": 348.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 12.0,
+"targets": 33.3,
+"rec": 19.8,
+"rec_yd": 257.0,
+"rec_td": 1.5,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Elic Ayomanor",
+"team": "TEN",
+"pos": "WR",
+"bye": 9.0,
+"points": 53.0,
+"yahoo_rank": 325.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"targets": 33.5,
+"rec": 18.7,
+"rec_yd": 244.0,
+"rec_td": 1.7,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Elijah Sarratt",
+"team": "BAL",
+"pos": "WR",
+"bye": 13.0,
+"points": 53.0,
+"yahoo_rank": 303.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 1.7,
+"targets": 25.9,
+"rec": 19.7,
+"rec_yd": 234.0,
+"rec_td": 1.7,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Sean Tucker",
+"team": "TB",
+"pos": "RB",
+"bye": 10.0,
+"points": 52.0,
+"yahoo_rank": 243.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 16.0,
+"rush_att": 61.0,
+"rush_yd": 255.0,
+"rush_td": 3.1,
+"targets": 4.7,
+"rec": 4.0,
+"rec_yd": 27.1,
+"rec_td": 0.2,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Jalen Tolbert",
+"team": "MIA",
+"pos": "WR",
+"bye": 6.0,
+"points": 52.0,
+"yahoo_rank": 2102.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 12.0,
+"targets": 28.2,
+"rec": 19.8,
+"rec_yd": 233.0,
+"rec_td": 1.5,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Daniel Bellinger",
+"team": "TEN",
+"pos": "TE",
+"bye": 9.0,
+"points": 52.0,
+"yahoo_rank": 2095.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"targets": 30.8,
+"rec": 20.2,
+"rec_yd": 234.0,
+"rec_td": 1.3,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Nicholas Singleton",
+"team": "TEN",
+"pos": "RB",
+"bye": 9.0,
+"points": 51.0,
+"yahoo_rank": 205.0,
+"pct_rostered": 4.0,
+"stats": {
+"games": 15.0,
+"rush_att": 50.6,
+"rush_yd": 212.0,
+"rush_td": 1.3,
+"targets": 5.9,
+"rec": 9.9,
+"rec_yd": 99.0,
+"rec_td": 0.4,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Kimani Vidal",
+"team": "LAC",
+"pos": "RB",
+"bye": 7.0,
+"points": 51.0,
+"yahoo_rank": 227.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 14.0,
+"rush_att": 50.4,
+"rush_yd": 210.0,
+"rush_td": 1.5,
+"targets": 11.4,
+"rec": 9.6,
+"rec_yd": 79.0,
+"rec_td": 0.6,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Carson Beck",
+"team": "ARI",
+"pos": "QB",
+"bye": 14.0,
+"points": 51.0,
+"yahoo_rank": 319.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 4.0,
+"pass_yd": 697.0,
+"pass_td": 3.8,
+"pass_int": 3.2,
+"rush_att": 7.9,
+"rush_yd": 36.1,
+"rush_td": 0.1,
+"two_pt": 0.2,
+"fum_lost": 0.3
+}
+},
+{
+"name": "George Holani",
+"team": "SEA",
+"pos": "RB",
+"bye": 11.0,
+"points": 51.0,
+"yahoo_rank": 220.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 12.0,
+"rush_att": 52.6,
+"rush_yd": 204.0,
+"rush_td": 1.5,
+"targets": 13.4,
+"rec": 10.3,
+"rec_yd": 77.8,
+"rec_td": 0.6,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Elijah Higgins",
+"team": "ARI",
+"pos": "TE",
+"bye": 14.0,
+"points": 50.0,
+"yahoo_rank": 2122.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"targets": 32.8,
+"rec": 22.1,
+"rec_yd": 210.0,
+"rec_td": 1.2,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Eli Stowers",
+"team": "PHI",
+"pos": "TE",
+"bye": 10.0,
+"points": 50.0,
+"yahoo_rank": 313.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.5,
+"rush_yd": 5.5,
+"targets": 25.9,
+"rec": 19.9,
+"rec_yd": 207.0,
+"rec_td": 1.5,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Jaydon Blue",
+"team": "PHI",
+"pos": "RB",
+"bye": 10.0,
+"points": 50.0,
+"yahoo_rank": 250.0,
+"pct_rostered": 4.0,
+"stats": {
+"games": 16.0,
+"rush_att": 47.0,
+"rush_yd": 163.0,
+"rush_td": 2.0,
+"targets": 11.0,
+"rec": 9.0,
+"rec_yd": 64.0,
+"rec_td": 1.0
+}
+},
+{
+"name": "Jordan James",
+"team": "SF",
+"pos": "RB",
+"bye": 8.0,
+"points": 49.0,
+"yahoo_rank": 244.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 12.0,
+"rush_att": 56.0,
+"rush_yd": 238.0,
+"rush_td": 1.9,
+"targets": 9.9,
+"rec": 7.3,
+"rec_yd": 60.0,
+"rec_td": 0.2,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "Malik Benson",
+"team": "LV",
+"pos": "WR",
+"bye": 13.0,
+"points": 49.0,
+"yahoo_rank": 296.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 1.7,
+"targets": 29.9,
+"rec": 18.9,
+"rec_yd": 217.0,
+"rec_td": 1.4,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Jake Tonges",
+"team": "SF",
+"pos": "TE",
+"bye": 8.0,
+"points": 49.0,
+"yahoo_rank": 301.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"targets": 25.9,
+"rec": 20.0,
+"rec_yd": 191.0,
+"rec_td": 1.6,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Hollywood Brown",
+"team": "PHI",
+"pos": "WR",
+"bye": 10.0,
+"points": 49.0,
+"yahoo_rank": 349.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 14.0,
+"targets": 28.8,
+"rec": 18.0,
+"rec_yd": 216.0,
+"rec_td": 1.5,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Eli Raridon",
+"team": "NE",
+"pos": "TE",
+"bye": 11.0,
+"points": 48.0,
+"yahoo_rank": 273.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"targets": 23.5,
+"rec": 20.3,
+"rec_yd": 207.0,
+"rec_td": 1.1,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Olamide Zaccheaus",
+"team": "ATL",
+"pos": "WR",
+"bye": 11.0,
+"points": 47.0,
+"yahoo_rank": 2086.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.7,
+"rush_yd": 7.4,
+"rush_td": 0.0,
+"targets": 36.2,
+"rec": 19.2,
+"rec_yd": 187.0,
+"rec_td": 1.4,
+"two_pt": 0.1,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Isiah Pacheco",
+"team": "DET",
+"pos": "RB",
+"bye": 6.0,
+"points": 47.0,
+"yahoo_rank": 178.0,
+"pct_rostered": 24.0,
+"stats": {
+"games": 11.0,
+"rush_att": 60.7,
+"rush_yd": 255.0,
+"rush_td": 1.5,
+"targets": 7.7,
+"rec": 7.3,
+"rec_yd": 43.3,
+"rec_td": 0.2,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Will Kacmarek",
+"team": "MIA",
+"pos": "TE",
+"bye": 6.0,
+"points": 47.0,
+"yahoo_rank": 2254.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"targets": 27.8,
+"rec": 20.8,
+"rec_yd": 202.0,
+"rec_td": 1.0,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Kaytron Allen",
+"team": "WAS",
+"pos": "RB",
+"bye": 7.0,
+"points": 47.0,
+"yahoo_rank": 204.0,
+"pct_rostered": 3.0,
+"stats": {
+"games": 12.0,
+"rush_att": 52.7,
+"rush_yd": 230.0,
+"rush_td": 1.4,
+"targets": 5.1,
+"rec": 6.9,
+"rec_yd": 67.8,
+"rec_td": 0.2,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Kalif Raymond",
+"team": "CHI",
+"pos": "WR",
+"bye": 10.0,
+"points": 46.0,
+"yahoo_rank": 2119.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.4,
+"rush_yd": 14.4,
+"rush_td": 0.0,
+"targets": 27.0,
+"rec": 17.7,
+"rec_yd": 199.0,
+"rec_td": 1.1,
+"ret_td": 0.2,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Isaiah Bond",
+"team": "CLE",
+"pos": "WR",
+"bye": 11.0,
+"points": 46.0,
+"yahoo_rank": 338.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 12.0,
+"rush_att": 2.5,
+"rush_yd": 11.0,
+"rush_td": 0.0,
+"targets": 30.3,
+"rec": 14.6,
+"rec_yd": 221.0,
+"rec_td": 1.2,
+"ret_td": 0.2,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Demond Claiborne",
+"team": "MIN",
+"pos": "RB",
+"bye": 6.0,
+"points": 46.0,
+"yahoo_rank": 202.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 16.0,
+"rush_att": 33.3,
+"rush_yd": 143.0,
+"rush_td": 1.0,
+"targets": 13.7,
+"rec": 11.7,
+"rec_yd": 104.0,
+"rec_td": 0.6,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Ollie Gordon II",
+"team": "MIA",
+"pos": "RB",
+"bye": 6.0,
+"points": 45.0,
+"yahoo_rank": 280.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 12.0,
+"rush_att": 45.9,
+"rush_yd": 167.0,
+"rush_td": 1.7,
+"targets": 11.9,
+"rec": 8.6,
+"rec_yd": 59.9,
+"rec_td": 0.6,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Noah Fant",
+"team": "NO",
+"pos": "TE",
+"bye": 8.0,
+"points": 45.0,
+"yahoo_rank": 369.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"targets": 28.7,
+"rec": 19.7,
+"rec_yd": 179.0,
+"rec_td": 1.3,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Kyle Williams",
+"team": "NE",
+"pos": "WR",
+"bye": 11.0,
+"points": 44.0,
+"yahoo_rank": 343.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 1.8,
+"rush_yd": 6.5,
+"rush_td": 0.0,
+"targets": 20.2,
+"rec": 14.7,
+"rec_yd": 210.0,
+"rec_td": 1.2,
+"ret_td": 0.1,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Josh Oliver",
+"team": "MIN",
+"pos": "TE",
+"bye": 6.0,
+"points": 44.0,
+"yahoo_rank": 2071.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"targets": 24.6,
+"rec": 17.7,
+"rec_yd": 186.0,
+"rec_td": 1.3,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Bryce Lance",
+"team": "NO",
+"pos": "WR",
+"bye": 8.0,
+"points": 44.0,
+"yahoo_rank": 288.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 14.0,
+"targets": 21.0,
+"rec": 17.1,
+"rec_yd": 199.0,
+"rec_td": 1.2,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Treylon Burks",
+"team": "WAS",
+"pos": "WR",
+"bye": 7.0,
+"points": 44.0,
+"yahoo_rank": 278.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 14.0,
+"rush_att": 0.9,
+"rush_yd": 4.2,
+"targets": 33.0,
+"rec": 16.1,
+"rec_yd": 196.0,
+"rec_td": 1.3,
+"two_pt": 0.1,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Joshua Palmer",
+"team": "BUF",
+"pos": "WR",
+"bye": 7.0,
+"points": 44.0,
+"yahoo_rank": 292.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 12.0,
+"targets": 20.4,
+"rec": 15.9,
+"rec_yd": 217.0,
+"rec_td": 1.1,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Tyler Higbee",
+"team": "LAR",
+"pos": "TE",
+"bye": 11.0,
+"points": 44.0,
+"yahoo_rank": 361.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 15.0,
+"targets": 24.3,
+"rec": 17.5,
+"rec_yd": 190.0,
+"rec_td": 1.2,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Austin Hooper",
+"team": "ATL",
+"pos": "TE",
+"bye": 11.0,
+"points": 44.0,
+"yahoo_rank": 2074.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"targets": 27.8,
+"rec": 18.0,
+"rec_yd": 196.0,
+"rec_td": 1.0,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Oscar Delp",
+"team": "NO",
+"pos": "TE",
+"bye": 8.0,
+"points": 43.0,
+"yahoo_rank": 322.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 12.0,
+"targets": 24.3,
+"rec": 18.3,
+"rec_yd": 187.0,
+"rec_td": 1.1,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Skyler Bell",
+"team": "BUF",
+"pos": "WR",
+"bye": 7.0,
+"points": 43.0,
+"yahoo_rank": 310.0,
+"pct_rostered": 1.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.3,
+"rush_yd": 1.7,
+"targets": 20.7,
+"rec": 16.1,
+"rec_yd": 183.0,
+"rec_td": 1.4,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Zavion Thomas",
+"team": "CHI",
+"pos": "WR",
+"bye": 10.0,
+"points": 43.0,
+"yahoo_rank": 346.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.3,
+"rush_yd": 10.8,
+"rush_td": 0.0,
+"targets": 26.2,
+"rec": 15.5,
+"rec_yd": 175.0,
+"rec_td": 1.3,
+"ret_td": 0.1,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Isaiah Williams",
+"team": "NYJ",
+"pos": "WR",
+"bye": 13.0,
+"points": 43.0,
+"yahoo_rank": 2541.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"rush_att": 2.7,
+"rush_yd": 12.5,
+"rush_td": 0.0,
+"targets": 31.8,
+"rec": 17.0,
+"rec_yd": 160.0,
+"rec_td": 0.7,
+"ret_td": 0.7,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Greg Dortch",
+"team": "BUF",
+"pos": "WR",
+"bye": 7.0,
+"points": 42.0,
+"yahoo_rank": 2078.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 12.0,
+"rush_att": 4.0,
+"rush_yd": 17.0,
+"targets": 24.0,
+"rec": 18.0,
+"rec_yd": 167.0,
+"rec_td": 1.0
+}
+},
+{
+"name": "Colbie Young",
+"team": "CIN",
+"pos": "WR",
+"bye": 6.0,
+"points": 42.0,
+"yahoo_rank": 340.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 8.0,
+"rush_att": 0.3,
+"rush_yd": 1.7,
+"targets": 23.4,
+"rec": 16.7,
+"rec_yd": 193.0,
+"rec_td": 1.0,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Cade Klubnik",
+"team": "NYJ",
+"pos": "QB",
+"bye": 13.0,
+"points": 41.0,
+"yahoo_rank": 2831.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 2.0,
+"pass_yd": 586.0,
+"pass_td": 3.1,
+"pass_int": 2.7,
+"rush_att": 4.8,
+"rush_yd": 16.6,
+"rush_td": 0.1,
+"two_pt": 0.1,
+"fum_lost": 0.2
+}
+},
+{
+"name": "LeQuint Allen Jr.",
+"team": "JAX",
+"pos": "RB",
+"bye": 7.0,
+"points": 41.0,
+"yahoo_rank": 330.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"rush_att": 16.5,
+"rush_yd": 66.5,
+"rush_td": 0.2,
+"targets": 23.0,
+"rec": 16.1,
+"rec_yd": 115.0,
+"rec_td": 0.9,
+"two_pt": 0.0,
+"fum_lost": 0.1
+}
+},
+{
+"name": "Mack Hollins",
+"team": "NE",
+"pos": "WR",
+"bye": 11.0,
+"points": 40.0,
+"yahoo_rank": 351.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 16.0,
+"rush_att": 0.7,
+"rush_yd": 1.8,
+"rush_td": 0.0,
+"targets": 27.0,
+"rec": 15.8,
+"rec_yd": 191.0,
+"rec_td": 0.9,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Kevin Coleman Jr.",
+"team": "MIA",
+"pos": "WR",
+"bye": 6.0,
+"points": 40.0,
+"yahoo_rank": 2309.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 14.0,
+"targets": 25.3,
+"rec": 17.2,
+"rec_yd": 194.0,
+"rec_td": 0.6,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Brenen Thompson",
+"team": "LAC",
+"pos": "WR",
+"bye": 7.0,
+"points": 40.0,
+"yahoo_rank": 311.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 12.0,
+"rush_att": 0.7,
+"rush_yd": 1.6,
+"rush_td": 0.0,
+"targets": 19.7,
+"rec": 14.8,
+"rec_yd": 184.0,
+"rec_td": 1.1,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Jimmy Horn Jr.",
+"team": "CAR",
+"pos": "WR",
+"bye": 5.0,
+"points": 40.0,
+"yahoo_rank": 2535.0,
+"pct_rostered": 0.0,
+"stats": {
+"games": 12.0,
+"rush_att": 6.4,
+"rush_yd": 31.8,
+"rush_td": 0.1,
+"targets": 20.9,
+"rec": 13.7,
+"rec_yd": 140.0,
+"rec_td": 1.1,
+"ret_td": 0.3,
+"two_pt": 0.0,
+"fum_lost": 0.0
+}
+},
+{
+"name": "Brandon Aiyuk",
+"team": "SF",
+"pos": "WR",
+"bye": 8.0,
+"points": 40.0,
+"yahoo_rank": 341.0,
+"pct_rostered": 2.0,
+"stats": {
+"games": 6.0,
+"rush_yd": 1.0,
+"targets": 22.0,
+"rec": 14.5,
+"rec_yd": 196.0,
+"rec_td": 0.9
+}
+},
+{
+"name": "Harrison Mevis",
+"team": "LAR",
+"pos": "K",
+"bye": 11.0,
+"points": 136.0,
+"yahoo_rank": 253.0,
+"pct_rostered": 65.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 7.2,
+"fg_30_39": 8.9,
+"fg_40_49": 7.9,
+"fg_50": 2.0,
+"pat": 46.1
+}
+},
+{
+"name": "Spencer Shrader",
+"team": "IND",
+"pos": "K",
+"bye": 13.0,
+"points": 136.0,
+"yahoo_rank": 356.0,
+"pct_rostered": 2.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 7.5,
+"fg_30_39": 9.2,
+"fg_40_49": 9.1,
+"fg_50": 1.9,
+"pat": 39.6
+}
+},
+{
+"name": "Jason Myers",
+"team": "SEA",
+"pos": "K",
+"bye": 11.0,
+"points": 134.0,
+"yahoo_rank": 188.0,
+"pct_rostered": 98.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 7.2,
+"fg_30_39": 8.9,
+"fg_40_49": 8.4,
+"fg_50": 2.0,
+"pat": 42.0
+}
+},
+{
+"name": "Tyler Loop",
+"team": "BAL",
+"pos": "K",
+"bye": 13.0,
+"points": 134.0,
+"yahoo_rank": 201.0,
+"pct_rostered": 84.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.7,
+"fg_30_39": 8.9,
+"fg_40_49": 8.3,
+"fg_50": 2.0,
+"pat": 43.4
+}
+},
+{
+"name": "Cameron Dicker",
+"team": "LAC",
+"pos": "K",
+"bye": 7.0,
+"points": 134.0,
+"yahoo_rank": 187.0,
+"pct_rostered": 98.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 7.2,
+"fg_30_39": 9.3,
+"fg_40_49": 8.3,
+"fg_50": 1.9,
+"pat": 40.9
+}
+},
+{
+"name": "Brandon Aubrey",
+"team": "DAL",
+"pos": "K",
+"bye": 14.0,
+"points": 133.0,
+"yahoo_rank": 168.0,
+"pct_rostered": 100.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 7.1,
+"fg_30_39": 8.8,
+"fg_40_49": 8.2,
+"fg_50": 1.9,
+"pat": 43.3
+}
+},
+{
+"name": "Evan McPherson",
+"team": "CIN",
+"pos": "K",
+"bye": 6.0,
+"points": 133.0,
+"yahoo_rank": 219.0,
+"pct_rostered": 55.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.7,
+"fg_30_39": 8.8,
+"fg_40_49": 8.3,
+"fg_50": 1.9,
+"pat": 43.5
+}
+},
+{
+"name": "Jake Bates",
+"team": "DET",
+"pos": "K",
+"bye": 6.0,
+"points": 133.0,
+"yahoo_rank": 231.0,
+"pct_rostered": 62.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.7,
+"fg_30_39": 8.9,
+"fg_40_49": 7.8,
+"fg_50": 2.0,
+"pat": 45.1
+}
+},
+{
+"name": "Ka'imi Fairbairn",
+"team": "HOU",
+"pos": "K",
+"bye": 8.0,
+"points": 132.0,
+"yahoo_rank": 181.0,
+"pct_rostered": 98.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 7.2,
+"fg_30_39": 8.9,
+"fg_40_49": 8.8,
+"fg_50": 1.9,
+"pat": 38.5
+}
+},
+{
+"name": "Tyler Bass",
+"team": "BUF",
+"pos": "K",
+"bye": 7.0,
+"points": 131.0,
+"yahoo_rank": 2529.0,
+"pct_rostered": 9.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.7,
+"fg_30_39": 8.4,
+"fg_40_49": 7.8,
+"fg_50": 2.0,
+"pat": 44.1
+}
+},
+{
+"name": "Eddy Pineiro",
+"team": "SF",
+"pos": "K",
+"bye": 8.0,
+"points": 130.0,
+"yahoo_rank": 217.0,
+"pct_rostered": 61.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.7,
+"fg_30_39": 8.9,
+"fg_40_49": 7.8,
+"fg_50": 1.9,
+"pat": 42.3
+}
+},
+{
+"name": "Harrison Butker",
+"team": "KC",
+"pos": "K",
+"bye": 5.0,
+"points": 129.0,
+"yahoo_rank": 275.0,
+"pct_rostered": 27.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.7,
+"fg_30_39": 8.9,
+"fg_40_49": 7.8,
+"fg_50": 2.0,
+"pat": 40.6
+}
+},
+{
+"name": "Andy Borregales",
+"team": "NE",
+"pos": "K",
+"bye": 11.0,
+"points": 128.0,
+"yahoo_rank": 286.0,
+"pct_rostered": 10.0,
+"stats": {
+"fg_0_19": 0.6,
+"fg_20_29": 6.2,
+"fg_30_39": 8.9,
+"fg_40_49": 7.8,
+"fg_50": 1.9,
+"pat": 40.5
+}
+},
+{
+"name": "Cairo Santos",
+"team": "CHI",
+"pos": "K",
+"bye": 10.0,
+"points": 128.0,
+"yahoo_rank": 215.0,
+"pct_rostered": 44.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.6,
+"fg_30_39": 8.8,
+"fg_40_49": 7.7,
+"fg_50": 1.9,
+"pat": 40.9
+}
+},
+{
+"name": "Cam Little",
+"team": "JAX",
+"pos": "K",
+"bye": 7.0,
+"points": 127.0,
+"yahoo_rank": 193.0,
+"pct_rostered": 96.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.6,
+"fg_30_39": 8.8,
+"fg_40_49": 7.7,
+"fg_50": 1.9,
+"pat": 40.6
+}
+},
+{
+"name": "Will Reichard",
+"team": "MIN",
+"pos": "K",
+"bye": 6.0,
+"points": 127.0,
+"yahoo_rank": 207.0,
+"pct_rostered": 60.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.6,
+"fg_30_39": 8.7,
+"fg_40_49": 8.2,
+"fg_50": 1.9,
+"pat": 38.4
+}
+},
+{
+"name": "Wil Lutz",
+"team": "DEN",
+"pos": "K",
+"bye": 10.0,
+"points": 126.0,
+"yahoo_rank": 225.0,
+"pct_rostered": 21.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.7,
+"fg_30_39": 8.8,
+"fg_40_49": 7.8,
+"fg_50": 1.9,
+"pat": 38.6
+}
+},
+{
+"name": "Chase McLaughlin",
+"team": "TB",
+"pos": "K",
+"bye": 10.0,
+"points": 126.0,
+"yahoo_rank": 265.0,
+"pct_rostered": 12.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.6,
+"fg_30_39": 8.7,
+"fg_40_49": 7.7,
+"fg_50": 1.9,
+"pat": 39.6
+}
+},
+{
+"name": "Jake Elliott",
+"team": "PHI",
+"pos": "K",
+"bye": 10.0,
+"points": 124.0,
+"yahoo_rank": 347.0,
+"pct_rostered": 8.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.7,
+"fg_30_39": 8.4,
+"fg_40_49": 7.3,
+"fg_50": 2.0,
+"pat": 39.7
+}
+},
+{
+"name": "Trey Smack",
+"team": "GB",
+"pos": "K",
+"bye": 11.0,
+"points": 124.0,
+"yahoo_rank": 263.0,
+"pct_rostered": 11.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": 7.0,
+"fg_30_39": 9.0,
+"fg_40_49": 9.0,
+"fg_50": null,
+"pat": 40.0
+}
+},
+{
+"name": "Daniel Carlson",
+"team": "NO",
+"pos": "K",
+"bye": 8.0,
+"points": 123.0,
+"yahoo_rank": 2109.0,
+"pct_rostered": 1.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.0,
+"fg_30_39": 8.7,
+"fg_40_49": 8.1,
+"fg_50": 1.9,
+"pat": 37.2
+}
+},
+{
+"name": "Drew Stevens",
+"team": "WAS",
+"pos": "K",
+"bye": 7.0,
+"points": 123.0,
+"yahoo_rank": 2707.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": 7.0,
+"fg_30_39": 9.0,
+"fg_40_49": 9.0,
+"fg_50": null,
+"pat": 39.0
+}
+},
+{
+"name": "Matt Gay",
+"team": "LV",
+"pos": "K",
+"bye": 13.0,
+"points": 123.0,
+"yahoo_rank": 385.0,
+"pct_rostered": 2.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.9,
+"fg_30_39": 8.5,
+"fg_40_49": 8.5,
+"fg_50": 1.8,
+"pat": 33.2
+}
+},
+{
+"name": "Chris Boswell",
+"team": "PIT",
+"pos": "K",
+"bye": 9.0,
+"points": 122.0,
+"yahoo_rank": 268.0,
+"pct_rostered": 23.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.6,
+"fg_30_39": 8.7,
+"fg_40_49": 7.7,
+"fg_50": 1.9,
+"pat": 35.7
+}
+},
+{
+"name": "Nick Folk",
+"team": "ATL",
+"pos": "K",
+"bye": 11.0,
+"points": 122.0,
+"yahoo_rank": 380.0,
+"pct_rostered": 3.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.5,
+"fg_30_39": 8.6,
+"fg_40_49": 7.6,
+"fg_50": 1.8,
+"pat": 36.8
+}
+},
+{
+"name": "Ryan Fitzgerald",
+"team": "CAR",
+"pos": "K",
+"bye": 5.0,
+"points": 119.0,
+"yahoo_rank": 2132.0,
+"pct_rostered": 1.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.5,
+"fg_30_39": 8.1,
+"fg_40_49": 7.6,
+"fg_50": 1.8,
+"pat": 34.8
+}
+},
+{
+"name": "Blake Grupe",
+"team": "NYJ",
+"pos": "K",
+"bye": 13.0,
+"points": 117.0,
+"yahoo_rank": 376.0,
+"pct_rostered": 1.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.4,
+"fg_30_39": 8.0,
+"fg_40_49": 7.5,
+"fg_50": 1.8,
+"pat": 34.2
+}
+},
+{
+"name": "Riley Patterson",
+"team": "MIA",
+"pos": "K",
+"bye": 6.0,
+"points": 114.0,
+"yahoo_rank": 2081.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.3,
+"fg_30_39": 8.9,
+"fg_40_49": 7.4,
+"fg_50": 1.8,
+"pat": 29.7
+}
+},
+{
+"name": "Joey Slye",
+"team": "TEN",
+"pos": "K",
+"bye": 9.0,
+"points": 114.0,
+"yahoo_rank": 371.0,
+"pct_rostered": 1.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.5,
+"fg_30_39": 8.1,
+"fg_40_49": 7.1,
+"fg_50": 1.8,
+"pat": 32.8
+}
+},
+{
+"name": "Dominic Zvada",
+"team": "NYG",
+"pos": "K",
+"bye": 8.0,
+"points": 114.0,
+"yahoo_rank": 2705.0,
+"pct_rostered": 1.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": 7.0,
+"fg_30_39": 9.0,
+"fg_40_49": 8.0,
+"fg_50": null,
+"pat": 34.0
+}
+},
+{
+"name": "Chad Ryland",
+"team": "ARI",
+"pos": "K",
+"bye": 14.0,
+"points": 112.0,
+"yahoo_rank": 375.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.3,
+"fg_30_39": 7.9,
+"fg_40_49": 7.4,
+"fg_50": 1.7,
+"pat": 31.1
+}
+},
+{
+"name": "Andre Szmyt",
+"team": "CLE",
+"pos": "K",
+"bye": 11.0,
+"points": 109.0,
+"yahoo_rank": 2128.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": 0.1,
+"fg_20_29": 6.0,
+"fg_30_39": 7.6,
+"fg_40_49": 7.1,
+"fg_50": 1.8,
+"pat": 30.6
+}
+},
+{
+"name": "Younghoe Koo",
+"team": "NYG",
+"pos": "K",
+"bye": 8.0,
+"points": 19.0,
+"yahoo_rank": 2129.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": 1.0,
+"fg_30_39": 1.0,
+"fg_40_49": 2.0,
+"fg_50": null,
+"pat": 5.0
+}
+},
+{
+"name": "Cade York",
+"team": "NYJ",
+"pos": "K",
+"bye": 13.0,
+"points": 18.0,
+"yahoo_rank": 2638.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": 1.0,
+"fg_30_39": 2.0,
+"fg_40_49": 1.0,
+"fg_50": null,
+"pat": 5.0
+}
+},
+{
+"name": "Matt Prater",
+"team": "BUF",
+"pos": "K",
+"bye": 7.0,
+"points": 18.0,
+"yahoo_rank": 2082.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": 1.0,
+"fg_30_39": 2.0,
+"fg_40_49": 1.0,
+"fg_50": null,
+"pat": 5.0
+}
+},
+{
+"name": "Jason Sanders",
+"team": "NYJ",
+"pos": "K",
+"bye": 13.0,
+"points": 15.0,
+"yahoo_rank": 2512.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": 1.0,
+"fg_30_39": 1.0,
+"fg_40_49": 1.0,
+"fg_50": null,
+"pat": 5.0
+}
+},
+{
+"name": "Lenny Krieg",
+"team": "GB",
+"pos": "K",
+"bye": 11.0,
+"points": 9.0,
+"yahoo_rank": 2696.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": 1.0,
+"fg_40_49": 1.0,
+"fg_50": null,
+"pat": 2.0
+}
+},
+{
+"name": "Will Ferrin",
+"team": "NYJ",
+"pos": "K",
+"bye": 13.0,
+"points": 9.0,
+"yahoo_rank": 2701.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": 1.0,
+"fg_40_49": 1.0,
+"fg_50": null,
+"pat": 2.0
+}
+},
+{
+"name": "Charlie Smyth",
+"team": "NO",
+"pos": "K",
+"bye": 8.0,
+"points": 8.0,
+"yahoo_rank": 285.0,
+"pct_rostered": 1.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": 1.0,
+"fg_40_49": null,
+"fg_50": null,
+"pat": 5.0
+}
+},
+{
+"name": "Jake Moody",
+"team": "BAL",
+"pos": "K",
+"bye": 13.0,
+"points": 8.0,
+"yahoo_rank": 362.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": 1.0,
+"fg_40_49": null,
+"fg_50": null,
+"pat": 5.0
+}
+},
+{
+"name": "Zane Gonzalez",
+"team": "MIA",
+"pos": "K",
+"bye": 6.0,
+"points": 2.0,
+"yahoo_rank": 359.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": null,
+"fg_40_49": null,
+"fg_50": null,
+"pat": 2.0
+}
+},
+{
+"name": "Ben Sauls",
+"team": "NYG",
+"pos": "K",
+"bye": 8.0,
+"points": 2.0,
+"yahoo_rank": 2703.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": null,
+"fg_40_49": null,
+"fg_50": null,
+"pat": 2.0
+}
+},
+{
+"name": "Brandon McManus",
+"team": "GB",
+"pos": "K",
+"bye": 11.0,
+"points": 2.0,
+"yahoo_rank": 368.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": null,
+"fg_40_49": null,
+"fg_50": null,
+"pat": 2.0
+}
+},
+{
+"name": "Chris Freeman",
+"team": "HOU",
+"pos": "K",
+"bye": 8.0,
+"points": 0.0,
+"yahoo_rank": 2706.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": null,
+"fg_40_49": null,
+"fg_50": null,
+"pat": null
+}
+},
+{
+"name": "Ethan Sanchez",
+"team": "SF",
+"pos": "K",
+"bye": 8.0,
+"points": 0.0,
+"yahoo_rank": 2702.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": null,
+"fg_40_49": null,
+"fg_50": null,
+"pat": null
+}
+},
+{
+"name": "Laith Marjan",
+"team": "PIT",
+"pos": "K",
+"bye": 9.0,
+"points": 0.0,
+"yahoo_rank": 2700.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": null,
+"fg_40_49": null,
+"fg_50": null,
+"pat": null
+}
+},
+{
+"name": "Kansei Matsuzawa",
+"team": "LV",
+"pos": "K",
+"bye": 13.0,
+"points": 0.0,
+"yahoo_rank": 2695.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": null,
+"fg_40_49": null,
+"fg_50": null,
+"pat": null
+}
+},
+{
+"name": "Tanner Brown",
+"team": "NO",
+"pos": "K",
+"bye": 8.0,
+"points": 0.0,
+"yahoo_rank": 2710.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": null,
+"fg_40_49": null,
+"fg_50": null,
+"pat": null
+}
+},
+{
+"name": "Luke Drzewiecki",
+"team": "BAL",
+"pos": "K",
+"bye": 13.0,
+"points": 0.0,
+"yahoo_rank": 2708.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": null,
+"fg_40_49": null,
+"fg_50": null,
+"pat": null
+}
+},
+{
+"name": "Gabriel Plascencia",
+"team": "CHI",
+"pos": "K",
+"bye": 10.0,
+"points": 0.0,
+"yahoo_rank": 2709.0,
+"pct_rostered": 0.0,
+"stats": {
+"fg_0_19": null,
+"fg_20_29": null,
+"fg_30_39": null,
+"fg_40_49": null,
+"fg_50": null,
+"pat": null
+}
+},
+{
+"name": "Rams",
+"team": "LAR",
+"pos": "DEF",
+"bye": 11.0,
+"points": 122.0,
+"yahoo_rank": 169.0,
+"pct_rostered": 99.0,
+"stats": {
+"pts_allowed": 187.0,
+"sacks": 46.2,
+"safeties": 0.2,
+"int": 13.8,
+"fum_rec": 8.6,
+"td": 2.6,
+"blk": 1.1
+}
+},
+{
+"name": "Texans",
+"team": "HOU",
+"pos": "DEF",
+"bye": 8.0,
+"points": 118.0,
+"yahoo_rank": 155.0,
+"pct_rostered": 99.0,
+"stats": {
+"pts_allowed": 176.0,
+"sacks": 46.0,
+"safeties": 0.2,
+"int": 14.4,
+"fum_rec": 8.5,
+"td": 1.3,
+"blk": 1.1
+}
+},
+{
+"name": "Seahawks",
+"team": "SEA",
+"pos": "DEF",
+"bye": 11.0,
+"points": 117.0,
+"yahoo_rank": 176.0,
+"pct_rostered": 99.0,
+"stats": {
+"pts_allowed": 177.0,
+"sacks": 43.6,
+"safeties": 0.2,
+"int": 14.3,
+"fum_rec": 8.4,
+"td": 1.5,
+"blk": 1.1
+}
+},
+{
+"name": "Eagles",
+"team": "PHI",
+"pos": "DEF",
+"bye": 10.0,
+"points": 113.0,
+"yahoo_rank": 185.0,
+"pct_rostered": 96.0,
+"stats": {
+"pts_allowed": 178.0,
+"sacks": 43.8,
+"safeties": 0.2,
+"int": 13.7,
+"fum_rec": 7.9,
+"td": 1.4,
+"blk": 1.1
+}
+},
+{
+"name": "Broncos",
+"team": "DEN",
+"pos": "DEF",
+"bye": 10.0,
+"points": 113.0,
+"yahoo_rank": 175.0,
+"pct_rostered": 99.0,
+"stats": {
+"pts_allowed": 176.0,
+"sacks": 45.9,
+"safeties": 0.2,
+"int": 13.2,
+"fum_rec": 7.5,
+"td": 1.2,
+"blk": 1.1
+}
+},
+{
+"name": "Patriots",
+"team": "NE",
+"pos": "DEF",
+"bye": 11.0,
+"points": 113.0,
+"yahoo_rank": 197.0,
+"pct_rostered": 85.0,
+"stats": {
+"pts_allowed": 182.0,
+"sacks": 43.3,
+"safeties": 0.2,
+"int": 12.9,
+"fum_rec": 8.0,
+"td": 1.9,
+"blk": 1.1
+}
+},
+{
+"name": "Jaguars",
+"team": "JAX",
+"pos": "DEF",
+"bye": 7.0,
+"points": 112.0,
+"yahoo_rank": 196.0,
+"pct_rostered": 84.0,
+"stats": {
+"pts_allowed": 195.0,
+"sacks": 42.4,
+"safeties": 0.2,
+"int": 13.1,
+"fum_rec": 8.0,
+"td": 2.3,
+"blk": 1.1
+}
+},
+{
+"name": "Ravens",
+"team": "BAL",
+"pos": "DEF",
+"bye": 13.0,
+"points": 111.0,
+"yahoo_rank": 203.0,
+"pct_rostered": 58.0,
+"stats": {
+"pts_allowed": 187.0,
+"sacks": 42.9,
+"safeties": 0.2,
+"int": 13.5,
+"fum_rec": 7.9,
+"td": 1.5,
+"blk": 1.1
+}
+},
+{
+"name": "Lions",
+"team": "DET",
+"pos": "DEF",
+"bye": 6.0,
+"points": 109.0,
+"yahoo_rank": 233.0,
+"pct_rostered": 51.0,
+"stats": {
+"pts_allowed": 378.0,
+"sacks": 42.2,
+"safeties": 0.2,
+"int": 12.6,
+"fum_rec": 8.4,
+"td": 1.5,
+"blk": 1.1
+}
+},
+{
+"name": "Vikings",
+"team": "MIN",
+"pos": "DEF",
+"bye": 6.0,
+"points": 108.0,
+"yahoo_rank": 189.0,
+"pct_rostered": 85.0,
+"stats": {
+"pts_allowed": 191.0,
+"sacks": 42.4,
+"safeties": 0.2,
+"int": 12.8,
+"fum_rec": 7.9,
+"td": 1.7,
+"blk": 1.1
+}
+},
+{
+"name": "Steelers",
+"team": "PIT",
+"pos": "DEF",
+"bye": 9.0,
+"points": 106.0,
+"yahoo_rank": 199.0,
+"pct_rostered": 77.0,
+"stats": {
+"pts_allowed": 187.0,
+"sacks": 42.3,
+"safeties": 0.2,
+"int": 12.8,
+"fum_rec": 7.5,
+"td": 1.1,
+"blk": 1.1
+}
+},
+{
+"name": "Bills",
+"team": "BUF",
+"pos": "DEF",
+"bye": 7.0,
+"points": 106.0,
+"yahoo_rank": 242.0,
+"pct_rostered": 18.0,
+"stats": {
+"pts_allowed": 192.0,
+"sacks": 41.5,
+"safeties": 0.2,
+"int": 12.3,
+"fum_rec": 7.4,
+"td": 1.5,
+"blk": 1.1
+}
+},
+{
+"name": "Chargers",
+"team": "LAC",
+"pos": "DEF",
+"bye": 7.0,
+"points": 105.0,
+"yahoo_rank": 228.0,
+"pct_rostered": 64.0,
+"stats": {
+"pts_allowed": 183.0,
+"sacks": 41.0,
+"safeties": 0.2,
+"int": 12.0,
+"fum_rec": 7.3,
+"td": 1.4,
+"blk": 1.1
+}
+},
+{
+"name": "Chiefs",
+"team": "KC",
+"pos": "DEF",
+"bye": 5.0,
+"points": 105.0,
+"yahoo_rank": 238.0,
+"pct_rostered": 12.0,
+"stats": {
+"pts_allowed": 180.0,
+"sacks": 42.3,
+"safeties": 0.2,
+"int": 12.2,
+"fum_rec": 7.5,
+"td": 1.4,
+"blk": 1.1
+}
+},
+{
+"name": "Packers",
+"team": "GB",
+"pos": "DEF",
+"bye": 11.0,
+"points": 103.0,
+"yahoo_rank": 237.0,
+"pct_rostered": 18.0,
+"stats": {
+"pts_allowed": 187.0,
+"sacks": 41.6,
+"safeties": 0.2,
+"int": 12.4,
+"fum_rec": 7.3,
+"td": 1.4,
+"blk": 1.1
+}
+},
+{
+"name": "49ers",
+"team": "SF",
+"pos": "DEF",
+"bye": 8.0,
+"points": 99.0,
+"yahoo_rank": 259.0,
+"pct_rostered": 11.0,
+"stats": {
+"pts_allowed": 190.0,
+"sacks": 39.1,
+"safeties": 0.2,
+"int": 12.1,
+"fum_rec": 7.5,
+"td": 1.5,
+"blk": 1.1
+}
+},
+{
+"name": "Bears",
+"team": "CHI",
+"pos": "DEF",
+"bye": 10.0,
+"points": 99.0,
+"yahoo_rank": 290.0,
+"pct_rostered": 8.0,
+"stats": {
+"pts_allowed": 195.0,
+"sacks": 40.5,
+"safeties": 0.2,
+"int": 11.9,
+"fum_rec": 7.5,
+"td": 1.4,
+"blk": 1.1
+}
+},
+{
+"name": "Colts",
+"team": "IND",
+"pos": "DEF",
+"bye": 13.0,
+"points": 98.0,
+"yahoo_rank": 272.0,
+"pct_rostered": 2.0,
+"stats": {
+"pts_allowed": 208.0,
+"sacks": 42.1,
+"safeties": 0.2,
+"int": 12.3,
+"fum_rec": 7.4,
+"td": 1.2,
+"blk": 1.1
+}
+},
+{
+"name": "Buccaneers",
+"team": "TB",
+"pos": "DEF",
+"bye": 10.0,
+"points": 98.0,
+"yahoo_rank": 269.0,
+"pct_rostered": 3.0,
+"stats": {
+"pts_allowed": 199.0,
+"sacks": 40.3,
+"safeties": 0.2,
+"int": 11.5,
+"fum_rec": 6.9,
+"td": 1.3,
+"blk": 1.1
+}
+},
+{
+"name": "Bengals",
+"team": "CIN",
+"pos": "DEF",
+"bye": 6.0,
+"points": 98.0,
+"yahoo_rank": 257.0,
+"pct_rostered": 4.0,
+"stats": {
+"pts_allowed": 196.0,
+"sacks": 41.1,
+"safeties": 0.2,
+"int": 11.7,
+"fum_rec": 6.9,
+"td": 1.5,
+"blk": 1.1
+}
+},
+{
+"name": "Cowboys",
+"team": "DAL",
+"pos": "DEF",
+"bye": 14.0,
+"points": 97.0,
+"yahoo_rank": 223.0,
+"pct_rostered": 26.0,
+"stats": {
+"pts_allowed": 209.0,
+"sacks": 41.5,
+"safeties": 0.2,
+"int": 11.9,
+"fum_rec": 7.5,
+"td": 1.5,
+"blk": 1.1
+}
+},
+{
+"name": "Falcons",
+"team": "ATL",
+"pos": "DEF",
+"bye": 11.0,
+"points": 95.0,
+"yahoo_rank": 291.0,
+"pct_rostered": 2.0,
+"stats": {
+"pts_allowed": 206.0,
+"sacks": 40.0,
+"safeties": 0.1,
+"int": 11.2,
+"fum_rec": 7.4,
+"td": 1.0,
+"blk": 1.1
+}
+},
+{
+"name": "Giants",
+"team": "NYG",
+"pos": "DEF",
+"bye": 8.0,
+"points": 94.0,
+"yahoo_rank": 266.0,
+"pct_rostered": 4.0,
+"stats": {
+"pts_allowed": 204.0,
+"sacks": 40.9,
+"safeties": 0.2,
+"int": 11.6,
+"fum_rec": 7.5,
+"td": 1.1,
+"blk": 1.1
+}
+},
+{
+"name": "Saints",
+"team": "NO",
+"pos": "DEF",
+"bye": 8.0,
+"points": 93.0,
+"yahoo_rank": 289.0,
+"pct_rostered": 1.0,
+"stats": {
+"pts_allowed": 199.0,
+"sacks": 39.2,
+"safeties": 0.2,
+"int": 10.9,
+"fum_rec": 6.9,
+"td": 1.1,
+"blk": 1.1
+}
+},
+{
+"name": "Panthers",
+"team": "CAR",
+"pos": "DEF",
+"bye": 5.0,
+"points": 91.0,
+"yahoo_rank": 2077.0,
+"pct_rostered": 1.0,
+"stats": {
+"pts_allowed": 197.0,
+"sacks": 38.4,
+"safeties": 0.2,
+"int": 11.3,
+"fum_rec": 7.4,
+"td": 1.0,
+"blk": 1.1
+}
+},
+{
+"name": "Browns",
+"team": "CLE",
+"pos": "DEF",
+"bye": 11.0,
+"points": 90.0,
+"yahoo_rank": 300.0,
+"pct_rostered": 5.0,
+"stats": {
+"pts_allowed": 192.0,
+"sacks": 37.8,
+"safeties": 0.1,
+"int": 11.0,
+"fum_rec": 6.9,
+"td": 0.9,
+"blk": 1.1
+}
+},
+{
+"name": "Commanders",
+"team": "WAS",
+"pos": "DEF",
+"bye": 7.0,
+"points": 88.0,
+"yahoo_rank": 2104.0,
+"pct_rostered": 1.0,
+"stats": {
+"pts_allowed": 211.0,
+"sacks": 39.1,
+"safeties": 0.2,
+"int": 10.8,
+"fum_rec": 6.5,
+"td": 1.2,
+"blk": 1.1
+}
+},
+{
+"name": "Titans",
+"team": "TEN",
+"pos": "DEF",
+"bye": 9.0,
+"points": 87.0,
+"yahoo_rank": 304.0,
+"pct_rostered": 12.0,
+"stats": {
+"pts_allowed": 205.0,
+"sacks": 37.1,
+"safeties": 0.1,
+"int": 10.5,
+"fum_rec": 6.5,
+"td": 1.0,
+"blk": 1.1
+}
+},
+{
+"name": "Raiders",
+"team": "LV",
+"pos": "DEF",
+"bye": 13.0,
+"points": 81.0,
+"yahoo_rank": 2111.0,
+"pct_rostered": 5.0,
+"stats": {
+"pts_allowed": 203.0,
+"sacks": 36.3,
+"safeties": 0.1,
+"int": 9.6,
+"fum_rec": 6.3,
+"td": 0.9,
+"blk": 1.1
+}
+},
+{
+"name": "Jets",
+"team": "NYJ",
+"pos": "DEF",
+"bye": 13.0,
+"points": 81.0,
+"yahoo_rank": 2505.0,
+"pct_rostered": 1.0,
+"stats": {
+"pts_allowed": 199.0,
+"sacks": 37.0,
+"safeties": 0.1,
+"int": 8.8,
+"fum_rec": 6.3,
+"td": 0.8,
+"blk": 1.1
+}
+},
+{
+"name": "Cardinals",
+"team": "ARI",
+"pos": "DEF",
+"bye": 14.0,
+"points": 77.0,
+"yahoo_rank": 2100.0,
+"pct_rostered": 0.0,
+"stats": {
+"pts_allowed": 230.0,
+"sacks": 35.6,
+"safeties": 0.1,
+"int": 9.6,
+"fum_rec": 6.3,
+"td": 1.2,
+"blk": 1.1
+}
+},
+{
+"name": "Dolphins",
+"team": "MIA",
+"pos": "DEF",
+"bye": 6.0,
+"points": 76.0,
+"yahoo_rank": 2073.0,
+"pct_rostered": 1.0,
+"stats": {
+"pts_allowed": 220.0,
+"sacks": 35.6,
+"safeties": 0.1,
+"int": 8.9,
+"fum_rec": 5.9,
+"td": 0.8,
+"blk": 1.1
+}
+}
+]
+}

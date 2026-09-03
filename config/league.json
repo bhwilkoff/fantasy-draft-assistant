@@ -27,5 +27,10 @@
     },
     "dst_points_allowed": [[0, 10.0], [6, 7.0], [13, 4.0], [20, 1.0], [27, 0.0], [34, -1.0], [1000000000, -4.0]]
   },
+  "sources": {
+    "yahoo_bias_weight": 0.2,
+    "kdef_yahoo_weight": 0.5,
+    "_note": "Yahoo's own projections under this league's scoring (data/sources/yahoo_league_proj.json) are a bias check, not a peer: the blend moves toward them by this weight."
+  },
   "season": {"regular_season_weeks": 14, "playoff_weeks": [15, 16, 17], "playoff_teams": 6}
 }
