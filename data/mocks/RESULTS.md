@@ -693,3 +693,46 @@ Everything else held: entry twenty seconds before the start, the
 autodraft prior re-classifying seats as they burned clock, the
 per-source line and Yahoo delta on every pick, the in-room report.
 Report: `data/mocks/reports/10526391.md`; bundle in `data/mocks/harvests/`.
+
+
+## Draft 19 — room 10601647 (12-team, slot 10), joined mid-draft, 2026-09-03
+
+Not a clean run and not graded. The room had been joined from another
+tab at 9:52 MDT (the log shows the autopilot armed at pick 1 and queuing
+from Gibbs on); that tab died around pick 50, Yahoo drafted picks 58-106
+for the seat from the queue and its own rank, and the session found the
+registration in the lobby ("Launch Draft App") at round 10 and entered.
+Real-room flags were on (`hcDraftDelay` 20, `hcAssumeAutodraft` 1).
+
+What it measured:
+
+* **Every one of our turns froze the renderer, for 70 to 180 seconds.**
+  Pick 111: the turn opened at +0 s, the click is recorded at +66 s (after
+  Yahoo's clock had already taken Goedert from the queue). Pick 130: the
+  click landed at +21.7 s, 1.7 s after the 20 s window closed -- the
+  mechanism working exactly as designed. Pick 135: the turn opened, the
+  next log entry is 177 s later, and the draft finished (picks 136-180)
+  while the page was frozen; the tab's title never left "YOUR TURN, DRAFT
+  NOW" and a fresh tab had to be opened.
+* **Every freeze coincided with a tool call into the draft tab** from the
+  monitoring session (a JavaScript eval or a screenshot issued during or
+  just before our turn); the page came back within seconds of the last
+  call timing out at 45 s, and the extension itself reported "not
+  connected" at the same moment. Pick 130, the one turn with no call
+  issued, was clean. The lobby page -- no draft, no autopilot -- also hung
+  a 45 s eval once. The quiet window (DECISIONS 023) held: `windowSkips`
+  counted the quiet passes and no pass ran inside the window.
+* The autopilot now records its own stalls (a 250 ms heartbeat, gaps over
+  1.5 s with the tab's visibility) and the browser's long tasks with
+  attribution, persisted with the log, so the next room can tell a frozen
+  renderer from a frozen debugger session. Draft 20 runs with the 20 s
+  window and no tool call into the draft tab at all.
+* `clock` is null in every log entry, including on our turn (the status
+  reader's regex looks for mm:ss in the body text; the room renders the
+  opponents' clock as bare seconds and ours inside the header). The click
+  path finds the clock itself when it needs it; the audit does not.
+
+Roster (Yahoo's picks 1-9 for the seat from our queue, then ours): `RB
+Achane, C. Brown, Pollard · WR Rice, G. Wilson, McLaurin, Sutton · TE
+Fannin, Goedert, Ferguson · QB Prescott · DEF Broncos · K Myers`. The
+saved log is in localStorage on the Yahoo origin as `hcSavedLog_10601647`.
