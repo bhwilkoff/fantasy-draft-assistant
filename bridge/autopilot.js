@@ -1149,6 +1149,19 @@
             // the league-wide report: every team graded, the near misses,
             // the story of the draft (bridge/report.js)
             try { if (window.__hcReport) A.report = window.__hcReport(h); } catch (e) { A.reportError = String(e); }
+            /* The one-line grade too. It used to be written only by
+             * __hcSupervise(), which a Claude session calls by hand -- so a
+             * hands-off draft finished with a report but no grade, and the
+             * stale grade from an older room was what a reader found in
+             * localStorage (draft 21). Anything the draft produces must be
+             * produced by the draft. */
+            try {
+              if (window.__hcGrade) {
+                window.__hcFinalGrade = window.__hcGrade();
+                localStorage.setItem('hcFinalGrade', JSON.stringify(window.__hcFinalGrade));
+                A.grade = window.__hcFinalGrade;
+              }
+            } catch (e) { A.gradeError = String(e); }
             // put the player list back so the last picks still advise
             var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
               .filter(function (x) { return x.children.length === 0; })
@@ -1316,6 +1329,7 @@
       'prof=[' + (window.__hcProfile ? window.__hcProfile() : '-') + ' pre:' + (A.preMs == null ? '?' : A.preMs + 'ms') + ' reconcile:' + (A.reconcileMs == null ? '?' : A.reconcileMs + 'ms') + ' seq:' + (A.seqMs == null ? '?' : A.seqMs + 'ms') + ']',
       'dialogs=' + ((window.__hcDialogs || []).length),
       'clockAtTurn=' + (A.clockAtTurn || '-'),
+      'grade=' + (A.grade ? (A.grade.myRank + '/' + A.grade.numTeams) : '-'),
       'deadline=' + (A.deadlineVia || '-') + '/armed' + (A.deadlineArmed || 0) + '/fired' + (A.deadlineFires || 0),
       'stalls=' + ((window.__hcStalls || []).length) + (window.__hcStalls && window.__hcStalls.length ? '/max' + Math.round(Math.max.apply(null, window.__hcStalls.map(function (x) { return x.gap; })) / 1000) + 's' : ''),
       A.blind ? 'BLIND=' + A.blind : '',
