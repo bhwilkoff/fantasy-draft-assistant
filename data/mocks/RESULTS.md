@@ -862,3 +862,36 @@ Everything else held: `deadline=worker`, armed 12, fired 10; `clockAtTurn`
 read 00:30 on every turn; the stall heartbeat logged 60-second gaps all
 draft, which is Chrome throttling a background tab while the Worker timer
 kept the clicks on time.
+
+
+## Draft 23 — room 10710193 (12-team, slot 11), real-room flags, 2026-09-04
+
+**First of twelve by forty points, 1725.0 to Martin's 1684.6.** Thirteen
+of fifteen picks by our own click; the report and the grade both written
+by the autopilot in the room (`grade=1/12`).
+
+Roster: `QB Daniels, Shough · RB Henry, Achane, Etienne · WR McMillan, P.
+Washington, Pierce, Sutton, Samuel · TE Fannin, Andrews · K Mevis · DEF
+Broncos`. Report room: 10710193.
+
+**The stale-clock fix (DECISIONS 025) is confirmed.** Slot 11 gives a
+back-to-back turn every round, and `windowFor` now reads **15 at all
+thirteen turns it sized** -- 11, 14, 35, 38, 59, 62, 83, 86, 107, 131,
+134, 155, 158 -- where the same shape produced zeros at two turns in the
+previous mock. Every second pick of a turn got the same window as the
+first.
+
+The two picks that were not ours both fell to the same cause, and it is
+not the clock:
+
+* **Pick 110 had no pass at all.** The roster re-read that follows each of
+  our picks started after pick 107 and was still holding the Results tab
+  three picks later, so every pass returned early and the turn opened and
+  closed unobserved. Yahoo's clock took Mark Andrews from the queue --
+  which is our own ranking, so the pick was sane, but it was not ours.
+* **Pick 179, the last of the draft**, fell to the final-round harvest for
+  the same reason, as it has in earlier mocks by design (DECISIONS 019).
+
+Fixed in DECISIONS 026: the re-read is deferred while our next pick is
+four or fewer away, and abandoned after three seconds instead of twenty
+if our turn opens while it runs.
