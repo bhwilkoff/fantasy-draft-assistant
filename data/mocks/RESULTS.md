@@ -787,3 +787,40 @@ Open: the clock capture in the audit log still read null at pick 93 (the
 re-arm may have fetched the previous bridge from the Pages cache); and
 Jaxson Dart at 100 as a second quarterback with RB graded 12th is worth a
 look at `BENCH_DISCOUNT.QB` under Yahoo-default scoring.
+
+
+## Draft 21 — room 10604470 (12-team, slot 11), real-room flags, 2026-09-03
+
+**First of twelve, 1711.3 to David's 1678.4, grade A**, graded at 100%
+Yahoo coverage, and the first genuinely hands-off run: armed by
+Tampermonkey before pick one, **all fifteen picks the exact recommendation
+drafted by our own click**, no tool call sent into the draft tab from the
+first pick to the last, no re-arm, no missed clock. Four seats were
+autodrafting (medians of 1-3 s), which is the closest a lobby mock has
+come to the Harvey Cup room.
+
+Roster: `QB Daniels, Dart · RB Achane, Henry, Etienne · WR Rice, J.
+Williams, Sutton, Worthy, Samuel · TE Kittle, Goedert · K Aubrey · DEF
+Broncos`. Report: `data/mocks/reports/10604470.yahoo.md`.
+
+**The clock-capped window (DECISIONS 024) is confirmed in a room.** The
+room's clock was 30 s, the configured window 20 s, and the cap held it to
+15 s; every click landed between 13.1 and 16.3 seconds after the previous
+pick:
+
+| pick | 11 | 14 | 35 | 38 | 59 | 62 | 83 | 86 | 107 | 110 | 131 | 134 | 155 | 158 | 179 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| click at | 13.1 | 15.8 | 15.0 | 16.3 | 15.1 | 14.1 | 15.7 | 15.7 | 16.2 | 16.0 | 13.1 | 15.9 | 15.1 | 15.6 | 13.1 |
+
+Also confirmed: the audit log now carries the clock on every pass
+("00:29", "00:26", "00:19" and so on, where every earlier mock logged
+null), and **the deadline timer works in a hidden tab** -- the stall
+heartbeat recorded 60-second gaps for the whole draft, which is Chrome
+throttling `setInterval` in a background tab, while the Worker timer kept
+firing and every click still landed on time. That is the case the real
+draft has to survive if the user switches tabs.
+
+One thing did not run: `hcFinalGrade` was never written for this room, so
+a reader found the stale grade from an older mock. The grade was only
+written by `__hcSupervise()`, which a Claude session calls by hand; the
+final-round harvest now writes it itself.
