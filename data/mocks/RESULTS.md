@@ -924,3 +924,37 @@ Fixed in DECISIONS 027: on the clock, the only reason to stop trying is
 that we are no longer on the clock. The timer now re-arms every second
 until `upIn` leaves zero, and the click path (which already re-derives the
 pick number and checks it is ours) decides what to click.
+
+
+## Draft 25 — room 10713721 (12-team, slot 10), real-room flags, 2026-09-04
+
+**The clean run. First of twelve, 1746.8 to kevin's 1742.2, and all
+fifteen picks drafted by our own click** — the first mock where the count
+is 15 of 15 — with the report and the grade written by the draft itself
+and not one tool call sent into the room while it was live.
+
+| | |
+|---|---|
+| finish | **1st of 12**, 1746.8, 100% Yahoo coverage, 222.9 spread |
+| our picks by our click | **15 of 15** |
+| deadline timer | armed 15, fired 14 |
+| window sized | every turn; `clockAtTurn` 00:30 throughout |
+| roster re-reads | 8 run, 54 deferred off a turn, 0 timed out |
+| dialogs, errors, missed clocks, re-arms | none |
+
+Starters: `QB Allen 334 · RB Achane 254, Henry 230 · WR Rice 194, Adams
+167 · TE Fannin 141 · K Mevis 144 · DEF Broncos 120 · FLEX Pierce 163`.
+
+The per-turn record (`turnLog`, new in this build) is the thing to read:
+
+```
+10:16s  15:8s   34:15s  39:15s  58:15s  63:6s   82:15s  87:15s
+106:15s 111:15s 130:15s 135:12s 154:15s 159:15s 178:15s
+```
+
+Fifteen seconds is the window this room allows (a 30-second clock minus
+the fifteen-second margin); the three shorter waits are turns the stack
+joined with the clock already part-run, which is the cap doing its job.
+In Harvey Cup, on a 60-second clock, every one of these reads 20 s.
+
+This is the run to compare tomorrow's draft against.
