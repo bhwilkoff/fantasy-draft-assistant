@@ -70,7 +70,13 @@ localStorage.setItem('hcRealAutopilot','1')
 
 From then on, on each of our turns the autopilot waits **20 seconds** (the
 override window: `localStorage.setItem('hcDraftDelay','20')` to change it)
-and then clicks Draft on the recommendation. If you want a different
+and then clicks Draft on the recommendation. The window is also capped at
+**the room's clock minus 15 seconds**, read off the header timer on the
+first pass of the turn, so it can never leave the click too late to
+register. Harvey Cup's clock is 60 s, so the full 20 s applies; a lobby
+mock's is 30 s, where the window shortens itself to 15 (DECISIONS 024).
+The click is driven by a Worker timer that fires at the window's exact
+end, so it lands on time even when the tab is in the background. If you want a different
 player, click Draft on him yourself inside the window; the autopilot sees
 the pick number move and stands down. Yahoo's own Autodraft toggle stays
 **off** (the autopilot turns it back off if Yahoo flips it); the queue is
@@ -86,6 +92,28 @@ The flags, all on Yahoo's origin (set once in any Yahoo fantasy page's console):
 | `hcAssumeAutodraft` | on in the real room, off in mocks | model every seat as autodraft until it burns clock (`'1'`/`'0'`) |
 | `hcLeagueOverride` | unset | `'config'` forces our rules in any room (a copy of our league is also recognised by name), `'mock'` forces Yahoo's |
 | `hcMockAutopilot` | unset | `'1'` arms the autopilot in mock rooms and auto-enters from the waiting room |
+
+### Two rules while the draft is live
+
+**Do not run anything in the room's console while you are on the clock.**
+Every JavaScript eval or screenshot taken through the draft tab during our
+turn froze the renderer for 70-180 seconds in mock 10601647, and Yahoo's
+clock took the pick. Watch the panel; if you want a different player,
+click his Draft button. Anything you want to inspect, inspect between
+turns or from a second tab.
+
+**Check the flags before pick one.** In the room's console:
+
+```js
+['hcRealAutopilot','hcDraftDelay','hcAssumeAutodraft','hcLeagueOverride','hcMockAutopilot']
+  .map(k => k + '=' + localStorage.getItem(k)).join(' ')
+```
+
+Expect `hcRealAutopilot=1 hcDraftDelay=20 hcAssumeAutodraft=1`.
+`hcLeagueOverride` should be `null` or `config` — if a mock session left it
+on `'mock'`, clear it with `localStorage.removeItem('hcLeagueOverride')`.
+Then confirm the panel footer names **Harvey Cup rules**, and that
+`__hcStatus()` shows `window=20s` and `deadline=worker`.
 
 ## T-minus 15 minutes — start the relay
 
@@ -133,7 +161,8 @@ first, then the autopilot (mock rooms only), never froze:
 window.__hcNoAutopilot = true;
 document.head.appendChild(Object.assign(document.createElement('script'),
   {src:'https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/arm.js?v='+Date.now()}));
-// step 2 (MOCKS ONLY -- never in Harvey Cup): the autopilot, ~10 s later
+// step 2: the autopilot, ~10 s later (in Harvey Cup this is what drafts;
+// it still honours the override window and hcRealAutopilot)
 document.head.appendChild(Object.assign(document.createElement('script'),
   {src:'https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/autopilot.js?v='+Date.now()}));
 ```
@@ -190,8 +219,16 @@ window.__hcReportShow()     // the report as plain text over the page; select al
 window.__hcReportHide()
 ```
 
-It is also in `localStorage.hcReport`, and the harvest it was built from
-in `localStorage.hcFinalHarvest`. Paste the report into
+It is also in `localStorage.hcReport`, the harvest it was built from in
+`localStorage.hcFinalHarvest`, and the one-line grade (our rank, the
+twelve totals) in `localStorage.hcFinalGrade` — all three written by the
+draft itself in the final round, with no session call needed.
+
+**Copy the report out before you leave the room.** Chrome replaces the
+draft tab within a minute of the end, and a mock league has no results
+page to go back to. Do not try to copy it to the clipboard from a script:
+a 150 KB `navigator.clipboard.writeText` hung the renderer twice. Use
+`__hcReportShow()`, select all, copy. Paste the report into
 `data/harvey-cup-2026-report.md`; it is what "who am I up against" looks
 like for the season, and the input for next year's calibration.
 
