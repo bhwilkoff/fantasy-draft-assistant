@@ -402,6 +402,17 @@
     var w = A.DRAFT_DELAY, c = st && st.clock;
     if (c && /^\d{1,2}:\d{2}$/.test(c)) {
       var secs = (+c.split(':')[0]) * 60 + (+c.split(':')[1]);
+      /* A clock already below the margin at the instant our turn opens is
+       * the PREVIOUS turn's timer still on screen, not ours: on the second
+       * pick of a back-to-back turn (mock 10708782, picks 27 and 51) it
+       * read a few seconds, the window collapsed to zero, and the click
+       * went out 2 s into a turn that had a full clock -- no override
+       * window for the human at all. Give the room four seconds to render
+       * its own timer before believing a low reading; a genuinely low
+       * clock (we arrived mid-turn) still caps to zero after that, which
+       * is what we want. */
+      var age = (Date.now() - ((A.onClockSince || {})[pick] || Date.now())) / 1000;
+      if (secs <= A.CLOCK_MARGIN && age < 4) return w;   // stale: re-read next pass
       if (secs > 0) w = Math.max(0, Math.min(w, secs - A.CLOCK_MARGIN));
       A.windowFor[pick] = w; A.clockAtTurn = c;
     }

@@ -479,3 +479,23 @@ the window there was nothing to notice its end.
 **How to apply:** `deadline=worker/armedN/firedM` in `__hcStatus()`; a
 click should now be recorded within a second of `hcDraftDelay` elapsing.
 A user watching the real draft sees the click at 20 s, not at 55.
+
+## 025 — A clock reading below the margin at the instant a turn opens is the previous turn's
+
+**Rule:** when the override window is sized from the room's clock, a
+reading at or below `CLOCK_MARGIN` in the first four seconds of our turn
+is discarded and re-read on the next pass. After four seconds a low
+reading is believed and the window caps to zero.
+
+**Why:** on the second pick of a back-to-back turn the room still shows
+the tail of the previous timer. In mock 10708782 that read a few seconds
+at picks 27 and 51, the window collapsed to zero, and the autopilot
+clicked two seconds into a turn that in fact had a full clock. Nothing
+was lost -- an early click is always safe -- but the human got no override
+window on those two turns, and the window is the whole point of the
+human staying in the loop. Four seconds is longer than any render and
+shorter than any margin we would spend.
+
+**How to apply:** `windowFor` in the autopilot holds the window each turn
+resolved to; every entry should equal the configured delay in a 60-second
+room. `clockAtTurn` shows the reading it was sized from.
