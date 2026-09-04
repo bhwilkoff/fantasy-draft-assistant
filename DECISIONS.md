@@ -516,3 +516,24 @@ running it across our own turn costs the turn.
 
 **How to apply:** `reseeds=N/defM/toK` in `__hcStatus()` — deferrals should
 appear on every back-to-back turn and timeouts should stay at zero.
+
+## 027 — On the clock, the only reason to stop trying is that we are no longer on the clock
+
+**Rule:** the deadline timer that forces a pass at the end of the override
+window re-arms every second for as long as `upIn === 0`, and stops only
+when the turn is over. It does not require the header's pick number to
+match the one it was armed for.
+
+**Why:** on a back-to-back turn the board already shows the second pick
+number while we are on the clock for the first, so a check for
+`st.pick === pick` failed on the very first fire and, because that path
+returned instead of re-arming, the chain died and the turn ran out with no
+pass at all. Mock 10711777 lost picks 60, 61, 84 and 85 to it, with the
+right recommendation logged on both sides of each turn. The click path
+re-derives the pick number and checks that it is ours, so the timer does
+not need to know it; a timer whose job is "do not let this turn expire"
+must not be the thing that gives up first.
+
+**How to apply:** `deadline=worker/armedN/firedM` should show M close to N
+across a draft, and `turnLog` records the seconds waited and the locator
+used for every pick we clicked.

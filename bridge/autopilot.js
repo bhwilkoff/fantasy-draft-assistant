@@ -564,6 +564,7 @@
     A.draftClickedPick = cur; A.draftMiss = null;
     A.draftClicks = (A.draftClicks || 0) + 1;
     A.draftLog = (A.draftLog || []).concat([cur + ' ' + via]);
+    A.turnLog = (A.turnLog || {}); A.turnLog[cur] = Math.round(waited) + 's ' + via;
     /* We know exactly what we drafted; the "Last:" header does not update
      * in step with the counter and, in a back-to-back turn, attributed our
      * first pick's player to our second pick as well (mock 10511947,
@@ -701,10 +702,23 @@
   }
   function onDeadline(pick) {
     if (!A.on) return;
-    if (A.draftClickedPick === pick) return;                    // already drafted
     var st = null;
     try { st = window.__hcReaders.readStatus(); } catch (e) {}
-    if (!st || st.pick !== pick || st.upIn !== 0) return;       // the turn has passed
+    /* THE ONLY REASON TO STOP IS THAT WE ARE NO LONGER ON THE CLOCK.
+     *
+     * This used to also require the header to still read the pick number
+     * the timer was armed for, and to return -- ending the chain -- when it
+     * did not. On a back-to-back turn the board already shows the second
+     * pick number while we are on the clock for the first, so the check
+     * failed on the first fire, the chain died, and the turn ran out with
+     * no pass at all: mock 10711777 lost picks 60, 61, 84 and 85 that way
+     * while the log shows the recommendation sitting there, correct, on
+     * both sides of the turn. The click path re-derives the pick number and
+     * checks it is ours, so nothing here needs to know it. */
+    if (!st || st.upIn !== 0) return;                 // the turn has passed
+    if (A.draftClickedPick === st.pick) {             // drafted: keep watching this turn
+      deadlineIn(1000, pick); return;
+    }
     A.deadlineFires = (A.deadlineFires || 0) + 1;
     lastRun = 0;                                                // bypass the rate limit
     schedule();
