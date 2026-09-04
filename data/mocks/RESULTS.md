@@ -824,3 +824,41 @@ One thing did not run: `hcFinalGrade` was never written for this room, so
 a reader found the stale grade from an older mock. The grade was only
 written by `__hcSupervise()`, which a Claude session calls by hand; the
 final-round harvest now writes it itself.
+
+
+## Draft 22 — room 10708782 (12-team, slot 3), real-room flags, 2026-09-04
+
+**3rd of 12, 1725.0 against a winning 1729.2** -- the top four inside seven
+points -- with QB and TE graded 1st and WR 3rd. Fourteen of fifteen picks
+were the exact recommendation drafted by our own click, no tool call was
+sent into the draft tab during the draft, no dialogs, no missed clock, and
+**the autopilot wrote the report AND the grade by itself** (`grade=3/12` in
+the status line), which was the fix made an hour earlier.
+
+Roster: `QB Allen, K. Murray · RB Irving, Montgomery, A. Jones, Spears ·
+WR Chase, Odunze, Pierce, Sutton, Samuel · TE McBride, Fannin · K
+Fairbairn · DEF Steelers`. Report: `data/mocks/reports/10708782.yahoo.md`.
+
+Two defects, both found in the log and both fixed:
+
+* **Pick 3 was Yahoo's, not ours.** Yahoo moved us from slot 7 to slot 3
+  at the room's start and the room began drafting immediately; the
+  autopilot's first pass ran at 14:43:57 against a start of about 14:42,
+  so our first-round pick was gone before the stack armed. It resolved to
+  J. Chase, who was the recommendation anyway. This is a lobby-mock
+  hazard: those rooms start the instant they fill, and the entry sequence
+  costs a minute or two. In Harvey Cup we are in the room half an hour
+  early, which is exactly what drafts 16 and 21 did.
+* **The override window collapsed to zero on back-to-back turns.**
+  `windowFor` recorded 15 s at picks 22, 46, 70 and 75 but **0 s at picks
+  27 and 51** -- the second pick of each turn, where the room still showed
+  the tail of the previous timer, so `clock - 15` came out negative. The
+  click went out under three seconds into a turn that had a full clock.
+  Nothing was lost, but the human had no window on those turns. A clock
+  reading at or below the margin in the first four seconds of a turn is
+  now discarded and re-read (DECISIONS 025).
+
+Everything else held: `deadline=worker`, armed 12, fired 10; `clockAtTurn`
+read 00:30 on every turn; the stall heartbeat logged 60-second gaps all
+draft, which is Chrome throttling a background tab while the Worker timer
+kept the clicks on time.
