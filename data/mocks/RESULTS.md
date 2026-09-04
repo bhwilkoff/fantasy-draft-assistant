@@ -895,3 +895,32 @@ not the clock:
 Fixed in DECISIONS 026: the re-read is deferred while our next pick is
 four or fewer away, and abandoned after three seconds instead of twenty
 if our turn opens while it runs.
+
+
+## Draft 24 — room 10711777 (12-team, slot 12), real-room flags, 2026-09-04
+
+4th of 12, 11 of 15 picks by our click, and the mock that finally
+explained the back-to-back turn. Slot 12 draws two picks at every turn,
+which is the hardest case in a snake and the one Harvey Cup will hand
+whoever ends up on an end.
+
+**What worked:** the roster re-read deferral shipped an hour earlier
+(DECISIONS 026) ran exactly as designed -- `reseeds=7/def7/to0`, seven
+reads deferred off a turn, none timed out. `windowFor` sized a window at
+fourteen of fifteen turns and `clockAtTurn` read 00:30 every time. The
+grade wrote itself again.
+
+**What failed:** picks 60, 61, 84 and 85 fell to Yahoo's clock, and the
+log shows why in one line -- there was **no pass at all** at those picks.
+The last entry before pick 60 is at pick 58; our two picks landed six and
+three seconds apart with nothing in between. The deadline timer had armed
+(15 arms) but fired only 7 times. It required the header's pick number to
+still equal the number it was armed for, and on a back-to-back turn the
+board already shows the second number while we are on the clock for the
+first. The check failed on the first fire, that path returned instead of
+re-arming, and the chain died for the rest of the turn.
+
+Fixed in DECISIONS 027: on the clock, the only reason to stop trying is
+that we are no longer on the clock. The timer now re-arms every second
+until `upIn` leaves zero, and the click path (which already re-derives the
+pick number and checks it is ours) decides what to click.
