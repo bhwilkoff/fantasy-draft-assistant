@@ -739,7 +739,10 @@
      * draft. Live: reseeding stayed true for two minutes and the queue went
      * stale through our own pick. Give a reseed 20 s, then carry on. */
     if (A.reseeding) {
-      if (A.reseedStartedAt && Date.now() - A.reseedStartedAt > 20000) {
+      /* On our own turn the roster read is worth three seconds, not twenty:
+       * the pick is worth more than the count it was going to correct. */
+      var reseedCap = (st.upIn === 0) ? 3000 : 20000;
+      if (A.reseedStartedAt && Date.now() - A.reseedStartedAt > reseedCap) {
         A.reseeding = false; A.reseedTimeouts = (A.reseedTimeouts || 0) + 1;
       } else {
         return;
@@ -962,12 +965,29 @@
       var crossed = mySnakePicks(A.numTeams, +slotM[1], rounds).some(function (pk) {
         return pk >= A.lastCur && pk < cur;
       });
-      if (crossed) {
+      if (crossed) A.reseedPending = true;
+    }
+    /* Never start the read with one of our picks about to open.
+     *
+     * The read holds the Results tab for a couple of seconds and every pass
+     * returns early while it does. On a back-to-back turn that is the whole
+     * gap: in mock 10710193 the reseed started after pick 107 and was still
+     * running at 110, no pass ran on that turn at all, and Yahoo's clock
+     * took the pick from the queue. Hold the read until our next pick is
+     * more than four away; it is only needed before the pick after that. */
+    if (A.reseedPending && !A.reseeding && slotM && A.numTeams) {
+      var mineAhead = mySnakePicks(A.numTeams, +slotM[1], rounds).filter(function (pk) {
+        return pk >= cur;
+      })[0];
+      if (mineAhead == null || mineAhead - cur > 4) {
+        A.reseedPending = false;
         A.reseeding = true;
         A.reseedStartedAt = Date.now();
         Promise.resolve(A.seedRosterFromResults())
           .then(function () { A.reseeding = false; A.reseeds = (A.reseeds || 0) + 1; },
                 function () { A.reseeding = false; });
+      } else {
+        A.reseedDeferrals = (A.reseedDeferrals || 0) + 1;
       }
     }
     A.lastCur = cur;
@@ -1341,6 +1361,7 @@
       'dialogs=' + ((window.__hcDialogs || []).length),
       'clockAtTurn=' + (A.clockAtTurn || '-'),
       'grade=' + (A.grade ? (A.grade.myRank + '/' + A.grade.numTeams) : '-'),
+      'reseeds=' + ((A.reseeds || 0)) + '/def' + (A.reseedDeferrals || 0) + '/to' + (A.reseedTimeouts || 0),
       'deadline=' + (A.deadlineVia || '-') + '/armed' + (A.deadlineArmed || 0) + '/fired' + (A.deadlineFires || 0),
       'stalls=' + ((window.__hcStalls || []).length) + (window.__hcStalls && window.__hcStalls.length ? '/max' + Math.round(Math.max.apply(null, window.__hcStalls.map(function (x) { return x.gap; })) / 1000) + 's' : ''),
       A.blind ? 'BLIND=' + A.blind : '',

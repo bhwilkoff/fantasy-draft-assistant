@@ -499,3 +499,20 @@ shorter than any margin we would spend.
 **How to apply:** `windowFor` in the autopilot holds the window each turn
 resolved to; every entry should equal the configured delay in a 60-second
 room. `clockAtTurn` shows the reading it was sized from.
+
+## 026 — Never read the Results tab with one of our picks about to open
+
+**Rule:** the roster re-read that follows each of our picks is deferred
+while our next pick is four or fewer away, and a read still running when
+our turn opens is abandoned after three seconds rather than twenty.
+
+**Why:** the read holds the Results tab for a couple of seconds and every
+pass returns early while it does (019). On a back-to-back turn that is the
+entire gap between our two picks: in mock 10710193 the read started after
+pick 107, was still running at 110, no pass ran on that turn at all, and
+Yahoo's clock took the pick from the queue. The read exists to correct a
+roster count before the pick after next, so deferring it costs nothing;
+running it across our own turn costs the turn.
+
+**How to apply:** `reseeds=N/defM/toK` in `__hcStatus()` — deferrals should
+appear on every back-to-back turn and timeouts should stay at zero.
