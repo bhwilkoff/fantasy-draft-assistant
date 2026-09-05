@@ -826,10 +826,12 @@
     /* A table with a handful of rows is not the player pool: it is the
      * Results tab showing one roster (the real draft, 2026-09-05, picks
      * 14-27 -- pool of two, both ours, recommendation already drafted). */
-    var onResults = [].slice.call(document.querySelectorAll('[role=tab]')).some(function (x) {
+    var tabs = [].slice.call(document.querySelectorAll('[role=tab]'));
+    var hasResultsTab = tabs.some(function (x) { return (x.textContent || '').trim() === 'Results'; });
+    var onResults = tabs.some(function (x) {
       return (x.textContent || '').trim() === 'Results' && x.getAttribute('aria-selected') === 'true';
     });
-    if (rows.length && (rows.length < 20 || onResults) && !A.reseeding && !window.__hcHarvestBusy) {
+    if (rows.length && hasResultsTab && (rows.length < 20 || onResults) && !A.reseeding && !window.__hcHarvestBusy) {
       A.blind = 'tiny pool (' + rows.length + ' rows' + (onResults ? ', Results tab' : '') + ')';
       if (clickPlayersTab()) A.blindRecoveries = (A.blindRecoveries || 0) + 1;
       return;
