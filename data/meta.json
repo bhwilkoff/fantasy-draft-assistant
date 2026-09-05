@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T21:35:38+00:00",
+  "generated_at": "2026-09-05T22:25:41+00:00",
   "league": {
     "id": 1556772,
     "name": "Yahoo Prestige H2H-Pts 1556772",
@@ -42,12 +42,12 @@
     "config": "league.json"
   },
   "replacement_points": {
-    "QB": 314.05,
-    "RB": 167.45,
-    "WR": 168.5,
-    "TE": 141.68,
-    "K": 149.89,
-    "DEF": 100.42
+    "QB": 305.7,
+    "RB": 165.83,
+    "WR": 166.72,
+    "TE": 139.69,
+    "K": 142.52,
+    "DEF": 100.8
   },
   "starters_consumed": {
     "QB": 10,
@@ -60,9 +60,9 @@
   "sources": {
     "projections": "consensus of ESPN + Sleeper + CBS + FantasySharks (raw stats blended per stat, re-scored); 69 players with 1 sources, 34 players with 2 sources, 96 players with 3 sources, 332 players with 4 sources; K/DEF ESPN-only",
     "yahoo_bias_check": {
-      "weight": 0.0,
+      "weight": 0.2,
       "fetched": "2026-09-05",
-      "players_checked": 360
+      "players_checked": 361
     },
     "injuries": "Sleeper (278 statuses)",
     "adp": "FantasyFootballCalculator PPR 12-team, 7430 drafts 2026-08-29..2026-09-05"
