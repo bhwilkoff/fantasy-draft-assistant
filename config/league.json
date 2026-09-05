@@ -1,13 +1,13 @@
 {
   "_comment": "Public Yahoo league joined 2026-09-05 after the Harvey Cup draft. Settings from the league's settings page: 10 teams, standard (snake) draft, H2H points, 9 starters QB,WR,WR,RB,RB,TE,W/R/T,K,DEF. Point values are Yahoo's public-league defaults (0.5 PPR, 4-pt passing TD) until confirmed on the settings page. Harvey Cup's file is config/league.harvey-cup-2026.json.",
-  "league_id": 0,
-  "league_name": "Yahoo Public League",
-  "team_key": 0,
+  "league_id": 1556772,
+  "league_name": "Yahoo Prestige H2H-Pts 1556772",
+  "team_key": 3,
   "num_teams": 10,
   "draft_type": "snake",
   "rounds": 15,
   "seconds_per_pick": 60,
-  "draft_time": null,
+  "draft_time": "2026-09-05T15:33:00-06:00",
   "fractional_points": true,
   "starters": {
     "QB": 1,
