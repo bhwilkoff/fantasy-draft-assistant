@@ -90,9 +90,9 @@
     ]
   },
   "sources": {
-    "yahoo_bias_weight": 0.0,
-    "kdef_yahoo_weight": 0.0,
-    "_note": "Set to 0 for the public league: data/sources/yahoo_league_proj.json is scored under Harvey Cup rules. Re-scrape from this league's player list and restore 0.2/0.5."
+    "yahoo_bias_weight": 0.2,
+    "kdef_yahoo_weight": 0.5,
+    "_note": "Yahoo's own projections under THIS league's scoring (data/sources/yahoo_league_proj.json) are a bias check, not a peer. Harvey Cup's file is kept as yahoo_league_proj.harvey-cup-2026.json."
   },
   "season": {
     "regular_season_weeks": 14,
