@@ -88,6 +88,21 @@
     var p = location.pathname.match(/\/draftclient\/f1\/\d+\/(\d+)/);
     return p ? +p[1] : null;
   }
+
+  /* THE VISIBLE PLAYERS TAB. The room renders "Players" more than once (a
+   * hidden duplicate for another layout); the first leaf that matched was
+   * not the tab, the click did nothing, and the room stayed on Results
+   * after a roster re-read -- the Harvey Cup draft itself, 2026-09-05,
+   * picks 14-27: the pool was our own two players and the recommendation
+   * was a man we had already drafted. Prefer role=tab, require layout. */
+  function clickPlayersTab() {
+    var c = [].slice.call(document.querySelectorAll('[role=tab],button,a,li,div,span')).filter(function (x) {
+      return (x.textContent || '').trim() === 'Players' && x.getBoundingClientRect().width > 0;
+    });
+    var el = c.filter(function (x) { return x.getAttribute('role') === 'tab'; })[0] || c[0];
+    if (el) { el.click(); return true; }
+    return false;
+  }
   var RELAY = 'http://127.0.0.1:8830';
   var LOG_KEY = 'hcAutopilotLog';
   var A = window.__hcAuto = {
@@ -302,10 +317,7 @@
           }
         });
       }
-      var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
-        .filter(function (x) { return x.children.length === 0; })
-        .find(function (x) { return (x.innerText || '').trim() === 'Players'; });
-      if (pl) pl.click();
+      clickPlayersTab();
     } catch (e) { A.seedError = String(e); }
     A.reseeding = false;
     return A.seedRoster ? A.seedRoster.length : 0;
@@ -811,12 +823,20 @@
       }
     }
     var rows = window.__hcProf ? window.__hcProf('readRows', readRows) : readRows();
+    /* A table with a handful of rows is not the player pool: it is the
+     * Results tab showing one roster (the real draft, 2026-09-05, picks
+     * 14-27 -- pool of two, both ours, recommendation already drafted). */
+    var onResults = [].slice.call(document.querySelectorAll('[role=tab]')).some(function (x) {
+      return (x.textContent || '').trim() === 'Results' && x.getAttribute('aria-selected') === 'true';
+    });
+    if (rows.length && (rows.length < 20 || onResults) && !A.reseeding && !window.__hcHarvestBusy) {
+      A.blind = 'tiny pool (' + rows.length + ' rows' + (onResults ? ', Results tab' : '') + ')';
+      if (clickPlayersTab()) A.blindRecoveries = (A.blindRecoveries || 0) + 1;
+      return;
+    }
     if (!rows.length) {
       A.blind = 'no player table (wrong view?)';
-      var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
-        .filter(function (x) { return x.children.length === 0; })
-        .find(function (x) { return (x.innerText || '').trim() === 'Players'; });
-      if (pl) { A.blindRecoveries = (A.blindRecoveries || 0) + 1; pl.click(); }
+      if (clickPlayersTab()) A.blindRecoveries = (A.blindRecoveries || 0) + 1;
       return;
     }
     A.blind = null;
@@ -1225,10 +1245,7 @@
               }
             } catch (e) { A.gradeError = String(e); }
             // put the player list back so the last picks still advise
-            var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
-              .filter(function (x) { return x.children.length === 0; })
-              .find(function (x) { return (x.innerText || '').trim() === 'Players'; });
-            if (pl) pl.click();
+            clickPlayersTab(); setTimeout(clickPlayersTab, 1500);
           });
         } catch (e) { A.harvestError = String(e); }
       }

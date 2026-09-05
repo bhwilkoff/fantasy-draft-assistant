@@ -517,9 +517,10 @@
           .then(function (h) {
             try { localStorage.setItem('hcFinalHarvest', JSON.stringify(h)); } catch (e) {}
             try { if (window.__hcReport) state.report = window.__hcReport(h); } catch (e) { state.reportError = String(e); }
-            var pl = [].slice.call(document.querySelectorAll('button,a,div,span,li'))
-              .filter(function (x) { return x.children.length === 0; })
-              .find(function (x) { return (x.innerText || '').trim() === 'Players'; });
+            var pc = [].slice.call(document.querySelectorAll('[role=tab],button,a,li,div,span')).filter(function (x) {
+              return (x.textContent || '').trim() === 'Players' && x.getBoundingClientRect().width > 0;
+            });
+            var pl = pc.filter(function (x) { return x.getAttribute('role') === 'tab'; })[0] || pc[0];
             if (pl) pl.click();
           })
           .catch(function (e) { state.reportError = String(e); });
