@@ -15,7 +15,8 @@
  * before tools/draftday.sh.
  */
 (function () {
-  var LEAGUE = '539156';
+  // the league is the page's: /f1/{id}/players (Harvey Cup's id is the fallback)
+  var LEAGUE = (location.pathname.match(/\/f1\/(\d+)\//) || [])[1] || '539156';
   var BASE = '/f1/' + LEAGUE + '/players?status=ALL&cut_type=9&stat1=S_PS_2026&myteam=0&sort=PTS&sdir=1';
   var PLAN = [{ pos: 'O', max: 300 }, { pos: 'K', max: 50 }, { pos: 'DEF', max: 32 }];
   var TEAM = { Buf: 'BUF', Bal: 'BAL', NE: 'NE', Cin: 'CIN', Phi: 'PHI', Dal: 'DAL', KC: 'KC', Was: 'WAS',
