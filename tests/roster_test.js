@@ -25,7 +25,12 @@ function draft(rosterText, numTeams, mySlot) {
   HarveyLeague.applyLeague(players, {
     roster, scoring: HarveyLeague.SCORING_PRESETS.yahoo_default, numTeams
   });
-  let pool = players.filter(p => p.adp).sort((a, b) => a.adp - b.adp);
+  /* Every undrafted player is on the board in a real room, not just the ones
+   * the ADP feed matched. Restricting the fixture to ADP-carrying players ran
+   * the pool dry of skill positions by round 17 (241 matched of 531 on
+   * 2026-09-05) and the last pick had nothing legal left to take, which is a
+   * property of the fixture and not of the advisor. */
+  let pool = players.slice().sort((a, b) => (a.adp || 999) - (b.adp || 999));
   const mine = [], others = {};
   let overall = 0;
   for (let r = 1; r <= size; r++) {

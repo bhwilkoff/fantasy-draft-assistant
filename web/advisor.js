@@ -234,6 +234,32 @@
       };
     });
 
+    /* NEVER HAND BACK "NOTHING" WITH PLAYERS ON THE BOARD.
+     *
+     * ranked only holds candidates from the first 80 of the pool that fill a
+     * gap, so a board whose top is entirely positions we have filled leaves
+     * it empty and the recommendation was null. On draft day 2026-09-05 that
+     * happened at pick 199 of the simulated Harvey Cup draft -- the last
+     * pick -- and a null recommendation in a live room means the panel shows
+     * nothing and the autopilot has nothing to click. Fall back in two
+     * steps: the best player anywhere in the pool at a position that still
+     * has a gap, then the best player left at all. A bench body we cannot
+     * start beats an empty roster slot. */
+    if (!ranked.length && pool.length) {
+      var fb = pool.filter(function (c) { return need.totalGap[c.pos] > 0; })[0]
+            || pool.filter(function (c) { return c.pos !== 'K' && c.pos !== 'DEF'; })[0]
+            || pool[0];
+      if (fb) {
+        ranked.push({
+          name: fb.name, pos: fb.pos, team: fb.team, tier: fb.tier, bye: fb.bye,
+          vor: fb.vor, points: fb.points, adp: fb.adp, edge: fb.edge,
+          injury: fb.injury, survival_next: null, position_dropoff: 0,
+          tier_players_left: 0, score: Math.round((fb.vor || 0) * 100) / 100,
+          is_target_position: false, fallback: true
+        });
+      }
+    }
+
     return {
       current_pick: currentPick, next_pick: nextPick, target_position: targetPos,
       recommendation: ranked[0] || null, alternatives: ranked.slice(1, topN),
