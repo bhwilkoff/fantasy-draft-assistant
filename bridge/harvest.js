@@ -9,6 +9,21 @@
  *   await window.__hcHarvest()
  */
 (function () {
+
+  /* OUR DRAFT SLOT IS NOT THE URL. In a mock room the path ends in the slot;
+   * in a league room it ends in the TEAM id (Harvey Cup: team 7, drafting
+   * 12th -- found thirty minutes before the real draft, 2026-09-05). Read it
+   * from the room: an explicit override first, then the pre-draft title
+   * ("You pick 12th", cached per room because the title changes once the
+   * clock starts), then the path as the last resort. */
+  function hcRoomSlotH() {
+    try { var f = localStorage.getItem('hcSlot'); if (f && !isNaN(+f) && +f > 0) return +f; } catch (e) {}
+    var m = (document.title || '').match(/You pick (\d+)(?:st|nd|rd|th)/i);
+    if (m) { try { localStorage.setItem('hcSlotSeen:' + location.pathname, m[1]); } catch (e) {} return +m[1]; }
+    try { var seen = localStorage.getItem('hcSlotSeen:' + location.pathname); if (seen && +seen > 0) return +seen; } catch (e) {}
+    var p = location.pathname.match(/\/draftclient\/f1\/\d+\/(\d+)/);
+    return p ? +p[1] : null;
+  }
   'use strict';
 
   function T(e) { return (e && e.textContent ? e.textContent : '').trim(); }
@@ -306,8 +321,7 @@
       .map(function (o) { return { value: o.value, label: T(o) }; })
       .filter(function (o) { return o.label; });
 
-    var m0 = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
-    var mySlot0 = m0 ? +m0[2] : null;
+    var mySlot0 = hcRoomSlotH();
     var teams = {}, slots = null, prevSig = null;
     for (var i = 0; i < options.length; i++) {
       // the list is in draft order, so our team is the option at our slot
@@ -336,8 +350,7 @@
       }
     }
 
-    var m = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
-    var slot = m ? +m[2] : null;
+    var slot = hcRoomSlotH();
     // Our team is the option at our draft slot; the list is in draft order.
     var me = (slot && options[slot - 1]) ? options[slot - 1].label : null;
 

@@ -73,6 +73,21 @@
     } catch (e) {}
   }
 
+
+  /* OUR DRAFT SLOT IS NOT THE URL. In a mock room the path ends in the slot;
+   * in a league room it ends in the TEAM id (Harvey Cup: team 7, drafting
+   * 12th -- found thirty minutes before the real draft, 2026-09-05). Read it
+   * from the room: an explicit override first, then the pre-draft title
+   * ("You pick 12th", cached per room because the title changes once the
+   * clock starts), then the path as the last resort. */
+  function hcRoomSlot() {
+    try { var f = localStorage.getItem('hcSlot'); if (f && !isNaN(+f) && +f > 0) return +f; } catch (e) {}
+    var m = (document.title || '').match(/You pick (\d+)(?:st|nd|rd|th)/i);
+    if (m) { try { localStorage.setItem('hcSlotSeen:' + location.pathname, m[1]); } catch (e) {} return +m[1]; }
+    try { var seen = localStorage.getItem('hcSlotSeen:' + location.pathname); if (seen && +seen > 0) return +seen; } catch (e) {}
+    var p = location.pathname.match(/\/draftclient\/f1\/\d+\/(\d+)/);
+    return p ? +p[1] : null;
+  }
   var RELAY = 'http://127.0.0.1:8830';
   var LOG_KEY = 'hcAutopilotLog';
   var A = window.__hcAuto = {
@@ -203,7 +218,7 @@
     // pick number, so the roster never showed one and a second was drafted)
     var numTeams = A.numTeamsFromResults || A.numTeams
       || ((order.length >= 4 && order.length <= 20) ? order.length : 12);
-    var mySlot = (location.pathname.match(/\/draftclient\/f1\/\d+\/(\d+)/) || [])[1];
+    var mySlot = hcRoomSlot();
     var slot = null, best = 0;
     order.forEach(function (name, i) {
       if (name === 'You' || !name) return;
@@ -773,7 +788,7 @@
      * two picks from the queue. The recommendation was already known
      * before the turn; nothing needs recomputing until the window closes. */
     if (A.DRAFT_DELAY > 0 && st.upIn === 0 && st.pick) {
-      var slotW = (location.pathname.match(/\/draftclient\/f1\/\d+\/(\d+)/) || [])[1];
+      var slotW = hcRoomSlot();
       if (slotW && ourPick(st.pick, +slotW)) {
         A.onClockSince = A.onClockSince || {};
         if (!A.onClockSince[st.pick]) A.onClockSince[st.pick] = Date.now();
@@ -871,7 +886,9 @@
     /* Exact picks remaining from the snake: how many of OUR pick numbers
      * are still >= the current pick. Independent of the roster count,
      * which has been wrong in every mock so far. */
-    var slotM = location.pathname.match(/\/draftclient\/f1\/\d+\/(\d+)/);
+    var slotN = hcRoomSlot();
+    var slotM = slotN ? [null, String(slotN)] : null;   // shape kept for the code below
+    A.slot = slotN;
     var rounds = HC.getRosterSize ? HC.getRosterSize() : 15;
     var remaining = null;
     if (slotM && A.numTeams) {
@@ -1377,6 +1394,7 @@
       'clockAtTurn=' + (A.clockAtTurn || '-'),
       'grade=' + (A.grade ? (A.grade.myRank + '/' + A.grade.numTeams) : '-'),
       'reseeds=' + ((A.reseeds || 0)) + '/def' + (A.reseedDeferrals || 0) + '/to' + (A.reseedTimeouts || 0),
+      'slot=' + (A.slot || hcRoomSlot() || '?'),
       'heartbeat=' + (A.heartbeatVia || '-') + '/' + (A.heartbeats || 0),
       'deadline=' + (A.deadlineVia || '-') + '/armed' + (A.deadlineArmed || 0) + '/fired' + (A.deadlineFires || 0),
       'stalls=' + ((window.__hcStalls || []).length) + (window.__hcStalls && window.__hcStalls.length ? '/max' + Math.round(Math.max.apply(null, window.__hcStalls.map(function (x) { return x.gap; })) / 1000) + 's' : ''),
