@@ -1,0 +1,36 @@
+{
+  "_comment": "The one file to edit for a different league. engine/league.py loads it; engine/build.py writes the relevant parts into data/meta.json so the browser overlay and the standalone board use the same rules. Scraped from the Yahoo settings page (/f1/{id}/settings) on 2026-08-30.",
+  "league_id": 539156,
+  "league_name": "Harvey Cup",
+  "team_key": 7,
+  "num_teams": 12,
+  "draft_type": "snake",
+  "rounds": 17,
+  "seconds_per_pick": 60,
+  "draft_time": "2026-09-05T14:00:00-06:00",
+  "fractional_points": false,
+  "starters": {"QB": 1, "WR": 3, "RB": 2, "TE": 1, "W/T": 1, "W/R": 1, "K": 1, "DEF": 1},
+  "bench": 6,
+  "flex_eligibility": {"W/T": ["WR", "TE"], "W/R": ["WR", "RB"]},
+  "scoring": {
+    "offense": {
+      "pass_yd": 0.04, "pass_td": 6.0, "pass_int": -1.0,
+      "rush_yd": 0.1, "rush_td": 6.0,
+      "rec": 1.0, "rec_yd": 0.1, "rec_td": 6.0,
+      "ret_td": 6.0, "two_pt": 2.0, "fum_lost": -2.0, "off_fum_ret_td": 6.0
+    },
+    "kicker": {
+      "fg_0_19": 3.0, "fg_20_29": 3.0, "fg_30_39": 3.0, "fg_40_49": 4.0, "fg_50_plus": 5.0, "pat_made": 1.0
+    },
+    "dst": {
+      "sack": 1.0, "int": 2.0, "fum_rec": 2.0, "td": 6.0, "safety": 4.0, "blk_kick": 2.0, "xp_ret": 2.0
+    },
+    "dst_points_allowed": [[0, 10.0], [6, 7.0], [13, 4.0], [20, 1.0], [27, 0.0], [34, -1.0], [1000000000, -4.0]]
+  },
+  "sources": {
+    "yahoo_bias_weight": 0.2,
+    "kdef_yahoo_weight": 0.5,
+    "_note": "Yahoo's own projections under this league's scoring (data/sources/yahoo_league_proj.json) are a bias check, not a peer: the blend moves toward them by this weight."
+  },
+  "season": {"regular_season_weeks": 14, "playoff_weeks": [15, 16, 17], "playoff_teams": 6}
+}

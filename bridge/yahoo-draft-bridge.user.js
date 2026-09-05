@@ -759,6 +759,11 @@
     var det = readLeagueSettings();
     var isMock = /\/draftclient\/f1\/\d{7,}\//.test(location.pathname)
               || /mock/i.test(location.href);
+    // the configured league is never a mock, whatever its id looks like
+    try {
+      var realId = (localStorage.getItem('hcRealLeague') || '539156').replace(/\D/g, '');
+      if (realId && new RegExp('\\/draftclient\\/f1\\/' + realId + '\\/').test(location.pathname)) isMock = false;
+    } catch (e) {}
     // The data plane carries the configured league (config/league.json via
     // engine/build.py), so a real room runs exactly the rules the engine was
     // built with; only a mock falls back to Yahoo's defaults.

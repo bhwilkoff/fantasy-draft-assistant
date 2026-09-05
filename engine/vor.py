@@ -13,7 +13,7 @@ player who actually gets started.
 import math
 import league as L
 
-FLEX_SLOTS = ("W/T", "W/R")
+FLEX_SLOTS = tuple(L.FLEX_ELIGIBILITY.keys())   # every slot with a slash in the config, whatever its shape
 
 
 def replacement_levels(players):

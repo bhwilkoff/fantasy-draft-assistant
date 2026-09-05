@@ -231,6 +231,9 @@ def advise(available, roster, current_pick, next_pick, recent_pick_positions=Non
     must_fill = False
     if holes > 0 and my_picks_remaining <= holes + 1:
         must = [p for p in usable if starter_gap[p] > 0]
+        skill = [p for p in must if p not in ("K", "DEF")]
+        if skill and my_picks_remaining <= holes:
+            must = skill                     # skill holes before K/DEF (mirrored in JS)
         if must:
             usable, must_fill = must, True
 

@@ -411,7 +411,9 @@
    *    recomputed, was Lamar Jackson.
    *  - one click per pick number. */
   A.DRAFT_CLICK = true;
-  var IN_REAL_ROOM = /\/draftclient\/f1\/539156\//.test(location.pathname);
+  var REAL_ID = '539156';
+  try { REAL_ID = (localStorage.getItem('hcRealLeague') || '539156').replace(/\D/g, '') || '539156'; } catch (e) {}
+  var IN_REAL_ROOM = new RegExp('\\/draftclient\\/f1\\/' + REAL_ID + '\\/').test(location.pathname);
   /* THE OVERRIDE WINDOW. In the real draft the autopilot makes the pick,
    * but the human watching the panel gets DRAFT_DELAY seconds on each of
    * our turns to click a different player first; the autopilot clicks only
@@ -515,8 +517,35 @@
     return null;
   }
 
+  /* PRE-FLIGHT. The click is allowed only while the room agrees with itself:
+   * the seat the roster is built from equals the seat the title announces,
+   * the Players tab is showing a real pool, and the team count is sane. In
+   * the Harvey Cup draft the seat came from the URL's team id and nothing
+   * checked it against the room; the roster was another team's for eleven
+   * picks. Now the room has to pass before a click is permitted, every pass. */
+  function preflight(st, rows) {
+    var why = [];
+    var slot = hcRoomSlot();
+    if (!slot) why.push('no seat');
+    var tm = (document.title || '').match(/You pick (\d+)(?:st|nd|rd|th)/i);
+    if (tm && slot && +tm[1] !== slot) why.push('seat ' + slot + ' != title ' + tm[1]);
+    var tabsP = [].slice.call(document.querySelectorAll('[role=tab]'));
+    var isRoom = tabsP.some(function (x) { return (x.textContent || '').trim() === 'Results'; });
+    // a real room pages 100 players; anything under 60 is the wrong view
+    if (isRoom && !(rows && rows.length >= 60) && !(st && st.pick > 150)) why.push('pool ' + (rows ? rows.length : 0));
+    var onResults = tabsP.some(function (x) {
+      return (x.textContent || '').trim() === 'Results' && x.getAttribute('aria-selected') === 'true'; });
+    if (onResults) why.push('Results tab');
+    if (A.numTeams && (A.numTeams < 4 || A.numTeams > 20)) why.push('teams ' + A.numTeams);
+    A.preflight = why.length ? 'FAIL:' + why.join(',') : 'OK';
+    A.preflightOk = !why.length;
+    return A.preflightOk;
+  }
+  A.runPreflight = function () { return preflight(A.last || {}, readRows()); };
+
   function draftClick(st, res, yidOf, slot, cur) {
     if (A.DRAFT_CLICK === false) return;
+    if (!preflight(st, readRows())) { A.preflightBlocks = (A.preflightBlocks || 0) + 1; return; }
     if (st.upIn !== 0) return;                       // not on the clock
     if (!ourPick(cur, slot)) { A.draftWait = cur; return; }   // header has not reached our pick yet
     if (A.draftClickedPick === cur) return;
@@ -1417,6 +1446,7 @@
       'grade=' + (A.grade ? (A.grade.myRank + '/' + A.grade.numTeams) : '-'),
       'reseeds=' + ((A.reseeds || 0)) + '/def' + (A.reseedDeferrals || 0) + '/to' + (A.reseedTimeouts || 0),
       'slot=' + (A.slot || hcRoomSlot() || '?'),
+      'preflight=' + (A.preflight || '-'),
       'heartbeat=' + (A.heartbeatVia || '-') + '/' + (A.heartbeats || 0),
       'deadline=' + (A.deadlineVia || '-') + '/armed' + (A.deadlineArmed || 0) + '/fired' + (A.deadlineFires || 0),
       'stalls=' + ((window.__hcStalls || []).length) + (window.__hcStalls && window.__hcStalls.length ? '/max' + Math.round(Math.max.apply(null, window.__hcStalls.map(function (x) { return x.gap; })) / 1000) + 's' : ''),

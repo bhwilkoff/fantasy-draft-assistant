@@ -10,6 +10,21 @@
  */
 (function () {
 
+  /* THE VISIBLE PLAYERS TAB. The room renders "Players" more than once (a
+   * hidden duplicate for another layout); the first leaf that matched was
+   * not the tab, the click did nothing, and the room stayed on Results
+   * after a roster re-read -- the Harvey Cup draft itself, 2026-09-05,
+   * picks 14-27: the pool was our own two players and the recommendation
+   * was a man we had already drafted. Prefer role=tab, require layout. */
+  function clickPlayersTab() {
+    var c = [].slice.call(document.querySelectorAll('[role=tab],button,a,li,div,span')).filter(function (x) {
+      return (x.textContent || '').trim() === 'Players' && x.getBoundingClientRect().width > 0;
+    });
+    var el = c.filter(function (x) { return x.getAttribute('role') === 'tab'; })[0] || c[0];
+    if (el) { el.click(); return true; }
+    return false;
+  }
+
   /* OUR DRAFT SLOT IS NOT THE URL. In a mock room the path ends in the slot;
    * in a league room it ends in the TEAM id (Harvey Cup: team 7, drafting
    * 12th -- found thirty minutes before the real draft, 2026-09-05). Read it

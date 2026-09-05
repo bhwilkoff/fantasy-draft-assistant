@@ -1,70 +1,66 @@
 {
-  "generated_at": "2026-09-05T17:37:33+00:00",
+  "generated_at": "2026-09-05T21:30:23+00:00",
   "league": {
-    "id": 539156,
-    "name": "Harvey Cup",
-    "teams": 12,
-    "rounds": 17,
-    "roster_size": 17,
+    "id": 0,
+    "name": "Yahoo Public League",
+    "teams": 10,
+    "rounds": 15,
+    "roster_size": 15,
     "starters": {
       "QB": 1,
-      "WR": 3,
+      "WR": 2,
       "RB": 2,
       "TE": 1,
-      "W/T": 1,
-      "W/R": 1,
+      "W/R/T": 1,
       "K": 1,
       "DEF": 1
     },
     "bench": 6,
-    "ppr": 1.0,
-    "pass_td": 6.0,
-    "roster_text": "QB,WR,WR,WR,RB,RB,TE,W/T,W/R,K,DEF,BN,BN,BN,BN,BN,BN",
+    "ppr": 0.5,
+    "pass_td": 4.0,
+    "roster_text": "QB,WR,WR,RB,RB,TE,W/R/T,K,DEF,BN,BN,BN,BN,BN,BN",
     "scoring": {
-      "name": "Harvey Cup",
+      "name": "Yahoo Public League",
       "pass_yd": 0.04,
-      "pass_td": 6.0,
+      "pass_td": 4.0,
       "pass_int": -1.0,
       "rush_yd": 0.1,
       "rush_td": 6.0,
-      "rec": 1.0,
+      "rec": 0.5,
       "rec_yd": 0.1,
       "rec_td": 6.0,
       "two_pt": 2.0,
       "fum_lost": -2.0
     },
     "flex_eligibility": {
-      "W/T": [
+      "W/R/T": [
         "WR",
+        "RB",
         "TE"
-      ],
-      "W/R": [
-        "WR",
-        "RB"
       ]
     },
     "config": "league.json"
   },
   "replacement_points": {
-    "QB": 356.8,
-    "RB": 157.18,
-    "WR": 155.19,
-    "TE": 153.55,
-    "K": 141.41,
-    "DEF": 94.65
+    "QB": 314.05,
+    "RB": 167.45,
+    "WR": 168.5,
+    "TE": 141.68,
+    "K": 149.89,
+    "DEF": 100.42
   },
   "starters_consumed": {
-    "QB": 12,
-    "RB": 34,
-    "WR": 47,
-    "TE": 15,
-    "K": 12,
-    "DEF": 12
+    "QB": 10,
+    "RB": 25,
+    "WR": 25,
+    "TE": 10,
+    "K": 10,
+    "DEF": 10
   },
   "sources": {
     "projections": "consensus of ESPN + Sleeper + CBS + FantasySharks (raw stats blended per stat, re-scored); 69 players with 1 sources, 34 players with 2 sources, 96 players with 3 sources, 332 players with 4 sources; K/DEF ESPN-only",
     "yahoo_bias_check": {
-      "weight": 0.2,
+      "weight": 0.0,
       "fetched": "2026-09-05",
       "players_checked": 360
     },

@@ -218,6 +218,12 @@
     POSITIONS.forEach(function (p) { holes += need.starterGap[p]; });
     if (holes > 0 && picksRemaining <= holes + 1) {
       var must = usable.filter(function (p) { return need.starterGap[p] > 0; });
+      /* Skill holes before kicker and defense: there are 32 of each of those
+       * for a dozen teams and their VOR is positive, so by value they came
+       * first -- the Harvey Cup draft took its kicker with no quarterback on
+       * the roster and four quarterbacks left on the board. */
+      var skill = must.filter(function (p) { return p !== 'K' && p !== 'DEF'; });
+      if (skill.length && picksRemaining <= holes) must = skill;
       if (must.length) { usable = must; need.mustFill = true; }
     }
 

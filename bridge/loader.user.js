@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Harvey Cup Draft Advisor (loader)
 // @namespace    https://github.com/bhwilkoff/fantasy-draft-assistant
-// @version      2.2.1
+// @version      2.3.0
 // @updateURL    https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/loader.user.js
 // @downloadURL  https://bhwilkoff.github.io/fantasy-draft-assistant/bridge/loader.user.js
 // @description  Loads the live draft advisor from GitHub Pages every time, so fixes deploy without reinstalling
@@ -41,7 +41,12 @@
  */
 (function () {
   'use strict';
-  var REAL_LEAGUE = /\/draftclient\/f1\/539156\//;
+  /* The real league is a setting, not a constant: localStorage.hcRealLeague
+   * holds its id (set once in any Yahoo page's console); Harvey Cup's id is
+   * the fallback. */
+  var realId = '539156';
+  try { realId = (localStorage.getItem('hcRealLeague') || '539156').replace(/\D/g, '') || '539156'; } catch (e) {}
+  var REAL_LEAGUE = new RegExp('\\/draftclient\\/f1\\/' + realId + '\\/');
   var here = location.pathname;
 
   function flag(k) { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } }
