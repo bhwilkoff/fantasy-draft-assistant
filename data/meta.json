@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T20:28:19+00:00",
+  "generated_at": "2026-09-05T17:37:33+00:00",
   "league": {
     "id": 539156,
     "name": "Harvey Cup",
@@ -50,8 +50,8 @@
     "RB": 157.18,
     "WR": 155.19,
     "TE": 153.55,
-    "K": 138.41,
-    "DEF": 96.65
+    "K": 141.41,
+    "DEF": 94.65
   },
   "starters_consumed": {
     "QB": 12,
@@ -62,14 +62,14 @@
     "DEF": 12
   },
   "sources": {
-    "projections": "consensus of ESPN + Sleeper + CBS + FantasySharks (raw stats blended per stat, re-scored); 70 players with 1 sources, 32 players with 2 sources, 97 players with 3 sources, 332 players with 4 sources; K/DEF ESPN-only",
+    "projections": "consensus of ESPN + Sleeper + CBS + FantasySharks (raw stats blended per stat, re-scored); 69 players with 1 sources, 34 players with 2 sources, 96 players with 3 sources, 332 players with 4 sources; K/DEF ESPN-only",
     "yahoo_bias_check": {
       "weight": 0.2,
-      "fetched": "2026-09-03",
+      "fetched": "2026-09-05",
       "players_checked": 360
     },
     "injuries": "Sleeper (279 statuses)",
-    "adp": "FantasyFootballCalculator PPR 12-team, 7681 drafts 2026-08-28..2026-09-04"
+    "adp": "FantasyFootballCalculator PPR 12-team, 7430 drafts 2026-08-29..2026-09-05"
   },
   "player_count": 531
 }
