@@ -974,3 +974,28 @@ one slot finishing 7th. After DECISIONS 028: **every one of the 36 rosters
 is RB 5, WR 6, TE 2, QB 2, K 1, DEF 1**, kicker in round 14-15, defense in
 13-15, no fallbacks, 35 of 36 first by lineup points and the other second
 by one point. Average lineup against humans 2393 -> 2414.
+
+
+## Draft 26 — room 10794537 (12-team, slot 7), new advisor (DECISIONS 028), 2026-09-05 12:17
+
+The live check of the draft-morning valuation change, an hour before the
+real draft. **5th of 12, 1712.8**, thirty-two behind in a room whose top
+five sat within 32 points; thirteen of fifteen picks by our own click, the
+grade and report written by the draft, no dialogs, no errors. Roster
+`QB Allen, K. Murray · RB McCaffrey, Etienne, J. Hill, Sampson · WR Rice,
+J. Williams, Pierce, Sutton, Worthy · TE Fannin, Goedert · K Myers · DEF
+Broncos` -- the shape the slot study predicts for a 2-WR, one-flex room,
+and no third tight end anywhere.
+
+The two picks that were not our click share one cause, and it is the
+lobby's, not the tool's: the room began drafting the instant it filled,
+our first pick (7) came three seconds before the stack's first pass, and
+**a missed pick puts the seat into Yahoo's auto-pick mode.** The autopilot
+switched Autodraft back off three times over the draft; pick 79 landed in
+one of the windows Yahoo had it on again, eleven seconds into the turn,
+and Yahoo drafted the top of the queue -- which is our own recommendation
+(Goedert), so nothing was lost but the click. In Harvey Cup we are in the
+room thirty minutes early: pick one cannot be missed and the seat never
+enters that mode. Every other turn: `turnLog` shows 15 s on a 30 s clock
+at eleven turns, and the three shorter waits are turns joined with the
+clock already running.
