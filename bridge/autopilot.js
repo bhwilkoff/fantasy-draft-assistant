@@ -1224,6 +1224,7 @@
                        pick: 9999, room: location.pathname,
                        roster: A.results.roster });
       clearInterval(A.timer); A.timer = null; A.on = false;
+      if (A.heartbeat) { try { A.heartbeat.terminate(); } catch (e) {} A.heartbeat = null; }
     }
   }
 
@@ -1376,6 +1377,7 @@
       'clockAtTurn=' + (A.clockAtTurn || '-'),
       'grade=' + (A.grade ? (A.grade.myRank + '/' + A.grade.numTeams) : '-'),
       'reseeds=' + ((A.reseeds || 0)) + '/def' + (A.reseedDeferrals || 0) + '/to' + (A.reseedTimeouts || 0),
+      'heartbeat=' + (A.heartbeatVia || '-') + '/' + (A.heartbeats || 0),
       'deadline=' + (A.deadlineVia || '-') + '/armed' + (A.deadlineArmed || 0) + '/fired' + (A.deadlineFires || 0),
       'stalls=' + ((window.__hcStalls || []).length) + (window.__hcStalls && window.__hcStalls.length ? '/max' + Math.round(Math.max.apply(null, window.__hcStalls.map(function (x) { return x.gap; })) / 1000) + 's' : ''),
       A.blind ? 'BLIND=' + A.blind : '',
@@ -1433,9 +1435,25 @@
     A.on = false;
     if (A.timer) clearInterval(A.timer);
     A.timer = null;
+    if (A.heartbeat) { try { A.heartbeat.terminate(); } catch (e) {} A.heartbeat = null; }
     if (A.observer) A.observer.disconnect();
   };
-  // slow backstop only; the observer is the real driver
+  /* THE HEARTBEAT LIVES IN A WORKER. The observer fires on DOM changes and
+   * the page timer was the backstop -- but a turn opening on a quiet board
+   * changes almost nothing, and a hidden tab has page timers throttled to
+   * once a minute. Mock 10794537 (2026-09-05): the first pass of our turn
+   * came 3-19 s after it opened at four turns, the window was sized from a
+   * clock already part-run, and at pick 79 no pass ran for 13 s while
+   * Yahoo's auto-pick took the seat. Chrome does not throttle Worker
+   * timers, so the pass loop is driven from one (the same trick as the
+   * deadline timer, DECISIONS 024); the page interval stays as a fallback
+   * for a CSP that refuses blob workers. schedule() still rate-limits. */
   A.timer = setInterval(schedule, 15000);
+  try {
+    var hbSrc = 'setInterval(function(){postMessage(1)},1500)';
+    A.heartbeat = new Worker(URL.createObjectURL(new Blob([hbSrc], { type: 'text/javascript' })));
+    A.heartbeat.onmessage = function () { A.heartbeats = (A.heartbeats || 0) + 1; schedule(); };
+    A.heartbeatVia = 'worker';
+  } catch (e) { A.heartbeat = null; A.heartbeatVia = 'setInterval'; }
   schedule();
 })();

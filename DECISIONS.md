@@ -577,3 +577,26 @@ that it does not need to be overridden.
 **How to apply:** `flexOpenFor`, `benchDepth` and `mustFill` are on the
 advisor's `roster` output; the slot study is the regression test for
 roster shape and should be run after any change to valuation.
+
+## 029 — The pass loop is driven by a Worker heartbeat, not by the page
+
+**Rule:** the autopilot's `schedule()` is called every 1.5 s from a blob
+Worker (`A.heartbeat`), in addition to the DOM observer; the 15 s page
+interval remains only as a fallback for a CSP that refuses blob workers.
+
+**Why:** the observer fires on DOM changes and the page interval was the
+backstop, but a turn opening on a quiet board changes almost nothing in
+the DOM, and a hidden tab has page timers throttled to once a minute. In
+mock 10794537 the first pass of our turn came 3, 9, 16 and 19 seconds after
+it opened, the window was sized from a clock already part-run, and at
+pick 79 no pass ran for thirteen seconds while Yahoo's auto-pick took the
+seat -- which is also why Autodraft kept switching itself back on: to
+Yahoo the seat looked unattended. The deadline timer (024) only arms once
+a pass has seen the turn, so a late first pass shortened the human's
+window. Chrome does not throttle Worker timers; the loop now ticks from
+one whether the tab is visible or not. `schedule()` still rate-limits, so
+the cost is unchanged.
+
+**How to apply:** `heartbeat=worker/N` in `__hcStatus()`; the first pass
+at our turn should now land within two seconds of the previous pick in any
+tab state, and `turnLog` should read the full window at every turn.
