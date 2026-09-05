@@ -958,3 +958,19 @@ joined with the clock already part-run, which is the cap doing its job.
 In Harvey Cup, on a 60-second clock, every one of these reads 20 s.
 
 This is the run to compare tomorrow's draft against.
+
+
+## Slot study — 36 simulated Harvey Cup drafts, 2026-09-05 (draft morning)
+
+`tools/slot_sim.js` drafts from every slot with the browser's own advisor
+against three rooms (market-ADP humans, Yahoo-style autodrafters, and the
+mixed room Harvey Cup is expected to be) under Harvey Cup's rules, and
+grades every roster by the best legal lineup it can field.
+
+Before: three tight ends by round seven and two running backs until round
+sixteen against humans; first quarterback in round sixteen against
+autodrafters; the emergency fallback on the last pick from seven slots;
+one slot finishing 7th. After DECISIONS 028: **every one of the 36 rosters
+is RB 5, WR 6, TE 2, QB 2, K 1, DEF 1**, kicker in round 14-15, defense in
+13-15, no fallbacks, 35 of 36 first by lineup points and the other second
+by one point. Average lineup against humans 2393 -> 2414.

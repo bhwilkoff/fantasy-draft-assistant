@@ -37,6 +37,19 @@
   var BASE_STARTERS = { QB: 1, RB: 2, WR: 3, TE: 1, K: 1, DEF: 1 };
   var NUM_FLEX = 2;
   var FLEX_ELIGIBLE = { WR: 1, RB: 1, TE: 1 };
+  /* Each flex slot's OWN eligibility, in the room's order. Harvey Cup's two
+   * are W/T and W/R: a tight end can start in one of them, a running back in
+   * one, a receiver in both. Counting every open flex slot as open to every
+   * flex-eligible position (the old rule) let a third tight end look like a
+   * starter, and the board drafted three tight ends by round seven against a
+   * room of humans (slot study, 2026-09-05). */
+  var FLEX_SLOTS = [['WR', 'TE'], ['WR', 'RB']];
+  /* The k-th bench body at a position is worth BENCH_DECAY^k of the first:
+   * the first backup running back starts whenever one of two starters sits,
+   * the fourth backup receiver behind five startable receivers almost never
+   * does. A flat discount valued them the same and the board carried two
+   * running backs into round sixteen while stacking receivers. */
+  var BENCH_DECAY = 0.5;
   function setLineup(roster) {
     if (!roster || !roster.base) return;
     var base = {};
@@ -48,6 +61,9 @@
       (f.eligible || []).forEach(function (p) { elig[p] = 1; });
     });
     FLEX_ELIGIBLE = elig;
+    FLEX_SLOTS = (roster.flex || []).map(function (f) {
+      return (f.eligible || []).filter(function (p) { return POSITIONS.indexOf(p) >= 0; });
+    }).filter(function (e) { return e.length; });
   }
 
   /* Roster size MUST come from the room, not from Harvey Cup's 17.
@@ -105,19 +121,35 @@
     POSITIONS.forEach(function (p) {
       starterGap[p] = Math.max(0, BASE_STARTERS[p] - counts[p]);
     });
-    var overflow = 0;
+    /* Overflow past the base slots goes into the flex slots that will take
+     * it: each slot, in the room's order, takes the eligible position with
+     * the most overflow left (ties to the slot's own eligibility order).
+     * What is left over at a position is its bench. Mirrored exactly in
+     * engine/advisor.py; tests/parity_test.py holds the two together. */
+    var overflow = {};
     Object.keys(FLEX_ELIGIBLE).forEach(function (p) {
-      overflow += Math.max(0, counts[p] - BASE_STARTERS[p]);
+      overflow[p] = Math.max(0, counts[p] - BASE_STARTERS[p]);
     });
-    var flexOpen = NUM_FLEX - Math.min(NUM_FLEX, overflow);
-
-    var totalGap = {};
+    var flexUsedBy = {}, openSlots = [];
+    POSITIONS.forEach(function (p) { flexUsedBy[p] = 0; });
+    FLEX_SLOTS.forEach(function (elig) {
+      var best = null;
+      elig.forEach(function (p) {
+        if ((overflow[p] || 0) > 0 && (best === null || overflow[p] > overflow[best])) best = p;
+      });
+      if (best !== null) { overflow[best]--; flexUsedBy[best]++; }
+      else openSlots.push(elig);
+    });
+    var flexOpen = openSlots.length;
+    var flexOpenFor = {}, benchDepth = {}, totalGap = {};
     POSITIONS.forEach(function (p) {
-      var cap = BASE_STARTERS[p] + BENCH_TARGET[p];
-      if (FLEX_ELIGIBLE[p]) cap += flexOpen;
+      flexOpenFor[p] = openSlots.filter(function (e) { return e.indexOf(p) >= 0; }).length;
+      benchDepth[p] = Math.max(0, counts[p] - BASE_STARTERS[p] - flexUsedBy[p]);
+      var cap = BASE_STARTERS[p] + BENCH_TARGET[p] + flexOpenFor[p];
       totalGap[p] = Math.max(0, cap - counts[p]);
     });
-    return { counts: counts, starterGap: starterGap, totalGap: totalGap, flexOpen: flexOpen };
+    return { counts: counts, starterGap: starterGap, totalGap: totalGap, flexOpen: flexOpen,
+             flexOpenFor: flexOpenFor, benchDepth: benchDepth };
   }
 
   /* Exact E[max VOR] among players at `pos` still available at `nextPick`:
@@ -176,6 +208,18 @@
       usable = ['RB', 'WR', 'TE', 'QB'].filter(function (p) { return need.totalGap[p] > 0; });
       if (!usable.length) usable = ['WR'];
     }
+    /* MUST-FILL. With as many picks left as lineup holes (plus one to spare)
+     * nothing but a hole may be drafted. Slot study 2026-09-05, mixed room,
+     * slot 7: the first quarterback came in round sixteen because every
+     * remaining quarterback's VOR was slightly negative and a bench receiver
+     * looked less bad. A lineup slot scoring zero is the one outcome the
+     * draft cannot recover from; the waiver wire fixes everything else. */
+    var holes = 0;
+    POSITIONS.forEach(function (p) { holes += need.starterGap[p]; });
+    if (holes > 0 && picksRemaining <= holes + 1) {
+      var must = usable.filter(function (p) { return need.starterGap[p] > 0; });
+      if (must.length) { usable = must; need.mustFill = true; }
+    }
 
     var now = {}, later = {};
     usable.forEach(function (p) {
@@ -198,18 +242,49 @@
     (recentPositions || []).slice(-8).forEach(function (p) { runs[p] = (runs[p] || 0) + 1; });
 
     var ranked = [];
-    pool.slice(0, 80).forEach(function (c) {
+    /* Candidates: the best eighty by VOR, plus the best three at every
+     * position we can still use -- so the last rounds, when the top of the
+     * board is all positions we have filled, still rank the real choices
+     * instead of falling through to the emergency pick. */
+    var cands = pool.slice(0, 80);
+    usable.forEach(function (p) {
+      var extra = 0;
+      for (var k = 0; k < pool.length && extra < 3; k++) {
+        if (pool[k].pos !== p) continue;
+        if (cands.indexOf(pool[k]) < 0) cands.push(pool[k]);
+        extra++;
+      }
+    });
+    cands.forEach(function (c) {
       if (!(need.totalGap[c.pos] > 0)) return;
+      if (need.mustFill && !(need.starterGap[c.pos] > 0)) return;
       if ((c.pos === 'K' || c.pos === 'DEF') && usable.indexOf(c.pos) < 0) return;
       var surv = survivalOf(c, nextPick, opts.availability);
       var drop = now[c.pos] ? (now[c.pos].vor - later[c.pos].expected) : 0;
       var tierLeft = pool.filter(function (x) {
         return x.pos === c.pos && x.tier === c.tier;
       }).length;
-      var starts = need.starterGap[c.pos] > 0
-                || (FLEX_ELIGIBLE[c.pos] && need.flexOpen > 0);
-      var score = (starts ? c.vor : c.vor * BENCH_DISCOUNT[c.pos])
+      var starts = need.starterGap[c.pos] > 0 || need.flexOpenFor[c.pos] > 0;
+      var benchW = BENCH_DISCOUNT[c.pos] * Math.pow(BENCH_DECAY, need.benchDepth[c.pos] || 0);
+      /* The discount shrinks a bench player's VALUE, never his deficit: a
+       * player below replacement is worth about nothing wherever he sits,
+       * and multiplying a negative VOR by 0.3 made him look better than a
+       * starter with a smaller deficit (that is how the quarterback went
+       * unfilled). */
+      var benchVal = c.vor > 0 ? c.vor * benchW : c.vor;
+      /* AN OPEN LINEUP SLOT MUST BE FILLED, so for a position with a hole the
+       * cost of waiting is real: what the best available there is worth now
+       * minus what the best available is expected to be worth at our next
+       * pick. VOR alone assumes a replacement-level player will be there
+       * when we finally fill the hole; in a room of autodrafters hoarding
+       * quarterbacks (slot study 2026-09-05, Yahoo room, slot 1) the 13th
+       * quarterback was gone by round ten and the first one we took was the
+       * 20th, in round sixteen. Positions without a hole get no such term --
+       * that is the double-count the dropoff experiments rejected. */
+      var holeUrgency = need.starterGap[c.pos] > 0 ? Math.max(0, drop) : 0;
+      var score = (starts ? c.vor : benchVal)
                 + DROPOFF_WEIGHT * drop * (1 - surv)
+                + holeUrgency
                 + (need.starterGap[c.pos] > 0 ? STARTER_BONUS : 0);
       ranked.push({
         name: c.name, pos: c.pos, team: c.team, tier: c.tier, bye: c.bye,
@@ -363,7 +438,7 @@
     setRosterSize: setRosterSize, rosterSizeFrom: rosterSizeFrom,
     setLineup: setLineup,
     getLineup: function () {
-      return { base: BASE_STARTERS, numFlex: NUM_FLEX, flexEligible: FLEX_ELIGIBLE };
+      return { base: BASE_STARTERS, numFlex: NUM_FLEX, flexEligible: FLEX_ELIGIBLE, flexSlots: FLEX_SLOTS };
     },
     getRosterSize: function () { return ROSTER_SIZE; },
     parseName: parseName, roomKey: roomKey, buildIndex: buildIndex,

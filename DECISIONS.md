@@ -537,3 +537,43 @@ must not be the thing that gives up first.
 **How to apply:** `deadline=worker/armedN/firedM` should show M close to N
 across a draft, and `turnLog` records the seconds waited and the locator
 used for every pick we clicked.
+
+## 028 — Bench value is a function of depth and eligibility, and a lineup hole is a debt
+
+**Rules** (web/advisor.js and engine/advisor.py, held together by
+tests/parity_test.py):
+
+1. Each flex slot carries its own eligibility (`FLEX_SLOTS`, parsed from the
+   room). Overflow past the base slots is assigned to the flex slots that
+   will take it, in the room's order, largest overflow first; what is left
+   at a position is its bench. A position is "starting" only if a base slot
+   or a flex slot *it is eligible for* is open.
+2. The k-th bench body at a position is worth `BENCH_DISCOUNT * 0.5^k` of
+   his VOR, and the discount shrinks value only: a bench player below
+   replacement keeps his full deficit.
+3. With as many picks left as lineup holes plus one, only hole positions
+   may be drafted (must-fill).
+4. A candidate at a hole position carries the expected drop at that
+   position to our next pick as urgency; positions without a hole get no
+   such term.
+5. Candidates are the top eighty by VOR plus the best three at every usable
+   position, so the last rounds rank real choices.
+
+**Why:** the draft-morning slot study (tools/slot_sim.js, 36 drafts) found
+the board drafting three tight ends by round seven and carrying two running
+backs into round sixteen against a room of humans, taking its first
+quarterback in round sixteen against autodrafters, and falling through to
+the emergency pick on the last selection from half the slots. Each traced
+to one line: every open flex slot counted as open to every flex position
+(so a third tight end looked like a starter); a flat bench discount valued
+a sixth receiver like a third running back; multiplying a negative VOR by
+the discount made a bench player look better than a starter with a smaller
+deficit; and the candidate scan stopped at eighty. After the change every
+one of the 36 drafts produces RB 5, WR 6, TE 2, QB 2, K 1, DEF 1, the
+average lineup in the all-human room rose 23 points, and no emergency
+pick was needed. The user's instruction was explicit: the tool is built so
+that it does not need to be overridden.
+
+**How to apply:** `flexOpenFor`, `benchDepth` and `mustFill` are on the
+advisor's `roster` output; the slot study is the regression test for
+roster shape and should be run after any change to valuation.

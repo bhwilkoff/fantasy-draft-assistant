@@ -69,27 +69,35 @@ BENCH_DISCOUNT = {"QB": 0.2, "RB": 0.6, "WR": 0.6, "TE": 0.35, "K": 0.0, "DEF": 
 BASE_STARTERS = {"QB": 1, "RB": 2, "WR": 3, "TE": 1, "K": 1, "DEF": 1}
 NUM_FLEX = 2
 FLEX_ELIGIBLE = {"WR", "RB", "TE"}
+# Each flex slot's own eligibility, in the room's order (W/T then W/R for
+# Harvey Cup). Mirrored in web/advisor.js FLEX_SLOTS.
+FLEX_SLOTS = [("WR", "TE"), ("WR", "RB")]
+# The k-th bench body at a position is worth BENCH_DECAY**k of the first.
+# Mirrored in web/advisor.js BENCH_DECAY.
+BENCH_DECAY = 0.5
 
 
 def set_lineup(starters, flex_eligibility=None):
     """starters: Yahoo-style dict {"QB":1,"WR":3,"W/T":1,...};
     flex_eligibility: {"W/T": ("WR","TE"), ...} for the slash slots."""
-    global BASE_STARTERS, NUM_FLEX, FLEX_ELIGIBLE
+    global BASE_STARTERS, NUM_FLEX, FLEX_ELIGIBLE, FLEX_SLOTS
     base = {p: 0 for p in ("QB", "RB", "WR", "TE", "K", "DEF")}
-    nflex, elig = 0, set()
+    nflex, elig, slots = 0, set(), []
+    letter = {"W": "WR", "R": "RB", "T": "TE", "Q": "QB"}
     for slot, n in starters.items():
         key = slot.upper().replace("D/ST", "DEF")
         if key in base:
             base[key] += n
         elif "/" in key:
             nflex += n
-            for part in key.split("/"):
-                elig.add({"W": "WR", "R": "RB", "T": "TE", "Q": "QB"}.get(part, part))
-    if flex_eligibility:
-        for slot, positions in flex_eligibility.items():
-            elig.update(positions)
+            parts = tuple(letter.get(part, part) for part in key.split("/"))
+            if flex_eligibility and slot in flex_eligibility:
+                parts = tuple(flex_eligibility[slot])
+            elig.update(parts)
+            slots.extend([tuple(p for p in parts if p in base)] * n)
     BASE_STARTERS, NUM_FLEX = base, nflex
     FLEX_ELIGIBLE = {p for p in elig if p in base}
+    FLEX_SLOTS = [sl for sl in slots if sl]
 
 # These are not taste; they were swept in sim.py against simulated projection
 # error (see docs/METHOD.md).
@@ -125,20 +133,35 @@ def roster_needs(roster):
         if p.get("pos") in counts:
             counts[p["pos"]] += 1
 
-    # Fill base starters first, then flex from the overflow.
+    # Fill base starters first, then flex from the overflow: each flex slot,
+    # in the room's order, takes the eligible position with the most overflow
+    # left (ties to the slot's own eligibility order). What is left at a
+    # position is its bench. Mirrored exactly in web/advisor.js rosterNeeds.
     base = BASE_STARTERS
     starter_gap = {p: max(0, base[p] - counts[p]) for p in base}
 
-    overflow = sum(max(0, counts[p] - base[p]) for p in FLEX_ELIGIBLE)
-    flex_open = NUM_FLEX - min(NUM_FLEX, overflow)
+    overflow = {p: max(0, counts[p] - base[p]) for p in FLEX_ELIGIBLE}
+    flex_used_by = {p: 0 for p in base}
+    open_slots = []
+    for elig in FLEX_SLOTS:
+        best = None
+        for p in elig:
+            if overflow.get(p, 0) > 0 and (best is None or overflow[p] > overflow[best]):
+                best = p
+        if best is not None:
+            overflow[best] -= 1
+            flex_used_by[best] += 1
+        else:
+            open_slots.append(elig)
+    flex_open = len(open_slots)
+    flex_open_for = {p: sum(1 for e in open_slots if p in e) for p in base}
+    bench_depth = {p: max(0, counts[p] - base[p] - flex_used_by[p]) for p in base}
 
     total_gap = {}
     for p in starter_gap:
-        cap = base[p] + BENCH_TARGET[p]
-        if p in FLEX_ELIGIBLE:
-            cap += flex_open
+        cap = base[p] + BENCH_TARGET[p] + flex_open_for[p]
         total_gap[p] = max(0, cap - counts[p])
-    return starter_gap, total_gap, counts, flex_open
+    return starter_gap, total_gap, counts, flex_open, flex_open_for, bench_depth
 
 
 def expected_best_later(pool, pos, next_pick, limit=40, availability=None):
@@ -186,7 +209,7 @@ def advise(available, roster, current_pick, next_pick, recent_pick_positions=Non
     count has twice run low and kept the K/DEF gate shut."""
     pool = sorted([p for p in available if p.get("vor") is not None],
                   key=lambda p: -p["vor"])
-    starter_gap, total_gap, counts, flex_open = roster_needs(roster)
+    starter_gap, total_gap, counts, flex_open, flex_open_for, bench_depth = roster_needs(roster)
 
     my_picks_remaining = (picks_remaining if picks_remaining is not None
                           else max(0, L.ROSTER_SIZE - len(roster)))
@@ -202,6 +225,14 @@ def advise(available, roster, current_pick, next_pick, recent_pick_positions=Non
             usable.remove(p)
     if not usable:
         usable = [p for p in ("RB", "WR", "TE", "QB") if total_gap[p] > 0] or ["WR"]
+    # MUST-FILL: with as many picks left as lineup holes (plus one), nothing
+    # but a hole may be drafted. Mirrored in web/advisor.js.
+    holes = sum(starter_gap.values())
+    must_fill = False
+    if holes > 0 and my_picks_remaining <= holes + 1:
+        must = [p for p in usable if starter_gap[p] > 0]
+        if must:
+            usable, must_fill = must, True
 
     now, later = {}, {}
     for p in usable:
@@ -226,9 +257,24 @@ def advise(available, roster, current_pick, next_pick, recent_pick_positions=Non
     runs = positional_run(recent_pick_positions or [])
 
     ranked = []
-    for cand in pool[:80]:
+    # The best eighty by VOR, plus the best three at every usable position,
+    # so the last rounds still rank real choices. Mirrored in web/advisor.js.
+    cands = list(pool[:80])
+    for p in usable:
+        extra = 0
+        for x in pool:
+            if extra >= 3:
+                break
+            if x["pos"] != p:
+                continue
+            if x not in cands:
+                cands.append(x)
+            extra += 1
+    for cand in cands:
         pos = cand["pos"]
         if total_gap.get(pos, 0) <= 0:
+            continue
+        if must_fill and starter_gap.get(pos, 0) <= 0:
             continue
         if pos in ("K", "DEF") and pos not in usable:
             continue
@@ -242,9 +288,16 @@ def advise(available, roster, current_pick, next_pick, recent_pick_positions=Non
                              if x["pos"] == pos and x.get("tier") == cand.get("tier"))
         # Score: the player's own value, plus what we lose by not taking his
         # position now, discounted by how likely he is to come back to us.
-        starts = starter_gap.get(pos, 0) > 0 or (pos in FLEX_ELIGIBLE and flex_open > 0)
-        score = (cand["vor"] if starts else cand["vor"] * BENCH_DISCOUNT[pos]) \
-            + DROPOFF_WEIGHT * dropoff * (1.0 - surv)
+        starts = starter_gap.get(pos, 0) > 0 or flex_open_for.get(pos, 0) > 0
+        bench_w = BENCH_DISCOUNT[pos] * (BENCH_DECAY ** bench_depth.get(pos, 0))
+        # the discount shrinks value, never a deficit (mirrored in JS)
+        bench_val = cand["vor"] * bench_w if cand["vor"] > 0 else cand["vor"]
+        # an open lineup slot must be filled: the cost of waiting at a hole
+        # position is the expected drop to our next pick (mirrored in JS)
+        hole_urgency = max(0.0, dropoff) if starter_gap.get(pos, 0) > 0 else 0.0
+        score = (cand["vor"] if starts else bench_val) \
+            + DROPOFF_WEIGHT * dropoff * (1.0 - surv) \
+            + hole_urgency
         if starter_gap.get(pos, 0) > 0:
             score += STARTER_BONUS            # a lineup hole is real value
         ranked.append({
