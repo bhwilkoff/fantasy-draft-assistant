@@ -324,9 +324,12 @@
   };
 
   function myRosterFromPicks() {
-    var m = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
-    if (!m) return [];
-    var slot = +m[2];
+    /* THE SLOT FROM THE ROOM, NEVER THE URL: in the Harvey Cup draft itself
+     * (2026-09-05) the room was team 7 drafting 12th and this built our
+     * roster from seat 7's picks; the autopilot drafted five tight ends to
+     * fill a roster that was not ours. */
+    var slot = hcRoomSlot();
+    if (!slot) return [];
     /* Team count: the Results tab's team list is authoritative (one option
      * per team, whatever the labels say) and the harvester records it as
      * h.numTeams; until a harvest has run, use the bridge's period-detecting
@@ -1318,7 +1321,7 @@
          * slot: the roster is empty by definition, skip the read. */
         var st0 = null;
         try { st0 = window.__hcReaders.readStatus(); } catch (e) { st0 = { pick: 1e9 }; }  // unreadable: seed anyway
-        var m0 = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
+        var m0 = [null, null, hcRoomSlot()];   // slot from the room, not the URL
         var slot0 = m0 ? +m0[2] : 0;
         if (!st0 || !st0.pick || (slot0 && st0.pick <= slot0)) {
           A.seededAtLoad = 'skipped:before-first-pick';
@@ -1439,7 +1442,7 @@
    * them was drafting from a stale queue. The advice being right is not
    * evidence the pick was right; compare them, pick by pick. */
   A.audit = function () {
-    var m = location.pathname.match(/\/draftclient\/f1\/(\d+)\/(\d+)/);
+    var m = [null, null, hcRoomSlot()];   // slot from the room, not the URL
     if (!m) return 'not in a draft room';
     var slot = +m[2], n = A.numTeams || 12, out = [], ok = 0, bad = 0;
     var norm = function (s) { return String(s || '').toLowerCase().replace(/[^a-z]/g, ''); };
