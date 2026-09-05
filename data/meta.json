@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-05T21:30:23+00:00",
+  "generated_at": "2026-09-05T21:35:38+00:00",
   "league": {
-    "id": 0,
-    "name": "Yahoo Public League",
+    "id": 1556772,
+    "name": "Yahoo Prestige H2H-Pts 1556772",
     "teams": 10,
     "rounds": 15,
     "roster_size": 15,
@@ -20,7 +20,7 @@
     "pass_td": 4.0,
     "roster_text": "QB,WR,WR,RB,RB,TE,W/R/T,K,DEF,BN,BN,BN,BN,BN,BN",
     "scoring": {
-      "name": "Yahoo Public League",
+      "name": "Yahoo Prestige H2H-Pts 1556772",
       "pass_yd": 0.04,
       "pass_td": 4.0,
       "pass_int": -1.0,
@@ -64,7 +64,7 @@
       "fetched": "2026-09-05",
       "players_checked": 360
     },
-    "injuries": "Sleeper (279 statuses)",
+    "injuries": "Sleeper (278 statuses)",
     "adp": "FantasyFootballCalculator PPR 12-team, 7430 drafts 2026-08-29..2026-09-05"
   },
   "player_count": 531
